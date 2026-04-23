@@ -901,11 +901,6 @@
       }
 
       function closePopup() {
-          try {
-          if (document.fullscreenElement) {
-            await document.exitFullscreen();
-            return;
-          }
         modal.classList.add('hidden');
         modal.setAttribute('aria-hidden', 'true');
         gameFrame.src = 'about:blank';
