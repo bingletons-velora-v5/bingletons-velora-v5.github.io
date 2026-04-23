@@ -276,8 +276,8 @@
       </div>
     </section>
   </main>
-
-  <script src="https://cdn.jsdelivr.net/gh/luminsdk/script@latest/lumin.min.js"></script>
+<!-- For static HTML sites -->
+<script src="https://cdn.jsdelivr.net/gh/luminsdk/script@latest/lumin.min.js"></script>
   <script>
     const starsCanvas = document.getElementById('stars');
     const starsCtx = starsCanvas.getContext('2d');
@@ -421,7 +421,12 @@
         return '';
       }
     }
+const { games, total, pages } = await Lumin.getGames({ page: 1, limit: 20 });
 
+for (const game of games) {
+  const imgUrl = await Lumin.getImageUrl(game.image_token);
+  // Render your own card with game.name, game.id, imgUrl, etc.
+}
     function renderGames(list) {
       if (!list.length) {
         gamesEl.innerHTML = '';
@@ -445,6 +450,12 @@
           </article>
         `;
       }).join('');
+
+       // Either load game game directly in the configured container
+ await Lumin.loadGame('space-invaders');
+
+ // Or, get the URL to put in your own <iframe>
+ const { url } = await Lumin.getGameUrl('space-invaders');
 
       gamesEl.querySelectorAll('.card').forEach((card) => {
         const play = () => {
