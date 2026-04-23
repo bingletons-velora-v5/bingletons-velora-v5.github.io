@@ -4,9 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Velora</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
+
   <style>
     :root {
       --bg: #0b0b0b;
@@ -14,10 +16,13 @@
       --text: #f4f4f4;
       --muted: rgba(255, 255, 255, 0.52);
       --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+      --panel: rgba(18, 18, 18, 0.92);
+      --panel-border: rgba(255,255,255,0.10);
     }
 
     * { box-sizing: border-box; }
     html, body { height: 100%; }
+
     body {
       margin: 0;
       overflow: hidden;
@@ -29,7 +34,15 @@
       font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
+    canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      pointer-events: none;
+    }
+
     #stars { z-index: 0; }
     #constellations { z-index: 1; }
 
@@ -99,6 +112,7 @@
       transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
+      cursor: pointer;
     }
 
     .app:hover {
@@ -144,11 +158,141 @@
       to { transform: translate(-50%, -50%) rotate(360deg); }
     }
 
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(0, 0, 0, 0.62);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-panel {
+      width: min(700px, 100%);
+      max-height: min(78vh, 760px);
+      overflow: hidden;
+      border-radius: 18px;
+      border: 1px solid var(--panel-border);
+      background: var(--panel);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.65);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px 18px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      background: rgba(18, 18, 18, 0.98);
+    }
+
+    .modal-title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      text-align: left;
+    }
+
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 0;
+      color: #fff;
+      letter-spacing: 0.02em;
+    }
+
+    .modal-subtitle {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .close-btn {
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.05);
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      line-height: 1;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .close-btn:hover {
+      transform: scale(1.04);
+      background: rgba(255,255,255,0.09);
+    }
+
+    .modal-body {
+      overflow: auto;
+      padding: 18px;
+    }
+
+    .sticky-note {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      margin-bottom: 16px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(122,255,202,0.22);
+      background: rgba(122,255,202,0.08);
+      color: #eafff7;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: lowercase;
+    }
+
+    .note-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .note {
+      padding: 14px 15px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      text-align: left;
+    }
+
+    .note-date {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 6px;
+      text-transform: capitalize;
+    }
+
+    .note-text {
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.86);
+      line-height: 1.5;
+    }
+
     @media (max-width: 700px) {
       .page { padding-top: 72px; padding-bottom: 72px; }
       .shell { gap: 18px; }
       .apps { width: min(360px, 100%); }
       .app { height: 96px; }
+      .modal-panel { max-height: 84vh; }
     }
   </style>
 </head>
@@ -156,8 +300,8 @@
   <canvas id="stars"></canvas>
   <canvas id="constellations"></canvas>
   <div class="overlay"></div>
+
   <div class="v5" id="v5">v5</div>
-    <div class="v5" id="v5">v5</div>
 
   <main class="page">
     <section class="shell" aria-label="Velora home">
@@ -168,14 +312,17 @@
           <div class="app-icon">▣</div>
           <div class="app-label">Games</div>
         </a>
+
         <a class="app" href="m.html">
           <div class="app-icon">▤</div>
           <div class="app-label">Movies</div>
         </a>
-        <a class="app" href="p.html">
+
+        <button class="app" id="patchBtn" type="button">
           <div class="app-icon">✦</div>
           <div class="app-label">Patch Notes</div>
-        </a>
+        </button>
+
         <a class="app" href="c.html">
           <div class="app-icon">◔</div>
           <div class="app-label">Chat</div>
@@ -184,12 +331,62 @@
     </section>
   </main>
 
+  <div class="modal" id="patchModal" aria-hidden="true">
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="patchTitle">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <h2 class="modal-title" id="patchTitle">Patch Notes</h2>
+          <div class="modal-subtitle">Velora timeline and updates</div>
+        </div>
+        <button class="close-btn" id="closePatchBtn" type="button" aria-label="Close patch notes">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="sticky-note">new updates underway</div>
+        <div class="note-list" id="patchList"></div>
+      </div>
+    </div>
+  </div>
+
   <script>
     const starsCanvas = document.getElementById('stars');
     const starsCtx = starsCanvas.getContext('2d');
     const constCanvas = document.getElementById('constellations');
     const constCtx = constCanvas.getContext('2d');
     const v5 = document.getElementById('v5');
+
+    const patchBtn = document.getElementById('patchBtn');
+    const patchModal = document.getElementById('patchModal');
+    const closePatchBtn = document.getElementById('closePatchBtn');
+    const patchList = document.getElementById('patchList');
+
+    // Easy to edit: add new patch notes here.
+    const PATCH_NOTES = [
+      {
+        date: "april 23, 2026",
+        text: "ui & fullscreen update — V5.01"
+      },
+      {
+        date: "april 22, 2026",
+        text: "V5 created — V5.0"
+      },
+      {
+        date: "march 2025",
+        text: "Velora V4 released — breakthrough"
+      },
+      {
+        date: "january 2025",
+        text: "V3 released — Velora gets its name"
+      },
+      {
+        date: "may 2024",
+        text: "Velora V2 released — experimental"
+      },
+      {
+        date: "february 2024",
+        text: "Velora V1 released"
+      }
+    ];
 
     let W = 0, H = 0;
     let stars = [];
@@ -233,8 +430,10 @@
         if (s.x > W + 10) s.x = -10;
         if (s.y < -10) s.y = H + 10;
         if (s.y > H + 10) s.y = -10;
+
         const pulse = 0.5 + 0.5 * Math.sin(performance.now() * 0.0015 + s.x * 0.01);
         const alpha = Math.max(0.08, Math.min(1, s.a * (0.7 + pulse * 0.35)));
+
         starsCtx.beginPath();
         starsCtx.fillStyle = `rgba(180,255,230,${alpha * 0.95})`;
         starsCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
@@ -292,6 +491,37 @@
       drawConstellations();
       requestAnimationFrame(animate);
     }
+
+    function renderPatchNotes() {
+      patchList.innerHTML = PATCH_NOTES.map(note => `
+        <div class="note">
+          <span class="note-date">${note.date}</span>
+          <div class="note-text">${note.text}</div>
+        </div>
+      `).join('');
+    }
+
+    function openPatchNotes() {
+      renderPatchNotes();
+      patchModal.classList.add('show');
+      patchModal.setAttribute('aria-hidden', 'false');
+    }
+
+    function closePatchNotes() {
+      patchModal.classList.remove('show');
+      patchModal.setAttribute('aria-hidden', 'true');
+    }
+
+    patchBtn.addEventListener('click', openPatchNotes);
+    closePatchBtn.addEventListener('click', closePatchNotes);
+
+    patchModal.addEventListener('click', (e) => {
+      if (e.target === patchModal) closePatchNotes();
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closePatchNotes();
+    });
 
     window.addEventListener('resize', resize);
     resize();
