@@ -1,62 +1,162 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Velora</title>
-    <style>
-        body {
-            background-color: darkgray;
-            overflow: hidden;
-            margin: 0;
-            position: relative;
-        }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Velora</title>
+  <style>
+    :root{
+      --bg:#0f1112;           /* very dark gray */
+      --accent:#18d26e;       /* bright green */
+      --accent-dark:#0ca85a;  /* darker green */
+      --text:#07140f;         /* very dark text for paragraphs, as requested */
+      --muted:#b8e9c9;
+    }
 
-        .constellation {
-            position: absolute;
-            width: 100vw;
-            height: 100vh;
-            background: radial-gradient(circle, lightgreen 0%, transparent 30%);
-            animation: shoot 3s infinite;
-        }
+    html,body{height:100%; margin:0; font-family:Inter, "Segoe UI", Roboto, Arial, sans-serif; background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
 
-        @keyframes shoot {
-            0% { opacity: 0; }
-            50% { opacity: 1; }
-            100% { opacity: 0; }
-        }
+    /* Star canvas (background) */
+    #starfield{ position:fixed; inset:0; z-index:0; display:block; }
 
-        h1 {
-            color: lightgreen;
-            text-align: center;
-            font-size: 5em;
-            animation: shine 1s infinite;
-        }
+    /* soft green constellation / overlay */
+    .constellation{
+      position:fixed;
+      inset:0;
+      z-index:1;
+      pointer-events:none;
+      mix-blend-mode:screen;
+      background:
+        radial-gradient(circle at 12% 20%, rgba(24,210,110,0.06), transparent 6%),
+        radial-gradient(circle at 72% 60%, rgba(24,210,110,0.04), transparent 8%),
+        radial-gradient(circle at 40% 80%, rgba(24,210,110,0.03), transparent 10%);
+    }
 
-        @keyframes shine {
-            0% { text-shadow: 0 0 20px lightgreen; }
-            50% { text-shadow: 0 0 40px lightgreen; }
-            100% { text-shadow: 0 0 20px lightgreen; }
-        }
+    /* main content centered */
+    .wrap{ position:relative; z-index:3; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:48px 20px; }
+    .card{ max-width:880px; width:100%; text-align:center; padding:44px; border-radius:18px; background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.02)); box-shadow: 0 10px 40px rgba(0,0,0,0.6); backdrop-filter: blur(6px); }
 
-        .v5 {
-            position: absolute;
-            font-size: 3em;
-            color: lightgreen;
-            animation: spin 2s linear infinite;
-        }
+    .brand{ font-size:72px; margin:0; color:var(--accent); letter-spacing:6px; text-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 18px rgba(24,210,110,0.14); }
+    .subtitle{ margin-top:8px; color:var(--text); font-size:18px; opacity:0.98; }
 
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-    </style>
+    /* buttons */
+    .actions{ margin-top:28px; display:flex; gap:16px; justify-content:center; flex-wrap:wrap; }
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:14px 26px; font-size:18px; border-radius:12px; border:1px solid rgba(12,168,90,0.18);
+      text-decoration:none; color:var(--accent-dark); background:linear-gradient(180deg, rgba(12,168,90,0.09), rgba(12,168,90,0.03));
+      box-shadow: 0 8px 20px rgba(0,0,0,0.55); transition:transform .14s ease, box-shadow .14s ease, background .14s;
+    }
+    .btn:hover{ transform:translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.6); }
+    .btn.ghost{ background:transparent; border:1px solid rgba(255,255,255,0.03); color:var(--muted); }
+
+    /* small description text darker */
+    .lead{ margin-top:18px; color:var(--text); max-width:70ch; margin-left:auto; margin-right:auto; font-size:16px; line-height:1.45; opacity:0.98; }
+
+    /* shooting star element */
+    .shoot{ position:fixed; z-index:2; pointer-events:none; width:4px; height:120px; transform:rotate(30deg); background:linear-gradient(45deg, rgba(24,210,110,1), rgba(24,210,110,0.04)); filter:blur(.6px); opacity:0; }
+
+    @media (max-width:560px){
+      .brand{ font-size:40px; letter-spacing:3px; }
+      .card{ padding:22px; border-radius:12px; }
+      .btn{ padding:12px 18px; font-size:16px; }
+    }
+  </style>
 </head>
 <body>
-    <div class="constellation"></div>
-    <h1>Velora</h1>
-    <div class="v5" style="top: 10%; left: 20%;">v5</div>
-    <div class="v5" style="top: 50%; left: 60%;">v5</div>
-    <div class="v5" style="top: 80%; left: 40%;">v5</div>
+  <!-- canvas for many tiny stars -->
+  <canvas id="starfield" aria-hidden="true"></canvas>
+
+  <!-- soft constellation overlay -->
+  <div class="constellation" aria-hidden="true"></div>
+
+  <!-- element used for an animated shooting star -->
+  <div class="shoot" id="shoot" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <section class="card" role="main" aria-labelledby="site-title">
+      <h1 id="site-title" class="brand">Velora</h1>
+      <div class="subtitle">A mysterious portal — games and cinematic worlds</div>
+      <p class="lead">Welcome to Velora. Explore curated games and cinematic experiences. Click a button below to enter the Games or Movies sections.</p>
+
+      <nav class="actions" aria-label="Primary">
+        <a class="btn" href="g.html" role="button">Games</a>
+        <a class="btn ghost" href="m.html" role="button">Movies</a>
+      </nav>
+    </section>
+  </div>
+
+  <script>
+    // Starfield: many small green-tinted stars
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    let W, H, starList = [];
+
+    function resize(){ W = canvas.width = innerWidth; H = canvas.height = innerHeight; createStars(); }
+    function createStars(){
+      starList = [];
+      const density = Math.max(80, Math.floor((W*H)/10000)); // scale number of stars by area
+      for(let i=0;i<density;i++){
+        starList.push({
+          x: Math.random()*W,
+          y: Math.random()*H,
+          r: Math.random()*1.6 + 0.2,
+          a: Math.random()*0.8 + 0.15,
+          twinkle: Math.random()*0.02 + 0.005
+        });
+      }
+    }
+    function renderStars(){
+      ctx.clearRect(0,0,W,H);
+      for(const s of starList){
+        s.a += (Math.random() - 0.5) * s.twinkle;
+        s.a = Math.max(0.08, Math.min(1, s.a));
+        ctx.beginPath();
+        ctx.fillStyle = 'rgba(24,210,110,' + (s.a*0.9) + ')';
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+        ctx.fill();
+      }
+      requestAnimationFrame(renderStars);
+    }
+    addEventListener('resize', resize);
+    resize();
+    renderStars();
+
+    // Shooting star logic: position and animate using transforms
+    const shootEl = document.getElementById('shoot');
+    function fireShootingStar(){
+      // start from left/top quadrant
+      const startX = Math.random() * innerWidth * 0.25 + 10;
+      const startY = Math.random() * innerHeight * 0.45 + 10;
+      // choose travel distance
+      const travelX = innerWidth * (0.6 + Math.random()*0.3);
+      const travelY = innerHeight * (0.4 + Math.random()*0.3);
+
+      shootEl.style.transition = 'none';
+      shootEl.style.opacity = '1';
+      shootEl.style.transform = 'translate(0,0) rotate(30deg)';
+      shootEl.style.left = startX + 'px';
+      shootEl.style.top = startY + 'px';
+
+      // let layout apply then animate
+      requestAnimationFrame(() => {
+        shootEl.style.transition = 'transform 900ms cubic-bezier(.2,.8,.2,1), opacity 900ms';
+        shootEl.style.transform = 'translate(' + travelX + 'px,' + travelY + 'px) rotate(30deg)';
+        shootEl.style.opacity = '0';
+      });
+
+      // reset after animation finishes
+      setTimeout(() => {
+        shootEl.style.transition = 'none';
+        shootEl.style.opacity = '0';
+        shootEl.style.transform = 'translate(0,0) rotate(30deg)';
+      }, 1100 + Math.random()*300);
+    }
+
+    // random intervals, sometimes cluster multiple
+    setInterval(() => {
+      if (Math.random() < 0.65) fireShootingStar();
+      if (Math.random() < 0.12) setTimeout(fireShootingStar, 250); // occasionally double
+    }, 2500 + Math.random()*1800);
+  </script>
 </body>
 </html>
