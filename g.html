@@ -1,32 +1,34 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>games</title>
+  <title>Velora</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Great+Vibes&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --bg: #0b0b0b;
-      --bg-2: #121212;
+      --bg: #070707;
+      --bg-2: #101010;
       --text: #f4f4f4;
-      --muted: rgba(255, 255, 255, 0.52);
-      --panel: rgba(10, 14, 12, 0.5);
-      --border: rgba(180, 255, 230, 0.14);
+      --muted: rgba(255, 255, 255, 0.58);
+      --border: rgba(180, 255, 230, 0.12);
       --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
-      --accent: rgba(180, 255, 230, 0.9);
+      --accent: #b4ffe6;
     }
 
     * { box-sizing: border-box; }
     html, body { height: 100%; }
+
     body {
       margin: 0;
       overflow: hidden;
       background:
-        radial-gradient(circle at 50% 45%, rgba(255,255,255,0.04), transparent 28%),
-        radial-gradient(circle at 50% 50%, rgba(122, 255, 202, 0.03), transparent 45%),
+        radial-gradient(circle at 50% 35%, rgba(255,255,255,0.04), transparent 26%),
+        radial-gradient(circle at 50% 55%, rgba(122, 255, 202, 0.04), transparent 44%),
         linear-gradient(180deg, var(--bg), var(--bg-2));
       color: var(--text);
       font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -50,174 +52,150 @@
       z-index: 2;
       pointer-events: none;
       background:
-        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.015), transparent 18%),
-        radial-gradient(circle at 75% 70%, rgba(255,255,255,0.015), transparent 20%);
+        radial-gradient(circle at 18% 22%, rgba(255,255,255,0.018), transparent 16%),
+        radial-gradient(circle at 78% 74%, rgba(255,255,255,0.015), transparent 20%);
     }
 
     .page {
       position: relative;
       z-index: 3;
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 28px 18px 22px;
-    }
-
-    .shell {
-      width: min(1100px, 100%);
+      padding: 28px 22px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 22px;
+    }
+
+    .hero {
+      width: min(1220px, 100%);
       text-align: center;
+      padding-top: 14px;
+      margin-bottom: 18px;
     }
 
     .brand {
       margin: 0;
       font-family: "Great Vibes", cursive;
-      font-size: clamp(4.4rem, 9vw, 7.2rem);
+      font-size: clamp(4.1rem, 8vw, 7rem);
       line-height: 0.9;
       font-weight: 400;
-      color: #ffffff;
+      color: #fff;
       letter-spacing: 0.03em;
       text-shadow: 0 0 22px rgba(255,255,255,0.08);
-      transform: translateY(2px);
       user-select: none;
     }
 
     .subtitle {
-      margin: 0;
+      margin: 10px auto 0;
+      max-width: 760px;
       color: var(--muted);
-      font-size: 0.95rem;
+      font-size: clamp(0.95rem, 2vw, 1.08rem);
+      line-height: 1.6;
+    }
+
+    .content {
+      width: min(1440px, 100%);
+      flex: 1;
+      min-height: 0;
+      display: flex;
+    }
+
+    #games {
+      width: 100%;
+      height: calc(100vh - 200px);
+      min-height: 560px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at top, rgba(122,255,202,0.05), transparent 40%),
+        rgba(10, 10, 10, 0.18);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      padding: 18px;
+    }
+
+    .games-toolbar {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .games-toolbar h2 {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 800;
       letter-spacing: 0.02em;
     }
 
-    .controls {
-      width: min(760px, 100%);
+    .games-toolbar .meta {
+      color: rgba(255,255,255,0.58);
+      font-size: 0.92rem;
+    }
+
+    .games-grid {
       display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 12px;
-      padding: 14px;
-      border: 1px solid var(--border);
-      background: linear-gradient(180deg, rgba(18, 18, 18, 0.76), rgba(8, 10, 9, 0.5));
-      backdrop-filter: blur(16px);
-      border-radius: 24px;
-      box-shadow: var(--shadow);
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     }
 
-    .search {
-      width: 100%;
-      appearance: none;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.04);
-      color: var(--text);
-      border-radius: 18px;
-      padding: 14px 16px;
-      font: inherit;
-      outline: none;
-    }
-
-    .search::placeholder { color: rgba(255,255,255,0.36); }
-    .search:focus { border-color: rgba(180,255,230,0.36); box-shadow: 0 0 0 4px rgba(180,255,230,0.08); }
-
-    .button {
-      border: 0;
-      border-radius: 18px;
-      padding: 0 18px;
-      min-width: 120px;
-      font: inherit;
-      font-weight: 700;
-      color: #07120f;
-      background: linear-gradient(180deg, rgba(210,255,241,1), rgba(180,255,230,0.88));
+    .game-card {
       cursor: pointer;
-      box-shadow: 0 12px 30px rgba(180,255,230,0.12);
-    }
-
-    .button:active { transform: translateY(1px); }
-
-    .grid-wrap {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .grid-shell {
-      width: 100%;
-      max-height: calc(100vh - 340px);
-      overflow: auto;
-      padding: 8px 2px 18px;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(180,255,230,0.4) transparent;
-    }
-
-    .grid-shell::-webkit-scrollbar { width: 10px; }
-    .grid-shell::-webkit-scrollbar-track { background: transparent; }
-    .grid-shell::-webkit-scrollbar-thumb {
-      background: rgba(180,255,230,0.28);
-      border-radius: 999px;
-    }
-
-    .status {
-      min-height: 24px;
-      color: rgba(255,255,255,0.68);
-      font-size: 0.88rem;
-      margin: 4px 0 0;
-    }
-
-    .games {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-      gap: 16px;
-      width: 100%;
-      margin-top: 18px;
-    }
-
-    .card {
-      border: 1px solid rgba(255,255,255,0.08);
-      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
-      border-radius: 22px;
+      border: 1px solid rgba(180,255,230,0.12);
+      background: rgba(255,255,255,0.03);
+      border-radius: 18px;
       overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.22);
-      cursor: pointer;
-      transform: translateY(0);
-      transition: transform .2s ease, border-color .2s ease, background .2s ease;
-      text-align: left;
-      min-height: 230px;
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+      min-height: 190px;
+      display: flex;
+      flex-direction: column;
     }
 
-    .card:hover {
-      transform: translateY(-4px);
-      border-color: rgba(180,255,230,0.26);
-      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+    .game-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(180,255,230,0.28);
+      background: rgba(180,255,230,0.06);
     }
 
-    .thumb {
+    .game-thumb {
       width: 100%;
       aspect-ratio: 16 / 10;
-      background: radial-gradient(circle at 50% 40%, rgba(180,255,230,0.16), rgba(255,255,255,0.04));
-      display: block;
       object-fit: cover;
-    }
-
-    .meta {
-      padding: 12px 13px 14px;
-    }
-
-    .name {
+      background: rgba(255,255,255,0.05);
       display: block;
-      font-weight: 700;
-      font-size: 0.96rem;
+    }
+
+    .game-info {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .game-name {
+      margin: 0;
+      font-size: 0.98rem;
+      font-weight: 800;
+      color: #fff;
       line-height: 1.25;
-      color: var(--text);
-      margin-bottom: 6px;
     }
 
-    .category {
-      display: block;
-      font-size: 0.8rem;
-      color: rgba(255,255,255,0.52);
+    .game-cat {
+      margin: 0;
+      font-size: 0.84rem;
+      color: rgba(255,255,255,0.55);
+    }
+
+    .topline {
+      margin-top: 10px;
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.34);
+      user-select: none;
     }
 
     .v5 {
@@ -241,14 +219,137 @@
       to { transform: translate(-50%, -50%) rotate(360deg); }
     }
 
+    /* Popup modal */
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.58);
+      backdrop-filter: blur(10px);
+    }
+
+    .modal.hidden { display: none; }
+
+    .modal-card {
+      width: min(1080px, 100%);
+      height: min(88vh, 860px);
+      border: 1px solid rgba(180, 255, 230, 0.18);
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at top, rgba(180,255,230,0.10), transparent 35%),
+        rgba(12, 12, 12, 0.97);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65);
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .modal-top {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 14px;
+      padding-right: 44px;
+    }
+
+    .modal-title {
+      margin: 0;
+      font-size: clamp(1.25rem, 2vw, 1.8rem);
+      line-height: 1.15;
+      color: #fff;
+    }
+
+    .modal-subtitle {
+      margin: 6px 0 0;
+      color: rgba(255,255,255,0.62);
+      font-size: 0.96rem;
+      line-height: 1.45;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+      cursor: pointer;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .modal-frame-wrap {
+      flex: 1;
+      min-height: 0;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: #000;
+    }
+
+    .modal-frame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #000;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .modal-btn {
+      appearance: none;
+      border: 1px solid rgba(180, 255, 230, 0.22);
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+    }
+
+    .modal-btn:hover {
+      transform: translateY(-1px);
+      background: rgba(180,255,230,0.10);
+      border-color: rgba(180, 255, 230, 0.36);
+    }
+
     @media (max-width: 700px) {
       body { overflow: auto; }
-      .page { padding-top: 72px; padding-bottom: 72px; }
-      .shell { gap: 18px; }
-      .controls { grid-template-columns: 1fr; }
-      .button { height: 48px; }
-      .grid-shell { max-height: none; overflow: visible; }
-      .games { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+      .page { padding-top: 22px; padding-bottom: 24px; }
+      #games {
+        height: auto;
+        min-height: 680px;
+      }
+      .content { min-height: 680px; }
+
+      .modal-card {
+        width: min(100%, 520px);
+        height: min(90vh, 820px);
+        padding: 16px;
+      }
+
+      .games-grid {
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      }
     }
   </style>
 </head>
@@ -257,73 +358,89 @@
   <canvas id="constellations"></canvas>
   <div class="overlay"></div>
   <div class="v5" id="v5">v5</div>
-    <div class="v5" id="v5">v5</div>
 
   <main class="page">
-    <section class="shell" aria-label="games page">
-      <h1 class="brand">games</h1>
-      <p class="subtitle">browse over 2,000 games with LuminSDK</p>
+    <section class="hero" aria-label="Velora games page">
+      <h1 class="brand">velora</h1>
+      <p class="subtitle">browse over 2,000 games with LuminSDK!</p>
+      <div class="topline">poki-style layout • custom popup player • fast browse</div>
+    </section>
 
-      <div class="controls" role="search">
-        <input id="search" class="search" type="search" placeholder="Search games" autocomplete="off" />
-        <button id="clear" class="button" type="button">Reset</button>
-      </div>
-
-      <div class="grid-wrap">
-        <div class="grid-shell">
-          <p id="status" class="status">loading games…</p>
-          <div id="games" class="games" aria-live="polite"></div>
+    <section class="content">
+      <div id="games">
+        <div class="games-toolbar">
+          <div>
+            <h2>Games</h2>
+            <div class="meta" id="gamesMeta">Loading…</div>
+          </div>
         </div>
+        <div class="games-grid" id="gamesGrid"></div>
       </div>
     </section>
   </main>
 
-  <div id="playerModal" class="player-modal" hidden>
-    <button id="closePlayer" class="close-player" type="button">×</button>
-    <iframe
-      id="playerFrame"
-      title="Game Player"
-      allow="autoplay; fullscreen; pointer-lock; gamepad"
-      allowfullscreen
-    ></iframe>
+  <div id="gameModal" class="modal hidden" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-card" id="modalCard">
+      <button class="modal-close" id="modalClose" aria-label="Close popup">×</button>
+
+      <div class="modal-top">
+        <div>
+          <h2 class="modal-title" id="modalTitle">Game Title</h2>
+          <p class="modal-subtitle" id="modalSubtitle">Selected game details will appear here.</p>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="modal-btn" id="modalFullscreen">Fullscreen</button>
+        <button class="modal-btn" id="modalBack">Back</button>
+      </div>
+
+      <div class="modal-frame-wrap" id="modalFrameWrap">
+        <iframe
+          id="gameFrame"
+          class="modal-frame"
+          title="Game player"
+          allow="autoplay; fullscreen; pointer-lock; gamepad"
+          loading="eager"
+        ></iframe>
+      </div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/gh/luminsdk/script@latest/lumin.min.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       const starsCanvas = document.getElementById('stars');
       const starsCtx = starsCanvas.getContext('2d');
       const constCanvas = document.getElementById('constellations');
       const constCtx = constCanvas.getContext('2d');
       const v5 = document.getElementById('v5');
-      const gamesEl = document.getElementById('games');
-      const statusEl = document.getElementById('status');
-      const searchEl = document.getElementById('search');
-      const clearBtn = document.getElementById('clear');
 
-      const playerModal = document.getElementById('playerModal');
-      const playerFrame = document.getElementById('playerFrame');
-      const closePlayer = document.getElementById('closePlayer');
+      const gamesMeta = document.getElementById('gamesMeta');
+      const gamesGrid = document.getElementById('gamesGrid');
+
+      const modal = document.getElementById('gameModal');
+      const modalCard = document.getElementById('modalCard');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalSubtitle = document.getElementById('modalSubtitle');
+      const modalClose = document.getElementById('modalClose');
+      const modalBack = document.getElementById('modalBack');
+      const modalFullscreen = document.getElementById('modalFullscreen');
+      const gameFrame = document.getElementById('gameFrame');
 
       let W = 0, H = 0;
       let stars = [];
-      let allGames = [];
-      let imageCache = new Map();
-      let initialized = false;
-      let activeRequest = 0;
+      let activeGame = {
+        id: '',
+        title: '',
+        url: ''
+      };
 
       function placeV5() {
         const x = Math.max(18, Math.min(window.innerWidth - 25, Math.random() * window.innerWidth));
         const y = Math.max(18, Math.min(window.innerHeight - 25, Math.random() * window.innerHeight));
         v5.style.left = `${x}px`;
         v5.style.top = `${y}px`;
-      }
-
-      function resize() {
-        W = starsCanvas.width = constCanvas.width = window.innerWidth;
-        H = starsCanvas.height = constCanvas.height = window.innerHeight;
-        makeStars();
-        placeV5();
       }
 
       function makeStars() {
@@ -341,17 +458,27 @@
         }
       }
 
+      function resize() {
+        W = starsCanvas.width = constCanvas.width = window.innerWidth;
+        H = starsCanvas.height = constCanvas.height = window.innerHeight;
+        makeStars();
+        placeV5();
+      }
+
       function drawStars() {
         starsCtx.clearRect(0, 0, W, H);
         for (const s of stars) {
           s.x += s.vx;
           s.y += s.vy;
+
           if (s.x < -10) s.x = W + 10;
           if (s.x > W + 10) s.x = -10;
           if (s.y < -10) s.y = H + 10;
           if (s.y > H + 10) s.y = -10;
+
           const pulse = 0.5 + 0.5 * Math.sin(performance.now() * 0.0015 + s.x * 0.01);
           const alpha = Math.max(0.08, Math.min(1, s.a * (0.7 + pulse * 0.35)));
+
           starsCtx.beginPath();
           starsCtx.fillStyle = `rgba(180,255,230,${alpha * 0.95})`;
           starsCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
@@ -368,6 +495,7 @@
         for (let i = 0; i < stars.length; i++) {
           const s = stars[i];
           const matches = [];
+
           for (let j = 0; j < stars.length; j++) {
             if (i === j) continue;
             const t = stars[j];
@@ -376,6 +504,7 @@
             const d = Math.hypot(dx, dy);
             if (d < maxD) matches.push({ t, d });
           }
+
           matches.sort((a, b) => a.d - b.d);
 
           for (let k = 0; k < Math.min(2, matches.length); k++) {
@@ -384,6 +513,7 @@
             const grad = constCtx.createLinearGradient(s.x, s.y, t.x, t.y);
             grad.addColorStop(0, `rgba(180,255,230,${alpha})`);
             grad.addColorStop(1, `rgba(180,255,230,${alpha * 0.4})`);
+
             constCtx.strokeStyle = grad;
             constCtx.lineWidth = 1;
             constCtx.lineDashOffset = performance.now() * -0.002 * (k + 1);
@@ -397,7 +527,7 @@
         constCtx.setLineDash([]);
         for (const s of stars) {
           constCtx.beginPath();
-          constCtx.fillStyle = `rgba(190,255,234,${Math.min(0.12, s.a * 0.08)}`;
+          constCtx.fillStyle = `rgba(190,255,234,${Math.min(0.12, s.a * 0.08)})`;
           constCtx.arc(s.x, s.y, s.r * 2.6, 0, Math.PI * 2);
           constCtx.fill();
         }
@@ -409,164 +539,103 @@
         requestAnimationFrame(animate);
       }
 
-      function escapeHtml(text) {
-        return String(text)
-          .replaceAll('&', '&amp;')
-          .replaceAll('<', '&lt;')
-          .replaceAll('>', '&gt;')
-          .replaceAll('"', '&quot;')
-          .replaceAll("'", '&#039;');
+      function openPopup({ id, title, url, category }) {
+        activeGame = { id, title, url };
+        modalTitle.textContent = title || 'Selected Game';
+        modalSubtitle.textContent = category ? `Category: ${category}` : 'Click Fullscreen for a larger view.';
+        gameFrame.src = url;
+        modal.classList.remove('hidden');
+        modal.setAttribute('aria-hidden', 'false');
       }
 
-      function normalizeGame(game) {
-        return {
-          id: game?.id ?? '',
-          name: game?.name ?? 'Untitled Game',
-          category: game?.category ?? '',
-          image_token: game?.image_token ?? '',
-          imageUrl: ''
-        };
+      function closePopup() {
+        modal.classList.add('hidden');
+        modal.setAttribute('aria-hidden', 'true');
+        gameFrame.src = 'about:blank';
+        activeGame = { id: '', title: '', url: '' };
       }
 
-      async function getImage(token) {
-        if (!token) return '';
-        if (imageCache.has(token)) return imageCache.get(token);
+      async function goFullscreen() {
         try {
-          const url = await Lumin.getImageUrl(token);
-          imageCache.set(token, url);
-          return url;
-        } catch {
-          return '';
-        }
-      }
-
-      function renderGames(list) {
-        if (!list.length) {
-          gamesEl.innerHTML = '';
-          statusEl.textContent = 'no games found';
-          return;
-        }
-
-        statusEl.textContent = `${list.length} games shown`;
-        gamesEl.innerHTML = list.map((game) => {
-          const img = game.imageUrl
-            ? `<img class="thumb" src="${escapeHtml(game.imageUrl)}" alt="${escapeHtml(game.name)}">`
-            : `<div class="thumb"></div>`;
-
-          return `
-            <article class="card" data-id="${escapeHtml(game.id)}" tabindex="0" role="button" aria-label="Play ${escapeHtml(game.name)}">
-              ${img}
-              <div class="meta">
-                <span class="name">${escapeHtml(game.name)}</span>
-                <span class="category">${escapeHtml(game.category || ' ')}&nbsp;</span>
-              </div>
-            </article>
-          `;
-        }).join('');
-
-        gamesEl.querySelectorAll('.card').forEach((card) => {
-          const play = async () => {
-            const id = card.getAttribute('data-id');
-            if (!id) return;
-
-            try {
-              const { url } = await Lumin.getGameUrl(id);
-              playerFrame.src = url;
-              playerModal.hidden = false;
-            } catch (err) {
-              console.error(err);
-              statusEl.textContent = 'could not open game';
-            }
-          };
-
-          card.addEventListener('click', play);
-          card.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              play();
-            }
-          });
-        });
-      }
-
-      function filterGames() {
-        const q = searchEl.value.trim().toLowerCase();
-        const filtered = allGames.filter((game) =>
-          !q || game.name.toLowerCase().includes(q) || (game.category || '').toLowerCase().includes(q)
-        );
-        renderGames(filtered);
-      }
-
-      async function loadInitialGames() {
-        const requestId = ++activeRequest;
-        statusEl.textContent = 'loading games…';
-        gamesEl.innerHTML = '';
-
-        try {
-          if (!window.Lumin) {
-            statusEl.textContent = 'Lumin script did not load';
-            return;
+          if (modalCard.requestFullscreen) {
+            await modalCard.requestFullscreen();
           }
-
-          if (!initialized) {
-            await Lumin.init({ headless: true });
-            initialized = true;
-          }
-
-          const { games } = await Lumin.getGames({ page: 1, limit: 24 });
-          if (requestId !== activeRequest) return;
-
-          allGames = (games || []).map(normalizeGame);
-
-          const imageResults = await Promise.all(
-            allGames.map(async (game) => ({
-              id: game.id,
-              imageUrl: await getImage(game.image_token)
-            }))
-          );
-
-          if (requestId !== activeRequest) return;
-
-          const imageMap = new Map(imageResults.map((entry) => [entry.id, entry.imageUrl]));
-          allGames = allGames.map((game) => ({ ...game, imageUrl: imageMap.get(game.id) || '' }));
-
-          filterGames();
         } catch (err) {
-          console.error(err);
-          statusEl.textContent = 'could not load games';
-          gamesEl.innerHTML = '';
+          console.error('Fullscreen failed:', err);
         }
       }
 
-      function closeGame() {
-        playerFrame.src = 'about:blank';
-        playerModal.hidden = true;
-      }
+      modalClose.addEventListener('click', closePopup);
+      modalBack.addEventListener('click', closePopup);
+      modalFullscreen.addEventListener('click', goFullscreen);
+
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closePopup();
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closePopup();
+      });
 
       window.addEventListener('resize', resize);
-      window.addEventListener('beforeunload', () => {
-        if (window.Lumin?.destroy) Lumin.destroy();
-      });
-
-      searchEl.addEventListener('input', filterGames);
-      clearBtn.addEventListener('click', () => {
-        searchEl.value = '';
-        filterGames();
-        searchEl.focus();
-      });
-
-      closePlayer.addEventListener('click', closeGame);
-      playerModal.addEventListener('click', (e) => {
-        if (e.target === playerModal) closeGame();
-      });
 
       resize();
       animate();
-      loadInitialGames();
 
-      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (reduceMotion) {
-        stars.forEach(s => { s.vx = 0; s.vy = 0; });
+      if (!window.Lumin) {
+        gamesMeta.textContent = 'LuminSDK failed to load.';
+        return;
+      }
+
+      try {
+        await Lumin.init({
+          container: '#games',
+          headless: true
+        });
+
+        const result = await Lumin.getGames({ page: 1, limit: 24 });
+        const games = result.games || [];
+
+        gamesMeta.textContent = `${result.total || games.length} games available`;
+
+        gamesGrid.innerHTML = '';
+
+        for (const game of games) {
+          const imageUrl = game.image_token ? await Lumin.getImageUrl(game.image_token) : '';
+          const card = document.createElement('button');
+          card.type = 'button';
+          card.className = 'game-card';
+          card.innerHTML = `
+            <img class="game-thumb" src="${imageUrl || ''}" alt="${game.name || 'Game'}">
+            <div class="game-info">
+              <p class="game-name">${game.name || 'Untitled Game'}</p>
+              <p class="game-cat">${game.category || 'Game'}</p>
+            </div>
+          `;
+
+          card.addEventListener('click', async () => {
+            try {
+              const { url, meta } = await Lumin.getGameUrl(game.id);
+              openPopup({
+                id: game.id,
+                title: meta?.name || game.name || 'Selected Game',
+                url,
+                category: meta?.category || game.category || ''
+              });
+            } catch (err) {
+              console.error('Could not load game:', err);
+              modalTitle.textContent = 'Error';
+              modalSubtitle.textContent = 'That game could not be loaded.';
+              modal.classList.remove('hidden');
+            }
+          });
+
+          gamesGrid.appendChild(card);
+        }
+
+      } catch (err) {
+        console.error('LuminSDK error:', err);
+        gamesMeta.textContent = 'Could not load games.';
       }
     });
   </script>
