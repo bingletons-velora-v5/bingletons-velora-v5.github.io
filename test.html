@@ -378,7 +378,7 @@
       // Also fallback again after a bit longer
       setTimeout(fallback, 2500);
     })();
-
+await Lumin.init({ headless: true });
     // Viewer logic
     const viewer = document.getElementById('viewer');
     const viewerTitle = document.getElementById('viewerTitle');
