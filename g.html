@@ -25,7 +25,8 @@
 
     body {
       margin: 0;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: auto;
       background:
         radial-gradient(circle at 50% 35%, rgba(255,255,255,0.04), transparent 26%),
         radial-gradient(circle at 50% 55%, rgba(122, 255, 202, 0.04), transparent 44%),
@@ -56,11 +57,33 @@
         radial-gradient(circle at 78% 74%, rgba(255,255,255,0.015), transparent 20%);
     }
 
+    .back-btn {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      z-index: 100;
+      text-decoration: none;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(180, 255, 230, 0.18);
+      backdrop-filter: blur(10px);
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+      transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+    }
+
+    .back-btn:hover {
+      transform: translateY(-1px);
+      background: rgba(180, 255, 230, 0.12);
+      border-color: rgba(180, 255, 230, 0.28);
+    }
+
     .page {
       position: relative;
       z-index: 3;
       min-height: 100vh;
-      padding: 28px 22px 20px;
+      padding: 28px 22px 80px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -102,7 +125,6 @@
 
     #games {
       width: 100%;
-      height: calc(100vh - 200px);
       min-height: 560px;
       border: 1px solid rgba(255, 255, 255, 0.07);
       border-radius: 22px;
@@ -113,6 +135,9 @@
       box-shadow: var(--shadow);
       overflow: hidden;
       padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
 
     .games-toolbar {
@@ -120,7 +145,6 @@
       gap: 12px;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 16px;
       flex-wrap: wrap;
     }
 
@@ -134,6 +158,64 @@
     .games-toolbar .meta {
       color: rgba(255,255,255,0.58);
       font-size: 0.92rem;
+      margin-top: 4px;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      width: 100%;
+      margin-top: 2px;
+    }
+
+    .search-input {
+      flex: 1 1 280px;
+      min-width: 220px;
+      border: 1px solid rgba(180,255,230,0.14);
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      border-radius: 14px;
+      padding: 12px 14px;
+      outline: none;
+      font: inherit;
+      transition: border-color 0.16s ease, background 0.16s ease;
+    }
+
+    .search-input::placeholder {
+      color: rgba(255,255,255,0.42);
+    }
+
+    .search-input:focus {
+      border-color: rgba(180,255,230,0.34);
+      background: rgba(255,255,255,0.07);
+    }
+
+    .action-btn {
+      appearance: none;
+      border: 1px solid rgba(180, 255, 230, 0.22);
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease, opacity 0.16s ease;
+      white-space: nowrap;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-1px);
+      background: rgba(180,255,230,0.10);
+      border-color: rgba(180, 255, 230, 0.36);
+    }
+
+    .action-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
     }
 
     .games-grid {
@@ -152,6 +234,9 @@
       min-height: 190px;
       display: flex;
       flex-direction: column;
+      width: 100%;
+      padding: 0;
+      text-align: left;
     }
 
     .game-card:hover {
@@ -189,6 +274,32 @@
       color: rgba(255,255,255,0.55);
     }
 
+    .empty-state {
+      grid-column: 1 / -1;
+      padding: 26px 16px;
+      border: 1px dashed rgba(180,255,230,0.16);
+      border-radius: 18px;
+      color: rgba(255,255,255,0.64);
+      text-align: center;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .pagination {
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      padding-top: 16px;
+    }
+
+    .pagination .page-info {
+      color: rgba(255,255,255,0.62);
+      font-size: 0.92rem;
+    }
+
     .topline {
       margin-top: 10px;
       font-size: 12px;
@@ -219,7 +330,6 @@
       to { transform: translate(-50%, -50%) rotate(360deg); }
     }
 
-    /* Popup modal */
     .modal {
       position: fixed;
       inset: 0;
@@ -307,39 +417,24 @@
       background: #000;
     }
 
-    .modal-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .modal-btn {
-      appearance: none;
-      border: 1px solid rgba(180, 255, 230, 0.22);
-      background: rgba(255,255,255,0.05);
-      color: #fff;
-      border-radius: 14px;
-      padding: 12px 16px;
-      font: inherit;
-      font-weight: 700;
-      cursor: pointer;
-      transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease;
-    }
-
-    .modal-btn:hover {
-      transform: translateY(-1px);
-      background: rgba(180,255,230,0.10);
-      border-color: rgba(180, 255, 230, 0.36);
-    }
-
     @media (max-width: 700px) {
-      body { overflow: auto; }
-      .page { padding-top: 22px; padding-bottom: 24px; }
+      body {
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+
+      .page {
+        padding-top: 22px;
+        padding-bottom: 40px;
+      }
+
       #games {
-        height: auto;
         min-height: 680px;
       }
-      .content { min-height: 680px; }
+
+      .content {
+        min-height: 680px;
+      }
 
       .modal-card {
         width: min(100%, 520px);
@@ -350,10 +445,15 @@
       .games-grid {
         grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
       }
+
+      .pagination {
+        justify-content: center;
+      }
     }
   </style>
 </head>
 <body>
+  <a href="index.html" class="back-btn">← Back</a>
   <canvas id="stars"></canvas>
   <canvas id="constellations"></canvas>
   <div class="overlay"></div>
@@ -362,7 +462,7 @@
   <main class="page">
     <section class="hero" aria-label="Velora games page">
       <h1 class="brand">velora</h1>
-      <p class="subtitle">browse over 1,000 games with LuminSDK!</p>
+      <p class="subtitle">browse over 2,000 games with LuminSDK!</p>
       <div class="topline">poki-style layout • custom popup player • fast browse</div>
     </section>
 
@@ -374,7 +474,27 @@
             <div class="meta" id="gamesMeta">Loading…</div>
           </div>
         </div>
+
+        <div class="search-row">
+          <input
+            id="searchInput"
+            class="search-input"
+            type="search"
+            placeholder="Search games..."
+            aria-label="Search games"
+          />
+          <button class="action-btn" id="searchBtn" type="button">Search</button>
+          <button class="action-btn" id="clearBtn" type="button">Clear</button>
+          <button class="action-btn" id="randomBtn" type="button">Random Game</button>
+        </div>
+
         <div class="games-grid" id="gamesGrid"></div>
+
+        <div class="pagination">
+          <button class="action-btn" id="prevPageBtn" type="button">← Previous</button>
+          <div class="page-info" id="pageInfo">Page 1</div>
+          <button class="action-btn" id="nextPageBtn" type="button">Next →</button>
+        </div>
       </div>
     </section>
   </main>
@@ -388,11 +508,6 @@
           <h2 class="modal-title" id="modalTitle">Game Title</h2>
           <p class="modal-subtitle" id="modalSubtitle">Selected game details will appear here.</p>
         </div>
-      </div>
-
-      <div class="modal-actions">
-        <button class="modal-btn" id="modalFullscreen">Fullscreen</button>
-        <button class="modal-btn" id="modalBack">Back</button>
       </div>
 
       <div class="modal-frame-wrap" id="modalFrameWrap">
@@ -418,18 +533,33 @@
 
       const gamesMeta = document.getElementById('gamesMeta');
       const gamesGrid = document.getElementById('gamesGrid');
+      const searchInput = document.getElementById('searchInput');
+      const searchBtn = document.getElementById('searchBtn');
+      const clearBtn = document.getElementById('clearBtn');
+      const randomBtn = document.getElementById('randomBtn');
+      const prevPageBtn = document.getElementById('prevPageBtn');
+      const nextPageBtn = document.getElementById('nextPageBtn');
+      const pageInfo = document.getElementById('pageInfo');
 
       const modal = document.getElementById('gameModal');
       const modalCard = document.getElementById('modalCard');
       const modalTitle = document.getElementById('modalTitle');
       const modalSubtitle = document.getElementById('modalSubtitle');
       const modalClose = document.getElementById('modalClose');
-      const modalBack = document.getElementById('modalBack');
-      const modalFullscreen = document.getElementById('modalFullscreen');
       const gameFrame = document.getElementById('gameFrame');
 
       let W = 0, H = 0;
       let stars = [];
+
+      let currentPage = 1;
+      const pageSize = 24;
+      let totalGames = 0;
+      let totalPages = 1;
+
+      let currentGames = [];
+      let visibleGames = [];
+      let searchTerm = '';
+
       let activeGame = {
         id: '',
         title: '',
@@ -565,46 +695,55 @@
         }
       }
 
-      modalClose.addEventListener('click', closePopup);
-      modalBack.addEventListener('click', closePopup);
-      modalFullscreen.addEventListener('click', goFullscreen);
-
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) closePopup();
-      });
-
-      window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closePopup();
-      });
-
-      window.addEventListener('resize', resize);
-
-      resize();
-      animate();
-
-      if (!window.Lumin) {
-        gamesMeta.textContent = 'LuminSDK failed to load.';
-        return;
+      function updatePager() {
+        prevPageBtn.disabled = currentPage <= 1;
+        nextPageBtn.disabled = currentPage >= totalPages;
+        pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
       }
 
-      try {
-        await Lumin.init({
-          container: '#games',
-          headless: true
-        });
+      function applySearch() {
+        const q = searchTerm.trim().toLowerCase();
+        if (!q) {
+          visibleGames = [...currentGames];
+        } else {
+          visibleGames = currentGames.filter((game) => {
+            const name = String(game.name || '').toLowerCase();
+            const category = String(game.category || '').toLowerCase();
+            return name.includes(q) || category.includes(q);
+          });
+        }
+        renderGames();
+      }
 
-        const result = await Lumin.getGames({ page: 1, limit: 24 });
-        const games = result.games || [];
-
-        gamesMeta.textContent = `${result.total || games.length} games available`;
-
+      function renderGames() {
         gamesGrid.innerHTML = '';
 
-        for (const game of games) {
-          const imageUrl = game.image_token ? await Lumin.getImageUrl(game.image_token) : '';
+        const totalOnPage = currentGames.length;
+        const totalVisible = visibleGames.length;
+
+        if (searchTerm.trim()) {
+          gamesMeta.textContent = `Showing ${totalVisible} of ${totalOnPage} on this page`;
+        } else {
+          gamesMeta.textContent = `${totalGames || totalOnPage} games available`;
+        }
+
+        if (!visibleGames.length) {
+          const empty = document.createElement('div');
+          empty.className = 'empty-state';
+          empty.textContent = searchTerm.trim()
+            ? 'No games matched your search on this page.'
+            : 'No games found.';
+          gamesGrid.appendChild(empty);
+          updatePager();
+          return;
+        }
+
+        for (const game of visibleGames) {
           const card = document.createElement('button');
           card.type = 'button';
           card.className = 'game-card';
+
+          const imageUrl = game.image_token ? (window.Lumin ? '' : '') : '';
           card.innerHTML = `
             <img class="game-thumb" src="${imageUrl || ''}" alt="${game.name || 'Game'}">
             <div class="game-info">
@@ -612,6 +751,15 @@
               <p class="game-cat">${game.category || 'Game'}</p>
             </div>
           `;
+
+          if (game.image_token && window.Lumin) {
+            Lumin.getImageUrl(game.image_token)
+              .then((url) => {
+                const img = card.querySelector('.game-thumb');
+                if (img) img.src = url || '';
+              })
+              .catch(() => {});
+          }
 
           card.addEventListener('click', async () => {
             try {
@@ -627,15 +775,136 @@
               modalTitle.textContent = 'Error';
               modalSubtitle.textContent = 'That game could not be loaded.';
               modal.classList.remove('hidden');
+              modal.setAttribute('aria-hidden', 'false');
             }
           });
 
           gamesGrid.appendChild(card);
         }
 
+        updatePager();
+      }
+
+      async function loadPage(page = 1) {
+        if (!window.Lumin) {
+          gamesMeta.textContent = 'LuminSDK failed to load.';
+          return;
+        }
+
+        currentPage = page;
+        gamesMeta.textContent = 'Loading…';
+        gamesGrid.innerHTML = '';
+        updatePager();
+
+        try {
+          const result = await Lumin.getGames({ page: currentPage, limit: pageSize });
+          currentGames = result.games || [];
+          totalGames = result.total || currentGames.length;
+          totalPages = Math.max(1, Math.ceil(totalGames / pageSize));
+
+          if (currentPage > totalPages) currentPage = totalPages;
+
+          applySearch();
+          updatePager();
+        } catch (err) {
+          console.error('LuminSDK error:', err);
+          gamesMeta.textContent = 'Could not load games.';
+          gamesGrid.innerHTML = `
+            <div class="empty-state">Could not load games right now.</div>
+          `;
+          updatePager();
+        }
+      }
+
+      function randomGame() {
+        const pool = visibleGames.length ? visibleGames : currentGames;
+        if (!pool.length) return;
+
+        const pick = pool[Math.floor(Math.random() * pool.length)];
+        if (!pick) return;
+
+        openGameById(pick);
+      }
+
+      async function openGameById(game) {
+        try {
+          const { url, meta } = await Lumin.getGameUrl(game.id);
+          openPopup({
+            id: game.id,
+            title: meta?.name || game.name || 'Selected Game',
+            url,
+            category: meta?.category || game.category || ''
+          });
+        } catch (err) {
+          console.error('Could not load game:', err);
+          modalTitle.textContent = 'Error';
+          modalSubtitle.textContent = 'That game could not be loaded.';
+          modal.classList.remove('hidden');
+          modal.setAttribute('aria-hidden', 'false');
+        }
+      }
+
+      modalClose.addEventListener('click', closePopup);
+
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closePopup();
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closePopup();
+      });
+
+      window.addEventListener('resize', resize);
+
+      prevPageBtn.addEventListener('click', () => {
+        if (currentPage > 1) loadPage(currentPage - 1);
+      });
+
+      nextPageBtn.addEventListener('click', () => {
+        if (currentPage < totalPages) loadPage(currentPage + 1);
+      });
+
+      searchBtn.addEventListener('click', () => {
+        searchTerm = searchInput.value || '';
+        applySearch();
+      });
+
+      searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          searchTerm = searchInput.value || '';
+          applySearch();
+        }
+      });
+
+      clearBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        searchTerm = '';
+        applySearch();
+        searchInput.focus();
+      });
+
+      randomBtn.addEventListener('click', randomGame);
+
+      resize();
+      animate();
+
+      if (!window.Lumin) {
+        gamesMeta.textContent = 'LuminSDK failed to load.';
+        gamesGrid.innerHTML = '<div class="empty-state">LuminSDK failed to load.</div>';
+        return;
+      }
+
+      try {
+        await Lumin.init({
+          container: '#games',
+          headless: true
+        });
+
+        await loadPage(1);
       } catch (err) {
         console.error('LuminSDK error:', err);
         gamesMeta.textContent = 'Could not load games.';
+        gamesGrid.innerHTML = '<div class="empty-state">Could not load games.</div>';
       }
     });
   </script>
