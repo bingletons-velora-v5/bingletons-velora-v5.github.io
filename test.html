@@ -3,24 +3,21 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Velora</title>
+  <title>Velora – Games</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Great+Vibes&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg: #0b0b0b;
-      --bg-2: #121212;
+      --bg: #070707;
+      --bg-2: #101010;
       --text: #f4f4f4;
-      --muted: rgba(255, 255, 255, 0.52);
+      --muted: rgba(255, 255, 255, 0.58);
+      --border: rgba(180, 255, 230, 0.12);
       --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
-      --panel: rgba(18, 18, 18, 0.92);
-      --panel-border: rgba(255,255,255,0.10);
-      --sweep-a: rgba(255,255,255,0.00);
-      --sweep-b: rgba(180,255,230,0.18);
-      --sweep-c: rgba(255,255,255,0.85);
+      --accent: #b4ffe6;
     }
 
     * { box-sizing: border-box; }
@@ -28,10 +25,11 @@
 
     body {
       margin: 0;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: auto;
       background:
-        radial-gradient(circle at 50% 45%, rgba(255,255,255,0.04), transparent 28%),
-        radial-gradient(circle at 50% 50%, rgba(122, 255, 202, 0.03), transparent 45%),
+        radial-gradient(circle at 50% 35%, rgba(255,255,255,0.04), transparent 26%),
+        radial-gradient(circle at 50% 55%, rgba(122, 255, 202, 0.04), transparent 44%),
         linear-gradient(180deg, var(--bg), var(--bg-2));
       color: var(--text);
       font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -55,90 +53,261 @@
       z-index: 2;
       pointer-events: none;
       background:
-        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.015), transparent 18%),
-        radial-gradient(circle at 75% 70%, rgba(255,255,255,0.015), transparent 20%);
+        radial-gradient(circle at 18% 22%, rgba(255,255,255,0.018), transparent 16%),
+        radial-gradient(circle at 78% 74%, rgba(255,255,255,0.015), transparent 20%);
+    }
+
+    .back-btn {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      z-index: 100;
+      text-decoration: none;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(180, 255, 230, 0.18);
+      backdrop-filter: blur(10px);
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+      transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+    }
+
+    .back-btn:hover {
+      transform: translateY(-1px);
+      background: rgba(180, 255, 230, 0.12);
+      border-color: rgba(180, 255, 230, 0.28);
     }
 
     .page {
       position: relative;
       z-index: 3;
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 28px 18px 22px;
-    }
-
-    .shell {
-      width: min(920px, 100%);
+      padding: 28px 22px 80px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 22px;
+    }
+
+    .hero {
+      width: min(1220px, 100%);
       text-align: center;
+      padding-top: 14px;
+      margin-bottom: 18px;
     }
 
     .brand {
       margin: 0;
       font-family: "Great Vibes", cursive;
-      font-size: clamp(4.4rem, 9vw, 7.2rem);
+      font-size: clamp(4.1rem, 8vw, 7rem);
       line-height: 0.9;
       font-weight: 400;
-      color: #ffffff;
+      color: #fff;
       letter-spacing: 0.03em;
       text-shadow: 0 0 22px rgba(255,255,255,0.08);
-      transform: translateY(2px);
       user-select: none;
     }
 
-    .apps {
-      width: min(480px, 100%);
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px 12px;
+    .subtitle {
+      margin: 10px auto 0;
+      max-width: 760px;
+      color: var(--muted);
+      font-size: clamp(0.95rem, 2vw, 1.08rem);
+      line-height: 1.6;
     }
 
-    .app {
-      pointer-events: auto;
-      height: 112px;
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(28, 28, 28, 0.8);
+    .content {
+      width: min(1440px, 100%);
+      flex: 1;
+      min-height: 0;
+      display: flex;
+    }
+
+    #games {
+      width: 100%;
+      min-height: 560px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at top, rgba(122,255,202,0.05), transparent 40%),
+        rgba(10, 10, 10, 0.18);
+      backdrop-filter: blur(10px);
       box-shadow: var(--shadow);
-      color: var(--text);
-      text-decoration: none;
+      overflow: hidden;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .games-toolbar {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .games-toolbar h2 {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+
+    .games-toolbar .meta {
+      color: rgba(255,255,255,0.58);
+      font-size: 0.92rem;
+      margin-top: 4px;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      width: 100%;
+      margin-top: 2px;
+    }
+
+    .search-input {
+      flex: 1 1 280px;
+      min-width: 220px;
+      border: 1px solid rgba(180,255,230,0.14);
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      border-radius: 14px;
+      padding: 12px 14px;
+      outline: none;
+      font: inherit;
+      transition: border-color 0.16s ease, background 0.16s ease;
+    }
+
+    .search-input::placeholder {
+      color: rgba(255,255,255,0.42);
+    }
+
+    .search-input:focus {
+      border-color: rgba(180,255,230,0.34);
+      background: rgba(255,255,255,0.07);
+    }
+
+    .action-btn {
+      appearance: none;
+      border: 1px solid rgba(180, 255, 230, 0.22);
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease, opacity 0.16s ease;
+      white-space: nowrap;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-1px);
+      background: rgba(180,255,230,0.10);
+      border-color: rgba(180, 255, 230, 0.36);
+    }
+
+    .action-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .games-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    }
+
+    .game-card {
+      cursor: pointer;
+      border: 1px solid rgba(180,255,230,0.12);
+      background: rgba(255,255,255,0.03);
+      border-radius: 18px;
+      overflow: hidden;
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+      min-height: 190px;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      padding: 0;
+      text-align: left;
+      color: inherit;
+    }
+
+    .game-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(180,255,230,0.28);
+      background: rgba(180,255,230,0.06);
+    }
+
+    .game-thumb {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      background: rgba(255,255,255,0.05);
+      display: block;
+    }
+
+    .game-info {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .game-name {
+      margin: 0;
+      font-size: 0.98rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.25;
+    }
+
+    .game-cat {
+      margin: 0;
+      font-size: 0.84rem;
+      color: rgba(255,255,255,0.55);
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      padding: 26px 16px;
+      border: 1px dashed rgba(180,255,230,0.16);
+      border-radius: 18px;
+      color: rgba(255,255,255,0.64);
+      text-align: center;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .pagination {
+      margin-top: 2px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      gap: 10px;
-      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      cursor: pointer;
-      font: inherit;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      padding-top: 16px;
     }
 
-    .app:hover {
-      transform: translateY(-4px);
-      border-color: rgba(216,255,240,0.2);
-      background: rgba(34, 34, 34, 0.88);
-    }
-
-    .app-icon {
-      width: 34px;
-      height: 34px;
-      border-radius: 9px;
-      display: grid;
-      place-items: center;
-      font-size: 1.1rem;
-      color: white;
-      background: rgba(255,255,255,0.08);
-    }
-
-    .app-label {
+    .pagination .page-info {
+      color: rgba(255,255,255,0.62);
       font-size: 0.92rem;
-      color: rgba(255,255,255,0.92);
+    }
+
+    .topline {
+      margin-top: 10px;
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.34);
+      user-select: none;
     }
 
     .v5 {
@@ -165,141 +334,179 @@
     .modal {
       position: fixed;
       inset: 0;
-      z-index: 20;
-      display: none;
+      z-index: 50;
+      display: flex;
       align-items: center;
       justify-content: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.58);
+      backdrop-filter: blur(10px);
+    }
+
+    .modal.hidden { display: none; }
+
+    .modal-card {
+      width: min(1080px, 100%);
+      height: min(88vh, 860px);
+      border: 1px solid rgba(180, 255, 230, 0.18);
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at top, rgba(180,255,230,0.10), transparent 35%),
+        rgba(12, 12, 12, 0.97);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65);
       padding: 18px;
-      background: rgba(0, 0, 0, 0.62);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-    }
-
-    .modal.show {
-      display: flex;
-    }
-
-    .modal-panel {
-      width: min(700px, 100%);
-      max-height: min(78vh, 760px);
+      position: relative;
       overflow: hidden;
-      border-radius: 18px;
-      border: 1px solid var(--panel-border);
-      background: var(--panel);
-      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.65);
       display: flex;
       flex-direction: column;
+      gap: 14px;
     }
 
-    .modal-header {
-      position: sticky;
-      top: 0;
-      z-index: 1;
+    .modal-top {
       display: flex;
-      align-items: center;
+      align-items: start;
       justify-content: space-between;
-      gap: 12px;
-      padding: 18px 18px 14px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      background: rgba(18, 18, 18, 0.98);
-    }
-
-    .modal-title-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      text-align: left;
+      gap: 14px;
+      padding-right: 92px;
     }
 
     .modal-title {
-      font-size: 1.1rem;
-      font-weight: 700;
       margin: 0;
+      font-size: clamp(1.25rem, 2vw, 1.8rem);
+      line-height: 1.15;
       color: #fff;
-      letter-spacing: 0.02em;
     }
 
     .modal-subtitle {
-      font-size: 0.85rem;
-      color: var(--muted);
+      margin: 6px 0 0;
+      color: rgba(255,255,255,0.62);
+      font-size: 0.96rem;
+      line-height: 1.45;
     }
 
-    .close-btn {
-      border: 1px solid rgba(255,255,255,0.1);
-      background: rgba(255,255,255,0.05);
-      color: white;
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
+    .modal-close,
+    .modal-fullscreen {
+      position: absolute;
+      top: 14px;
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: #fff;
       cursor: pointer;
-      font-size: 1.1rem;
+      font-size: 20px;
       line-height: 1;
-      transition: transform 0.15s ease, background 0.15s ease;
     }
 
-    .close-btn:hover {
-      transform: scale(1.04);
-      background: rgba(255,255,255,0.09);
+    .modal-close { right: 14px; }
+
+    .modal-fullscreen {
+      right: 60px;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      width: 44px;
     }
 
-    .modal-body {
-      overflow: auto;
+    .modal-frame-wrap {
+      flex: 1;
+      min-height: 0;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: #000;
+    }
+
+    .modal-frame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #000;
+    }
+
+    .search-overlay-card {
+      width: min(1180px, 100%);
+      max-height: 84vh;
+      border: 1px solid rgba(180, 255, 230, 0.18);
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at top, rgba(180,255,230,0.10), transparent 35%),
+        rgba(12, 12, 12, 0.97);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65);
       padding: 18px;
-    }
-
-    .sticky-note {
-      position: sticky;
-      top: 0;
-      z-index: 2;
-      margin-bottom: 16px;
-      padding: 12px 14px;
-      border-radius: 14px;
-      border: 1px solid rgba(122,255,202,0.22);
-      background: rgba(122,255,202,0.08);
-      color: #eafff7;
-      font-weight: 700;
-      letter-spacing: 0.03em;
-      text-transform: lowercase;
-    }
-
-    .note-list {
+      position: relative;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
     }
 
-    .note {
-      padding: 14px 15px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.03);
-      text-align: left;
+    .search-top {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 14px;
+      padding-right: 52px;
     }
 
-    .note-date {
-      display: block;
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: #ffffff;
-      margin-bottom: 6px;
-      text-transform: capitalize;
+    .search-title {
+      margin: 0;
+      font-size: clamp(1.15rem, 2vw, 1.55rem);
+      color: #fff;
     }
 
-    .note-text {
+    .search-subtitle {
+      margin: 6px 0 0;
+      color: rgba(255,255,255,0.62);
       font-size: 0.95rem;
-      color: rgba(255,255,255,0.86);
-      line-height: 1.5;
     }
 
-    /* sweep animation */
+    .search-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+      cursor: pointer;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .search-results {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .search-results-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    }
+
+    .search-results-grid .game-card {
+      min-height: 180px;
+    }
+
+    /* Sweep animation */
     .sweep {
       position: fixed;
       inset: 0;
-      z-index: 18;
+      z-index: 200;
       pointer-events: none;
       opacity: 0;
       overflow: hidden;
-      background: rgba(0,0,0,0.04);
     }
 
     .sweep::before,
@@ -314,25 +521,20 @@
     .sweep::before {
       background: linear-gradient(
         115deg,
-        var(--sweep-a) 0%,
-        var(--sweep-a) 38%,
-        rgba(255,255,255,0.03) 44%,
-        var(--sweep-b) 50%,
-        var(--sweep-c) 52%,
-        var(--sweep-b) 55%,
-        rgba(255,255,255,0.03) 60%,
-        var(--sweep-a) 66%,
-        var(--sweep-a) 100%
+        transparent 0%,
+        rgba(180,255,230,0.10) 48%,
+        rgba(255,255,255,0.92) 50%,
+        rgba(180,255,230,0.10) 54%,
+        transparent 100%
       );
       filter: blur(1px);
     }
 
     .sweep::after {
-      inset: -20%;
-      background: radial-gradient(circle at center, rgba(180,255,230,0.22), transparent 55%);
+      background: radial-gradient(circle, rgba(180,255,230,0.22), transparent 60%);
       transform: translateX(-180%) scale(0.9) skewX(-18deg);
-      filter: blur(12px);
-      opacity: 0.85;
+      filter: blur(14px);
+      opacity: 0.8;
     }
 
     .sweep.run {
@@ -340,303 +542,671 @@
     }
 
     .sweep.run::before {
-      animation: sweepAcross 720ms ease forwards;
+      animation: sweepAcross 1900ms ease forwards;
     }
 
     .sweep.run::after {
-      animation: sweepGlow 720ms ease forwards;
+      animation: sweepGlow 1900ms ease forwards;
     }
 
     @keyframes sweepAcross {
       0%   { transform: translateX(-160%) skewX(-20deg); opacity: 0; }
-      15%  { opacity: 1; }
-      55%  { opacity: 1; }
+      12%  { opacity: 1; }
+      58%  { opacity: 1; }
       100% { transform: translateX(160%) skewX(-20deg); opacity: 0; }
     }
 
     @keyframes sweepGlow {
       0%   { transform: translateX(-180%) scale(0.9) skewX(-18deg); opacity: 0; }
-      18%  { opacity: 1; }
+      14%  { opacity: 1; }
       100% { transform: translateX(180%) scale(1.1) skewX(-18deg); opacity: 0; }
     }
 
     @media (max-width: 700px) {
-      .page { padding-top: 72px; padding-bottom: 72px; }
-      .shell { gap: 18px; }
-      .apps { width: min(360px, 100%); }
-      .app { height: 96px; }
-      .modal-panel { max-height: 84vh; }
+      body {
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+
+      .page {
+        padding-top: 22px;
+        padding-bottom: 40px;
+      }
+
+      #games {
+        min-height: 680px;
+      }
+
+      .content {
+        min-height: 680px;
+      }
+
+      .modal-card,
+      .search-overlay-card {
+        width: min(100%, 520px);
+        height: min(90vh, 820px);
+        padding: 16px;
+      }
+
+      .games-grid,
+      .search-results-grid {
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      }
+
+      .pagination {
+        justify-content: center;
+      }
+
+      .modal-top,
+      .search-top {
+        padding-right: 0;
+      }
+
+      .modal-fullscreen {
+        right: 60px;
+      }
     }
   </style>
 </head>
 <body>
+  <a href="index.html" class="back-btn" id="backBtn">← Back</a>
   <canvas id="stars"></canvas>
   <canvas id="constellations"></canvas>
   <div class="overlay"></div>
-
   <div class="v5" id="v5">v5</div>
   <div class="sweep" id="sweep"></div>
 
   <main class="page">
-    <section class="shell" aria-label="Velora home">
-      <h1 class="brand">Velora</h1>
+    <section class="hero" aria-label="Velora games page">
+      <h1 class="brand">velora</h1>
+      <p class="subtitle">browse over 2,000 games with LuminSDK!</p>
+      <div class="topline">poki-style layout • custom popup player • fast browse</div>
+    </section>
 
-      <div class="apps">
-        <a class="app" href="g.html">
-          <div class="app-icon">▣</div>
-          <div class="app-label">Games</div>
-        </a>
+    <section class="content">
+      <div id="games">
+        <div class="games-toolbar">
+          <div>
+            <h2>Games</h2>
+            <div class="meta" id="gamesMeta">Loading…</div>
+          </div>
+        </div>
 
-        <a class="app" href="m.html">
-          <div class="app-icon">▤</div>
-          <div class="app-label">Movies</div>
-        </a>
+        <div class="search-row">
+          <input
+            id="searchInput"
+            class="search-input"
+            type="search"
+            placeholder="Search games..."
+            aria-label="Search games"
+          />
+          <button class="action-btn" id="searchBtn" type="button">Search</button>
+          <button class="action-btn" id="clearBtn" type="button">Clear</button>
+          <button class="action-btn" id="randomBtn" type="button">Random Game</button>
+        </div>
 
-        <button class="app" id="patchBtn" type="button">
-          <div class="app-icon">✦</div>
-          <div class="app-label">Patch Notes</div>
-        </button>
+        <div class="games-grid" id="gamesGrid"></div>
 
-        <a class="app" href="c.html">
-          <div class="app-icon">◔</div>
-          <div class="app-label">Chat</div>
-        </a>
+        <div class="pagination" id="pagination">
+          <button class="action-btn" id="prevPageBtn" type="button">← Previous</button>
+          <div class="page-info" id="pageInfo">Page 1</div>
+          <button class="action-btn" id="nextPageBtn" type="button">Next →</button>
+        </div>
       </div>
     </section>
   </main>
 
-  <div class="modal" id="patchModal" aria-hidden="true">
-    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="patchTitle">
-      <div class="modal-header">
-        <div class="modal-title-wrap">
-          <h2 class="modal-title" id="patchTitle">Patch Notes</h2>
-          <div class="modal-subtitle">Velora timeline and updates</div>
+  <div id="gameModal" class="modal hidden" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-card" id="modalCard">
+      <button class="modal-fullscreen" id="modalFullscreen" aria-label="Fullscreen">⛶</button>
+      <button class="modal-close" id="modalClose" aria-label="Close popup">×</button>
+
+      <div class="modal-top">
+        <div>
+          <h2 class="modal-title" id="modalTitle">Game Title</h2>
+          <p class="modal-subtitle" id="modalSubtitle">Selected game details will appear here.</p>
         </div>
-        <button class="close-btn" id="closePatchBtn" type="button" aria-label="Close patch notes">×</button>
       </div>
 
-      <div class="modal-body">
-        <div class="sticky-note">new updates underway</div>
-        <div class="note-list" id="patchList"></div>
+      <div class="modal-frame-wrap" id="modalFrameWrap">
+        <iframe
+          id="gameFrame"
+          class="modal-frame"
+          title="Game player"
+          allow="autoplay; fullscreen; pointer-lock; gamepad"
+          loading="eager"
+        ></iframe>
       </div>
     </div>
   </div>
 
-  <script>
-    const starsCanvas = document.getElementById('stars');
-    const starsCtx = starsCanvas.getContext('2d');
-    const constCanvas = document.getElementById('constellations');
-    const constCtx = constCanvas.getContext('2d');
-    const v5 = document.getElementById('v5');
-    const sweep = document.getElementById('sweep');
+  <div id="searchModal" class="modal hidden" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="search-overlay-card">
+      <button class="search-close" id="searchModalClose" aria-label="Close search">×</button>
 
-    const patchBtn = document.getElementById('patchBtn');
-    const patchModal = document.getElementById('patchModal');
-    const closePatchBtn = document.getElementById('closePatchBtn');
-    const patchList = document.getElementById('patchList');
-
-    // Easy to edit: add new patch notes here.
-    const PATCH_NOTES = [
-      {
-        date: "april 23, 2026",
-        text: "ui & fullscreen update — V5.01"
-      },
-      {
-        date: "april 22, 2026",
-        text: "V5 created — V5.0"
-      },
-      {
-        date: "march 2025",
-        text: "Velora V4 released — breakthrough"
-      },
-      {
-        date: "january 2025",
-        text: "V3 released — Velora gets its name"
-      },
-      {
-        date: "may 2024",
-        text: "Velora V2 released — experimental"
-      },
-      {
-        date: "february 2024",
-        text: "Velora V1 released"
-      }
-    ];
-
-    let W = 0, H = 0;
-    let stars = [];
-    let sweepTimer = null;
-
-    function placeV5() {
-      const x = Math.max(18, Math.min(window.innerWidth - 25, Math.random() * window.innerWidth));
-      const y = Math.max(18, Math.min(window.innerHeight - 25, Math.random() * window.innerHeight));
-      v5.style.left = `${x}px`;
-      v5.style.top = `${y}px`;
-    }
-
-    function resize() {
-      W = starsCanvas.width = constCanvas.width = window.innerWidth;
-      H = starsCanvas.height = constCanvas.height = window.innerHeight;
-      makeStars();
-      placeV5();
-    }
-
-    function makeStars() {
-      stars = [];
-      const total = Math.max(90, Math.floor((W * H) / 16000));
-      for (let i = 0; i < total; i++) {
-        stars.push({
-          x: Math.random() * W,
-          y: Math.random() * H,
-          r: Math.random() * 1.5 + 0.2,
-          a: Math.random() * 0.7 + 0.15,
-          tw: Math.random() * 0.02 + 0.005,
-          vx: (Math.random() - 0.5) * 0.03,
-          vy: (Math.random() - 0.5) * 0.03
-        });
-      }
-    }
-
-    function drawStars() {
-      starsCtx.clearRect(0, 0, W, H);
-      for (const s of stars) {
-        s.x += s.vx;
-        s.y += s.vy;
-        if (s.x < -10) s.x = W + 10;
-        if (s.x > W + 10) s.x = -10;
-        if (s.y < -10) s.y = H + 10;
-        if (s.y > H + 10) s.y = -10;
-
-        const pulse = 0.5 + 0.5 * Math.sin(performance.now() * 0.0015 + s.x * 0.01);
-        const alpha = Math.max(0.08, Math.min(1, s.a * (0.7 + pulse * 0.35)));
-
-        starsCtx.beginPath();
-        starsCtx.fillStyle = `rgba(180,255,230,${alpha * 0.95})`;
-        starsCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-        starsCtx.fill();
-      }
-    }
-
-    function drawConstellations() {
-      constCtx.clearRect(0, 0, W, H);
-      constCtx.setLineDash([7, 10]);
-      constCtx.lineCap = 'round';
-
-      const maxD = Math.max(110, Math.min(240, (W + H) / 12));
-
-      for (let i = 0; i < stars.length; i++) {
-        const s = stars[i];
-        let matches = [];
-        for (let j = 0; j < stars.length; j++) {
-          if (i === j) continue;
-          const t = stars[j];
-          const dx = t.x - s.x;
-          const dy = t.y - s.y;
-          const d = Math.hypot(dx, dy);
-          if (d < maxD) matches.push({ t, d });
-        }
-        matches.sort((a, b) => a.d - b.d);
-
-        for (let k = 0; k < Math.min(2, matches.length); k++) {
-          const { t, d } = matches[k];
-          const alpha = (1 - d / maxD) * 0.22;
-          const grad = constCtx.createLinearGradient(s.x, s.y, t.x, t.y);
-          grad.addColorStop(0, `rgba(180,255,230,${alpha})`);
-          grad.addColorStop(1, `rgba(180,255,230,${alpha * 0.4})`);
-          constCtx.strokeStyle = grad;
-          constCtx.lineWidth = 1;
-          constCtx.lineDashOffset = performance.now() * -0.002 * (k + 1);
-          constCtx.beginPath();
-          constCtx.moveTo(s.x, s.y);
-          constCtx.lineTo(t.x, t.y);
-          constCtx.stroke();
-        }
-      }
-
-      constCtx.setLineDash([]);
-      for (const s of stars) {
-        constCtx.beginPath();
-        constCtx.fillStyle = `rgba(190,255,234,${Math.min(0.12, s.a * 0.08)})`;
-        constCtx.arc(s.x, s.y, s.r * 2.6, 0, Math.PI * 2);
-        constCtx.fill();
-      }
-    }
-
-    function animate() {
-      drawStars();
-      drawConstellations();
-      requestAnimationFrame(animate);
-    }
-
-    function renderPatchNotes() {
-      patchList.innerHTML = PATCH_NOTES.map(note => `
-        <div class="note">
-          <span class="note-date">${note.date}</span>
-          <div class="note-text">${note.text}</div>
+      <div class="search-top">
+        <div>
+          <h2 class="search-title" id="searchModalTitle">Search results</h2>
+          <p class="search-subtitle" id="searchModalSubtitle">Type a game name and click Search.</p>
         </div>
-      `).join('');
-    }
+      </div>
 
-    function openPatchNotes() {
-      renderPatchNotes();
-      patchModal.classList.add('show');
-      patchModal.setAttribute('aria-hidden', 'false');
-    }
+      <div class="search-results">
+        <div class="search-results-grid" id="searchResultsGrid"></div>
+      </div>
+    </div>
+  </div>
 
-    function closePatchNotes() {
-      patchModal.classList.remove('show');
-      patchModal.setAttribute('aria-hidden', 'true');
-    }
+  <script src="https://cdn.jsdelivr.net/gh/luminsdk/script@latest/lumin.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const sweep = document.getElementById('sweep');
+      const backBtn = document.getElementById('backBtn');
 
-    function playSweep(callback) {
-      if (sweepTimer) clearTimeout(sweepTimer);
+      const starsCanvas = document.getElementById('stars');
+      const starsCtx = starsCanvas.getContext('2d');
+      const constCanvas = document.getElementById('constellations');
+      const constCtx = constCanvas.getContext('2d');
+      const v5 = document.getElementById('v5');
 
-      sweep.classList.remove('run');
-      void sweep.offsetWidth;
-      sweep.classList.add('run');
+      const gamesMeta = document.getElementById('gamesMeta');
+      const gamesGrid = document.getElementById('gamesGrid');
+      const searchInput = document.getElementById('searchInput');
+      const searchBtn = document.getElementById('searchBtn');
+      const clearBtn = document.getElementById('clearBtn');
+      const randomBtn = document.getElementById('randomBtn');
+      const prevPageBtn = document.getElementById('prevPageBtn');
+      const nextPageBtn = document.getElementById('nextPageBtn');
+      const pageInfo = document.getElementById('pageInfo');
 
-      sweepTimer = window.setTimeout(() => {
+      const modal = document.getElementById('gameModal');
+      const modalCard = document.getElementById('modalCard');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalSubtitle = document.getElementById('modalSubtitle');
+      const modalClose = document.getElementById('modalClose');
+      const modalFullscreen = document.getElementById('modalFullscreen');
+      const gameFrame = document.getElementById('gameFrame');
+
+      const searchModal = document.getElementById('searchModal');
+      const searchModalClose = document.getElementById('searchModalClose');
+      const searchModalTitle = document.getElementById('searchModalTitle');
+      const searchModalSubtitle = document.getElementById('searchModalSubtitle');
+      const searchResultsGrid = document.getElementById('searchResultsGrid');
+
+      let W = 0, H = 0;
+      let stars = [];
+
+      let currentPage = 1;
+      const pageSize = 24;
+      let totalGames = 0;
+      let totalPages = 1;
+
+      let currentGames = [];
+      let allGamesCache = null;
+
+      let sweepTimer = null;
+
+      function playSweep(callback) {
+        if (sweepTimer) clearTimeout(sweepTimer);
+
         sweep.classList.remove('run');
-        if (typeof callback === 'function') callback();
-      }, 700);
-    }
+        void sweep.offsetWidth;
+        sweep.classList.add('run');
 
-    patchBtn.addEventListener('click', openPatchNotes);
-    closePatchBtn.addEventListener('click', closePatchNotes);
+        sweepTimer = window.setTimeout(() => {
+          sweep.classList.remove('run');
+          if (typeof callback === 'function') callback();
+        }, 1900);
+      }
 
-    patchModal.addEventListener('click', (e) => {
-      if (e.target === patchModal) closePatchNotes();
-    });
+      function placeV5() {
+        const x = Math.max(18, Math.min(window.innerWidth - 25, Math.random() * window.innerWidth));
+        const y = Math.max(18, Math.min(window.innerHeight - 25, Math.random() * window.innerHeight));
+        v5.style.left = `${x}px`;
+        v5.style.top = `${y}px`;
+      }
 
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closePatchNotes();
-    });
+      function makeStars() {
+        stars = [];
+        const total = Math.max(90, Math.floor((W * H) / 16000));
+        for (let i = 0; i < total; i++) {
+          stars.push({
+            x: Math.random() * W,
+            y: Math.random() * H,
+            r: Math.random() * 1.5 + 0.2,
+            a: Math.random() * 0.7 + 0.15,
+            vx: (Math.random() - 0.5) * 0.03,
+            vy: (Math.random() - 0.5) * 0.03
+          });
+        }
+      }
 
-    document.querySelectorAll('.app[href]').forEach((link) => {
-      link.addEventListener('click', (e) => {
-        if (link.id === 'patchBtn') return;
+      function resize() {
+        W = starsCanvas.width = constCanvas.width = window.innerWidth;
+        H = starsCanvas.height = constCanvas.height = window.innerHeight;
+        makeStars();
+        placeV5();
+      }
 
+      function drawStars() {
+        starsCtx.clearRect(0, 0, W, H);
+        for (const s of stars) {
+          s.x += s.vx;
+          s.y += s.vy;
+
+          if (s.x < -10) s.x = W + 10;
+          if (s.x > W + 10) s.x = -10;
+          if (s.y < -10) s.y = H + 10;
+          if (s.y > H + 10) s.y = -10;
+
+          const pulse = 0.5 + 0.5 * Math.sin(performance.now() * 0.0015 + s.x * 0.01);
+          const alpha = Math.max(0.08, Math.min(1, s.a * (0.7 + pulse * 0.35)));
+
+          starsCtx.beginPath();
+          starsCtx.fillStyle = `rgba(180,255,230,${alpha * 0.95})`;
+          starsCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          starsCtx.fill();
+        }
+      }
+
+      function drawConstellations() {
+        constCtx.clearRect(0, 0, W, H);
+        constCtx.setLineDash([7, 10]);
+        constCtx.lineCap = 'round';
+        const maxD = Math.max(110, Math.min(240, (W + H) / 12));
+
+        for (let i = 0; i < stars.length; i++) {
+          const s = stars[i];
+          const matches = [];
+
+          for (let j = 0; j < stars.length; j++) {
+            if (i === j) continue;
+            const t = stars[j];
+            const dx = t.x - s.x;
+            const dy = t.y - s.y;
+            const d = Math.hypot(dx, dy);
+            if (d < maxD) matches.push({ t, d });
+          }
+
+          matches.sort((a, b) => a.d - b.d);
+
+          for (let k = 0; k < Math.min(2, matches.length); k++) {
+            const { t, d } = matches[k];
+            const alpha = (1 - d / maxD) * 0.22;
+            const grad = constCtx.createLinearGradient(s.x, s.y, t.x, t.y);
+            grad.addColorStop(0, `rgba(180,255,230,${alpha})`);
+            grad.addColorStop(1, `rgba(180,255,230,${alpha * 0.4})`);
+
+            constCtx.strokeStyle = grad;
+            constCtx.lineWidth = 1;
+            constCtx.lineDashOffset = performance.now() * -0.002 * (k + 1);
+            constCtx.beginPath();
+            constCtx.moveTo(s.x, s.y);
+            constCtx.lineTo(t.x, t.y);
+            constCtx.stroke();
+          }
+        }
+
+        constCtx.setLineDash([]);
+        for (const s of stars) {
+          constCtx.beginPath();
+          constCtx.fillStyle = `rgba(190,255,234,${Math.min(0.12, s.a * 0.08)})`;
+          constCtx.arc(s.x, s.y, s.r * 2.6, 0, Math.PI * 2);
+          constCtx.fill();
+        }
+      }
+
+      function animate() {
+        drawStars();
+        drawConstellations();
+        requestAnimationFrame(animate);
+      }
+
+      function createGameCard(game, onClick) {
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'game-card';
+
+        card.innerHTML = `
+          <img class="game-thumb" src="" alt="${game.name || 'Game'}">
+          <div class="game-info">
+            <p class="game-name">${game.name || 'Untitled Game'}</p>
+            <p class="game-cat">${game.category || 'Game'}</p>
+          </div>
+        `;
+
+        if (game.image_token && window.Lumin) {
+          Lumin.getImageUrl(game.image_token)
+            .then((url) => {
+              const img = card.querySelector('.game-thumb');
+              if (img) img.src = url || '';
+            })
+            .catch(() => {});
+        }
+
+        card.addEventListener('click', () => {
+          playSweep();
+          onClick();
+        });
+
+        return card;
+      }
+
+      function openPopup({ title, url, category }) {
+        modalTitle.textContent = title || 'Selected Game';
+        modalSubtitle.textContent = category ? `Category: ${category}` : 'Click Fullscreen for a larger view.';
+        gameFrame.src = url;
+        modal.classList.remove('hidden');
+        modal.setAttribute('aria-hidden', 'false');
+      }
+
+      function closePopup() {
+        modal.classList.add('hidden');
+        modal.setAttribute('aria-hidden', 'true');
+        gameFrame.src = 'about:blank';
+      }
+
+      function openSearchPopup() {
+        searchModal.classList.remove('hidden');
+        searchModal.setAttribute('aria-hidden', 'false');
+      }
+
+      function closeSearchPopup() {
+        searchModal.classList.add('hidden');
+        searchModal.setAttribute('aria-hidden', 'true');
+      }
+
+      async function goFullscreen() {
+        try {
+          if (document.fullscreenElement) {
+            await document.exitFullscreen();
+            return;
+          }
+          if (modalCard.requestFullscreen) {
+            await modalCard.requestFullscreen();
+          }
+        } catch (err) {
+          console.error('Fullscreen failed:', err);
+        }
+      }
+
+      function updateFullscreenButton() {
+        modalFullscreen.textContent = document.fullscreenElement ? '🗗' : '⛶';
+        modalFullscreen.title = document.fullscreenElement ? 'Exit fullscreen' : 'Fullscreen';
+        modalFullscreen.setAttribute('aria-label', document.fullscreenElement ? 'Exit fullscreen' : 'Fullscreen');
+      }
+
+      function updatePager() {
+        prevPageBtn.disabled = currentPage <= 1;
+        nextPageBtn.disabled = currentPage >= totalPages;
+        pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+      }
+
+      function renderGames() {
+        gamesGrid.innerHTML = '';
+
+        const totalOnPage = currentGames.length;
+        gamesMeta.textContent = `${totalGames || totalOnPage} games available`;
+
+        if (!currentGames.length) {
+          const empty = document.createElement('div');
+          empty.className = 'empty-state';
+          empty.textContent = 'No games found.';
+          gamesGrid.appendChild(empty);
+          updatePager();
+          return;
+        }
+
+        for (const game of currentGames) {
+          const card = createGameCard(game, async () => {
+            try {
+              const { url, meta } = await Lumin.getGameUrl(game.id);
+              openPopup({
+                title: meta?.name || game.name || 'Selected Game',
+                url,
+                category: meta?.category || game.category || ''
+              });
+            } catch (err) {
+              console.error('Could not load game:', err);
+              modalTitle.textContent = 'Error';
+              modalSubtitle.textContent = 'That game could not be loaded.';
+              modal.classList.remove('hidden');
+              modal.setAttribute('aria-hidden', 'false');
+            }
+          });
+
+          gamesGrid.appendChild(card);
+        }
+
+        updatePager();
+      }
+
+      async function loadPage(page = 1) {
+        if (!window.Lumin) {
+          gamesMeta.textContent = 'LuminSDK failed to load.';
+          return;
+        }
+
+        currentPage = page;
+        gamesMeta.textContent = 'Loading…';
+        gamesGrid.innerHTML = '';
+        updatePager();
+
+        try {
+          const result = await Lumin.getGames({ page: currentPage, limit: pageSize });
+          currentGames = result.games || [];
+          totalGames = result.total || currentGames.length;
+          totalPages = Math.max(1, Math.ceil(totalGames / pageSize));
+
+          if (currentPage > totalPages) currentPage = totalPages;
+
+          renderGames();
+        } catch (err) {
+          console.error('LuminSDK error:', err);
+          gamesMeta.textContent = 'Could not load games.';
+          gamesGrid.innerHTML = `<div class="empty-state">Could not load games right now.</div>`;
+          updatePager();
+        }
+      }
+
+      async function loadAllGamesOnce() {
+        if (allGamesCache) return allGamesCache;
+        if (!window.Lumin) return [];
+
+        gamesMeta.textContent = 'Searching all games…';
+
+        const gathered = [];
+        const pagesToFetch = Math.max(1, totalPages);
+
+        for (let p = 1; p <= pagesToFetch; p++) {
+          try {
+            const result = await Lumin.getGames({ page: p, limit: pageSize });
+            gathered.push(...(result.games || []));
+          } catch (err) {
+            console.error(`Failed to load search page ${p}:`, err);
+          }
+        }
+
+        allGamesCache = gathered;
+        return gathered;
+      }
+
+      async function searchGames() {
+        const q = searchInput.value.trim();
+        if (!q) {
+          closeSearchPopup();
+          gamesMeta.textContent = `${totalGames || currentGames.length} games available`;
+          return;
+        }
+
+        const query = q.toLowerCase();
+        openSearchPopup();
+        searchModalTitle.textContent = `Search results for “${q}”`;
+        searchModalSubtitle.textContent = 'Click a game to close search and start playing.';
+        searchResultsGrid.innerHTML = `<div class="empty-state">Searching…</div>`;
+
+        const source = await loadAllGamesOnce();
+        const results = source.filter((game) => {
+          const name = String(game.name || '').toLowerCase();
+          const category = String(game.category || '').toLowerCase();
+          return name.includes(query) || category.includes(query);
+        });
+
+        searchResultsGrid.innerHTML = '';
+
+        gamesMeta.textContent = `${results.length} result${results.length === 1 ? '' : 's'} for “${q}”`;
+        pageInfo.textContent = `${results.length} result${results.length === 1 ? '' : 's'}`;
+
+        if (!results.length) {
+          const empty = document.createElement('div');
+          empty.className = 'empty-state';
+          empty.textContent = 'No games matched your search.';
+          searchResultsGrid.appendChild(empty);
+          return;
+        }
+
+        for (const game of results) {
+          const card = createGameCard(game, async () => {
+            closeSearchPopup();
+            searchInput.blur();
+
+            try {
+              const { url, meta } = await Lumin.getGameUrl(game.id);
+              openPopup({
+                title: meta?.name || game.name || 'Selected Game',
+                url,
+                category: meta?.category || game.category || ''
+              });
+            } catch (err) {
+              console.error('Could not load game:', err);
+              modalTitle.textContent = 'Error';
+              modalSubtitle.textContent = 'That game could not be loaded.';
+              modal.classList.remove('hidden');
+              modal.setAttribute('aria-hidden', 'false');
+            }
+          });
+
+          searchResultsGrid.appendChild(card);
+        }
+      }
+
+      function randomGame() {
+        const pool = currentGames;
+        if (!pool.length) return;
+
+        const pick = pool[Math.floor(Math.random() * pool.length)];
+        if (!pick) return;
+
+        (async () => {
+          try {
+            const { url, meta } = await Lumin.getGameUrl(pick.id);
+            openPopup({
+              title: meta?.name || pick.name || 'Selected Game',
+              url,
+              category: meta?.category || pick.category || ''
+            });
+          } catch (err) {
+            console.error('Could not load game:', err);
+          }
+        })();
+      }
+
+      modalClose.addEventListener('click', closePopup);
+      modalFullscreen.addEventListener('click', goFullscreen);
+
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closePopup();
+      });
+
+      searchModalClose.addEventListener('click', () => {
+        closeSearchPopup();
+      });
+
+      searchModal.addEventListener('click', (e) => {
+        if (e.target === searchModal) closeSearchPopup();
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closePopup();
+          closeSearchPopup();
+        }
+      });
+
+      window.addEventListener('resize', resize);
+      document.addEventListener('fullscreenchange', updateFullscreenButton);
+
+      prevPageBtn.addEventListener('click', () => {
+        playSweep();
+        if (currentPage > 1) loadPage(currentPage - 1);
+      });
+
+      nextPageBtn.addEventListener('click', () => {
+        playSweep();
+        if (currentPage < totalPages) loadPage(currentPage + 1);
+      });
+
+      searchBtn.addEventListener('click', () => {
+        playSweep();
+        searchGames();
+      });
+
+      searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          playSweep();
+          searchGames();
+        }
+      });
+
+      clearBtn.addEventListener('click', () => {
+        playSweep();
+        searchInput.value = '';
+        closeSearchPopup();
+        gamesMeta.textContent = `${totalGames || currentGames.length} games available`;
+        updatePager();
+        searchInput.focus();
+      });
+
+      randomBtn.addEventListener('click', () => {
+        playSweep();
+        randomGame();
+      });
+
+      backBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        const href = link.getAttribute('href');
         playSweep(() => {
-          window.location.href = href;
+          window.location.href = backBtn.getAttribute('href');
         });
       });
+
+      resize();
+      animate();
+      updateFullscreenButton();
+
+      window.addEventListener('load', () => {
+        playSweep();
+      });
+
+      if (!window.Lumin) {
+        gamesMeta.textContent = 'LuminSDK failed to load.';
+        gamesGrid.innerHTML = '<div class="empty-state">LuminSDK failed to load.</div>';
+        return;
+      }
+
+      try {
+        await Lumin.init({
+          container: '#games',
+          headless: true
+        });
+
+        await loadPage(1);
+      } catch (err) {
+        console.error('LuminSDK error:', err);
+        gamesMeta.textContent = 'Could not load games.';
+        gamesGrid.innerHTML = '<div class="empty-state">Could not load games.</div>';
+      }
     });
-
-    window.addEventListener('resize', resize);
-    resize();
-    animate();
-
-    // page open sweep
-    window.addEventListener('load', () => {
-      playSweep();
-    });
-
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduceMotion) {
-      stars.forEach(s => { s.vx = 0; s.vy = 0; });
-    }
   </script>
 </body>
 </html>
