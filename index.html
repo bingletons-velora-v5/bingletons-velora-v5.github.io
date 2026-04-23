@@ -1,162 +1,253 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Velora</title>
+
+  <!-- Strong display font for "Velora" -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+
   <style>
     :root{
-      --bg:#0f1112;           /* very dark gray */
-      --accent:#18d26e;       /* bright green */
-      --accent-dark:#0ca85a;  /* darker green */
-      --text:#07140f;         /* very dark text for paragraphs, as requested */
-      --muted:#b8e9c9;
+      --bg:#04110b;           /* very dark green-black */
+      --accent:#08b85a;       /* vivid green */
+      --accent-deep:#056b3a;  /* deep green for lines */
+      --text:#e9f8ef;         /* light text */
+      --muted:#9fd9b3;
+      --panel-bg: rgba(8,184,90,0.04);
+      --panel-border: rgba(8,184,90,0.12);
     }
 
-    html,body{height:100%; margin:0; font-family:Inter, "Segoe UI", Roboto, Arial, sans-serif; background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+    html,body{height:100%; margin:0; font-family:Inter, "Segoe UI", Roboto, Arial, sans-serif; background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; overflow:hidden;}
 
-    /* Star canvas (background) */
-    #starfield{ position:fixed; inset:0; z-index:0; display:block; }
+    /* canvases */
+    canvas#starfield{ position:fixed; inset:0; z-index:0; display:block; }
+    canvas#constellation{ position:fixed; inset:0; z-index:1; pointer-events:none; mix-blend-mode:screen; }
 
-    /* soft green constellation / overlay */
-    .constellation{
-      position:fixed;
-      inset:0;
-      z-index:1;
-      pointer-events:none;
-      mix-blend-mode:screen;
+    /* subtle ambient glow */
+    .glow{ position:fixed; inset:0; z-index:1; pointer-events:none;
       background:
-        radial-gradient(circle at 12% 20%, rgba(24,210,110,0.06), transparent 6%),
-        radial-gradient(circle at 72% 60%, rgba(24,210,110,0.04), transparent 8%),
-        radial-gradient(circle at 40% 80%, rgba(24,210,110,0.03), transparent 10%);
+        radial-gradient(circle at 12% 18%, rgba(8,184,90,0.04), transparent 6%),
+        radial-gradient(circle at 72% 62%, rgba(5,107,58,0.03), transparent 8%); }
+
+    /* content sits directly on background, no box */
+    .wrap{ position:relative; z-index:3; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:48px 20px; pointer-events:auto; flex-direction:column; gap:22px; }
+
+    /* Velora display */
+    .brand{
+      font-family: 'Orbitron', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-weight:900;
+      font-size:110px;
+      margin:0;
+      color:var(--accent);
+      letter-spacing:8px;
+      line-height:0.9;
+      text-transform:uppercase;
+      text-shadow:
+        0 12px 40px rgba(4,107,58,0.18),
+        0 0 28px rgba(8,184,90,0.12);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      pointer-events:auto;
     }
 
-    /* main content centered */
-    .wrap{ position:relative; z-index:3; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:48px 20px; }
-    .card{ max-width:880px; width:100%; text-align:center; padding:44px; border-radius:18px; background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.02)); box-shadow: 0 10px 40px rgba(0,0,0,0.6); backdrop-filter: blur(6px); }
+    /* panel row for Chat / News */
+    .panel-row{ display:flex; gap:18px; align-items:center; justify-content:center; flex-wrap:wrap; width:100%; max-width:980px; padding:0 12px; box-sizing:border-box; }
+    .panel{
+      min-width:160px;
+      width:220px;
+      height:96px;
+      border-radius:14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      gap:6px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
+      border:1px solid var(--panel-border);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.55);
+      cursor:pointer;
+      transition: transform .16s cubic-bezier(.2,.9,.2,1), box-shadow .16s, border-color .16s;
+      color:var(--text);
+      text-decoration:none;
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+    }
+    .panel:hover{
+      transform: translateY(-8px);
+      box-shadow: 0 26px 70px rgba(4,107,58,0.14);
+      border-color: rgba(8,184,90,0.28);
+    }
+    .panel .label{ font-size:18px; font-weight:700; letter-spacing:1px; color:var(--accent); }
+    .panel .sub{ font-size:13px; color:var(--muted); opacity:0.95; }
 
-    .brand{ font-size:72px; margin:0; color:var(--accent); letter-spacing:6px; text-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 18px rgba(24,210,110,0.14); }
-    .subtitle{ margin-top:8px; color:var(--text); font-size:18px; opacity:0.98; }
-
-    /* buttons */
-    .actions{ margin-top:28px; display:flex; gap:16px; justify-content:center; flex-wrap:wrap; }
+    /* actions (Games / Movies) */
+    .actions{ display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:6px; }
     .btn{
       display:inline-flex; align-items:center; justify-content:center;
-      padding:14px 26px; font-size:18px; border-radius:12px; border:1px solid rgba(12,168,90,0.18);
-      text-decoration:none; color:var(--accent-dark); background:linear-gradient(180deg, rgba(12,168,90,0.09), rgba(12,168,90,0.03));
-      box-shadow: 0 8px 20px rgba(0,0,0,0.55); transition:transform .14s ease, box-shadow .14s ease, background .14s;
+      padding:12px 22px; font-size:16px; border-radius:999px; border:1px solid rgba(8,184,90,0.12);
+      text-decoration:none; color:var(--text); background:linear-gradient(180deg, rgba(8,184,90,0.06), rgba(5,107,58,0.03));
+      box-shadow: 0 10px 30px rgba(4,107,58,0.06); transition:transform .16s cubic-bezier(.2,.9,.2,1), box-shadow .16s;
     }
-    .btn:hover{ transform:translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.6); }
-    .btn.ghost{ background:transparent; border:1px solid rgba(255,255,255,0.03); color:var(--muted); }
+    .btn:hover{ transform:translateY(-6px); box-shadow: 0 20px 60px rgba(4,107,58,0.12); }
+    .btn.ghost{ background:transparent; border:1px solid rgba(255,255,255,0.03); color:var(--muted); box-shadow:none; }
 
-    /* small description text darker */
-    .lead{ margin-top:18px; color:var(--text); max-width:70ch; margin-left:auto; margin-right:auto; font-size:16px; line-height:1.45; opacity:0.98; }
-
-    /* shooting star element */
-    .shoot{ position:fixed; z-index:2; pointer-events:none; width:4px; height:120px; transform:rotate(30deg); background:linear-gradient(45deg, rgba(24,210,110,1), rgba(24,210,110,0.04)); filter:blur(.6px); opacity:0; }
-
-    @media (max-width:560px){
-      .brand{ font-size:40px; letter-spacing:3px; }
-      .card{ padding:22px; border-radius:12px; }
-      .btn{ padding:12px 18px; font-size:16px; }
+    @media (max-width:720px){
+      .brand{ font-size:48px; letter-spacing:4px; }
+      .panel{ width:160px; height:84px; min-width:140px; }
+      .panel .label{ font-size:16px; }
+      .btn{ padding:10px 14px; font-size:14px; }
     }
   </style>
 </head>
 <body>
-  <!-- canvas for many tiny stars -->
   <canvas id="starfield" aria-hidden="true"></canvas>
+  <canvas id="constellation" aria-hidden="true"></canvas>
+  <div class="glow" aria-hidden="true"></div>
 
-  <!-- soft constellation overlay -->
-  <div class="constellation" aria-hidden="true"></div>
+  <div class="wrap" role="banner" aria-labelledby="site-title">
+    <h1 id="site-title" class="brand">Velora</h1>
 
-  <!-- element used for an animated shooting star -->
-  <div class="shoot" id="shoot" aria-hidden="true"></div>
+    <!-- Panels row: Chat and News -->
+    <div class="panel-row" role="navigation" aria-label="Quick links">
+      <a class="panel" href="chat.html" role="button" aria-label="Open chat">
+        <div class="label">Chat</div>
+        <div class="sub">Live conversation</div>
+      </a>
 
-  <div class="wrap">
-    <section class="card" role="main" aria-labelledby="site-title">
-      <h1 id="site-title" class="brand">Velora</h1>
-      <div class="subtitle">A mysterious portal — games and cinematic worlds</div>
-      <p class="lead">Welcome to Velora. Explore curated games and cinematic experiences. Click a button below to enter the Games or Movies sections.</p>
+    
 
-      <nav class="actions" aria-label="Primary">
-        <a class="btn" href="g.html" role="button">Games</a>
-        <a class="btn ghost" href="m.html" role="button">Movies</a>
-      </nav>
-    </section>
+    <nav class="actions" aria-label="Primary">
+      <a class="btn" href="g.html" role="button">Games</a>
+      <a class="btn" href="m.html" role="button">Movies</a>
+      <a class="btn ghost" href="c.html" role="button">Chat</a>
+    <a class="btn ghost" href="p.html" role="button">Patch Notes</a>
+    </nav>
   </div>
 
   <script>
-    // Starfield: many small green-tinted stars
-    const canvas = document.getElementById('starfield');
-    const ctx = canvas.getContext('2d');
-    let W, H, starList = [];
+    // Canvas setup
+    const starCanvas = document.getElementById('starfield');
+    const starCtx = starCanvas.getContext('2d');
+    const lineCanvas = document.getElementById('constellation');
+    const lineCtx = lineCanvas.getContext('2d');
+    let W = innerWidth, H = innerHeight;
 
-    function resize(){ W = canvas.width = innerWidth; H = canvas.height = innerHeight; createStars(); }
+    function resize(){
+      W = starCanvas.width = lineCanvas.width = innerWidth;
+      H = starCanvas.height = lineCanvas.height = innerHeight;
+      createStars();
+    }
+    addEventListener('resize', resize);
+
+    // Stars
+    let stars = [];
     function createStars(){
-      starList = [];
-      const density = Math.max(80, Math.floor((W*H)/10000)); // scale number of stars by area
+      stars = [];
+      const density = Math.max(120, Math.floor((W*H)/14000));
       for(let i=0;i<density;i++){
-        starList.push({
+        stars.push({
           x: Math.random()*W,
           y: Math.random()*H,
-          r: Math.random()*1.6 + 0.2,
-          a: Math.random()*0.8 + 0.15,
-          twinkle: Math.random()*0.02 + 0.005
+          r: Math.random()*1.6 + 0.3,
+          baseA: Math.random()*0.6 + 0.15,
+          a: 0,
+          twinkle: Math.random()*0.02 + 0.004,
+          vx: (Math.random()-0.5) * 0.02,
+          vy: (Math.random()-0.5) * 0.02
         });
       }
     }
-    function renderStars(){
-      ctx.clearRect(0,0,W,H);
-      for(const s of starList){
+
+    // Draw stars
+    function drawStars(){
+      starCtx.clearRect(0,0,W,H);
+      for(const s of stars){
+        s.x += s.vx;
+        s.y += s.vy;
+        if(s.x < -10) s.x = W + 10;
+        if(s.x > W + 10) s.x = -10;
+        if(s.y < -10) s.y = H + 10;
+        if(s.y > H + 10) s.y = -10;
+
         s.a += (Math.random() - 0.5) * s.twinkle;
-        s.a = Math.max(0.08, Math.min(1, s.a));
-        ctx.beginPath();
-        ctx.fillStyle = 'rgba(24,210,110,' + (s.a*0.9) + ')';
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
-        ctx.fill();
+        s.a = Math.max(0.06, Math.min(1, s.baseA + Math.sin(performance.now()/1000 + s.x*0.001)*0.12 + (s.a - s.baseA)*0.2));
+        starCtx.beginPath();
+        starCtx.fillStyle = 'rgba(8,184,90,' + (s.a*0.95) + ')';
+        starCtx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+        starCtx.fill();
       }
-      requestAnimationFrame(renderStars);
     }
-    addEventListener('resize', resize);
+
+    // Straight-line constellation with directional motion along lines
+    let dashOffset = 0;
+    function drawConnections(){
+      lineCtx.clearRect(0,0,W,H);
+      lineCtx.lineWidth = 1;
+      dashOffset -= 0.8;
+      for(let i=0;i<stars.length;i++){
+        const s = stars[i];
+        // find nearest neighbors within threshold
+        let neighbors = [];
+        for(let j=0;j<stars.length;j++){
+          if(i===j) continue;
+          const t = stars[j];
+          const dx = t.x - s.x, dy = t.y - s.y;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          if(dist < Math.max(120, Math.min(260, (W+H)/12))) neighbors.push({dist, t});
+        }
+        neighbors.sort((a,b)=>a.dist-b.dist);
+        for(let k=0;k<Math.min(2, neighbors.length); k++){
+          const n = neighbors[k];
+          const t = n.t;
+          const d = n.dist;
+          const maxD = Math.max(120, Math.min(260, (W+H)/12));
+          const pulse = 0.4 + 0.25 * Math.sin((performance.now()/1200) + (s.x+s.y)*0.002 + k);
+          const alpha = Math.max(0, (1 - d/maxD) * pulse * 0.95);
+
+          // straight line stroke with gradient
+          const grad = lineCtx.createLinearGradient(s.x, s.y, t.x, t.y);
+          grad.addColorStop(0, `rgba(8,184,90,${alpha})`);
+          grad.addColorStop(1, `rgba(5,107,58,${alpha*0.7})`);
+          lineCtx.strokeStyle = grad;
+
+          // dashed line to create directional motion
+          lineCtx.setLineDash([8, 10]);
+          lineCtx.lineDashOffset = dashOffset * (1 + k*0.2);
+          lineCtx.beginPath();
+          lineCtx.moveTo(s.x, s.y);
+          lineCtx.lineTo(t.x, t.y);
+          lineCtx.stroke();
+        }
+      }
+
+      // faint node glow
+      for(const s of stars){
+        lineCtx.beginPath();
+        lineCtx.fillStyle = `rgba(8,184,90,${Math.min(0.06, s.a*0.06)})`;
+        lineCtx.arc(s.x, s.y, s.r*2.2, 0, Math.PI*2);
+        lineCtx.fill();
+      }
+      lineCtx.setLineDash([]);
+    }
+
+    // Animation loop
+    function animate(){
+      drawStars();
+      drawConnections();
+      requestAnimationFrame(animate);
+    }
+
+    // Init
     resize();
-    renderStars();
+    animate();
 
-    // Shooting star logic: position and animate using transforms
-    const shootEl = document.getElementById('shoot');
-    function fireShootingStar(){
-      // start from left/top quadrant
-      const startX = Math.random() * innerWidth * 0.25 + 10;
-      const startY = Math.random() * innerHeight * 0.45 + 10;
-      // choose travel distance
-      const travelX = innerWidth * (0.6 + Math.random()*0.3);
-      const travelY = innerHeight * (0.4 + Math.random()*0.3);
-
-      shootEl.style.transition = 'none';
-      shootEl.style.opacity = '1';
-      shootEl.style.transform = 'translate(0,0) rotate(30deg)';
-      shootEl.style.left = startX + 'px';
-      shootEl.style.top = startY + 'px';
-
-      // let layout apply then animate
-      requestAnimationFrame(() => {
-        shootEl.style.transition = 'transform 900ms cubic-bezier(.2,.8,.2,1), opacity 900ms';
-        shootEl.style.transform = 'translate(' + travelX + 'px,' + travelY + 'px) rotate(30deg)';
-        shootEl.style.opacity = '0';
-      });
-
-      // reset after animation finishes
-      setTimeout(() => {
-        shootEl.style.transition = 'none';
-        shootEl.style.opacity = '0';
-        shootEl.style.transform = 'translate(0,0) rotate(30deg)';
-      }, 1100 + Math.random()*300);
+    // Respect reduced motion
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if(mediaQuery.matches){
+      stars.forEach(s => { s.vx = s.vy = 0; s.twinkle = 0.001; });
     }
-
-    // random intervals, sometimes cluster multiple
-    setInterval(() => {
-      if (Math.random() < 0.65) fireShootingStar();
-      if (Math.random() < 0.12) setTimeout(fireShootingStar, 250); // occasionally double
-    }, 2500 + Math.random()*1800);
   </script>
 </body>
 </html>
