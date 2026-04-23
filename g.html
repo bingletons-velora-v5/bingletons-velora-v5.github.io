@@ -7,407 +7,467 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
-    :root {
-      --bg: #0b0b0b;
-      --bg-2: #121212;
-      --text: #f4f4f4;
-      --muted: rgba(255, 255, 255, 0.52);
-      --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+    :root{
+      --bg:#07080b;
+      --bg2:#0d1017;
+      --card: rgba(18, 22, 31, .72);
+      --card2: rgba(255,255,255,.04);
+      --text:#f5f7fb;
+      --muted: rgba(245,247,251,.62);
+      --line: rgba(255,255,255,.08);
+      --glow: rgba(120, 255, 214, .16);
+      --accent: #7cffd6;
+      --shadow: 0 18px 50px rgba(0,0,0,.45);
+      --radius: 18px;
     }
 
     * { box-sizing: border-box; }
     html, body { height: 100%; }
 
-    body {
-      margin: 0;
-      overflow: hidden;
+    body{
+      margin:0;
+      overflow:hidden;
+      color:var(--text);
+      font-family:Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background:
-        radial-gradient(circle at 50% 45%, rgba(255,255,255,0.04), transparent 28%),
-        radial-gradient(circle at 50% 50%, rgba(122, 255, 202, 0.03), transparent 45%),
-        linear-gradient(180deg, var(--bg), var(--bg-2));
-      color: var(--text);
-      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        radial-gradient(circle at 50% 20%, rgba(124,255,214,.07), transparent 22%),
+        radial-gradient(circle at 15% 80%, rgba(95,136,255,.08), transparent 20%),
+        radial-gradient(circle at 85% 75%, rgba(183,92,255,.06), transparent 18%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
     }
 
-    canvas {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      display: block;
-      pointer-events: none;
+    canvas{
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+      display:block;
+      pointer-events:none;
     }
 
-    #stars { z-index: 0; }
-    #constellations { z-index: 1; }
+    #stars{ z-index:0; }
+    #constellations{ z-index:1; }
 
-    .overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 2;
-      pointer-events: none;
+    .overlay{
+      position:fixed;
+      inset:0;
+      z-index:2;
+      pointer-events:none;
       background:
-        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.015), transparent 18%),
-        radial-gradient(circle at 75% 70%, rgba(255,255,255,0.015), transparent 20%);
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,.012), transparent 18%),
+        radial-gradient(circle at 75% 70%, rgba(255,255,255,.012), transparent 20%);
     }
 
-    .page {
-      position: relative;
-      z-index: 3;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 28px 18px 22px;
+    .page{
+      position:relative;
+      z-index:3;
+      min-height:100vh;
+      padding:24px 18px 20px;
+      display:flex;
+      justify-content:center;
+      align-items:center;
     }
 
-    .shell {
-      width: min(980px, 100%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 22px;
-      text-align: center;
+    .shell{
+      width:min(1220px, 100%);
+      display:flex;
+      flex-direction:column;
+      gap:18px;
     }
 
-    .top-row {
-      width: 100%;
-      display: flex;
-      justify-content: flex-start;
-      pointer-events: auto;
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
     }
 
-    .back {
-      text-decoration: none;
-      color: rgba(255,255,255,0.9);
-      background: rgba(28, 28, 28, 0.8);
-      border: 1px solid rgba(255,255,255,0.08);
+    .back{
+      text-decoration:none;
+      color:rgba(255,255,255,.92);
+      background:rgba(18,22,31,.78);
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+      border-radius:14px;
+      height:46px;
+      padding:0 15px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:600;
+      transition:transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .back:hover{
+      transform:translateY(-3px);
+      border-color: rgba(124,255,214,.22);
+      box-shadow: 0 22px 60px rgba(0,0,0,.52);
+      background: rgba(24, 30, 42, .9);
+    }
+
+    .hero{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      align-items:flex-start;
+      padding:4px 0 2px;
+    }
+
+    .title{
+      margin:0;
+      font-size:clamp(2.3rem, 4vw, 4rem);
+      line-height:1;
+      letter-spacing:-.04em;
+      font-weight:800;
+    }
+
+    .subtitle{
+      margin:0;
+      color:var(--muted);
+      font-size:.96rem;
+    }
+
+    .tools{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      width:100%;
+    }
+
+    .search{
+      flex:1 1 280px;
+      height:48px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      outline:none;
+      padding:0 16px;
+      color:var(--text);
+      background:rgba(18,22,31,.72);
+      box-shadow:var(--shadow);
+      font:inherit;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition:border-color .18s ease, transform .18s ease, background .18s ease;
+    }
+
+    .search::placeholder{ color: rgba(245,247,251,.38); }
+
+    .search:focus{
+      border-color: rgba(124,255,214,.24);
+      background: rgba(22, 27, 38, .88);
+      transform: translateY(-1px);
+    }
+
+    .pill{
+      height:48px;
+      padding:0 14px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(18,22,31,.72);
+      color:rgba(255,255,255,.88);
+      font:inherit;
+      cursor:pointer;
+      box-shadow:var(--shadow);
+      transition:transform .18s ease, border-color .18s ease, background .18s ease;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .pill:hover{
+      transform:translateY(-2px);
+      border-color: rgba(124,255,214,.2);
+      background: rgba(24, 30, 42, .9);
+    }
+
+    .meta-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      color:var(--muted);
+      font-size:.88rem;
+      flex-wrap:wrap;
+    }
+
+    .grid-wrap{
+      position:relative;
+      border:1px solid var(--line);
+      border-radius:24px;
+      background: rgba(8, 10, 15, .4);
       box-shadow: var(--shadow);
-      border-radius: 10px;
-      height: 46px;
-      min-width: 46px;
-      padding: 0 14px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+      overflow:hidden;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
     }
 
-    .back:hover {
-      transform: translateY(-3px);
-      border-color: rgba(216,255,240,0.2);
-      background: rgba(34, 34, 34, 0.88);
+    .grid-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 16px;
+      border-bottom:1px solid var(--line);
+      background: rgba(255,255,255,.02);
     }
 
-    .back span {
-      font-size: 0.95rem;
-      font-weight: 600;
+    .grid-head strong{
+      font-size:1rem;
+      letter-spacing:-.02em;
     }
 
-    .brand {
-      margin: 0;
-      font-family: "Great Vibes", cursive;
-      font-size: clamp(4.4rem, 9vw, 7.2rem);
-      line-height: 0.9;
-      font-weight: 400;
-      color: #ffffff;
-      letter-spacing: 0.03em;
-      text-shadow: 0 0 22px rgba(255,255,255,0.08);
-      transform: translateY(2px);
-      user-select: none;
+    .grid-head span{
+      color:var(--muted);
+      font-size:.88rem;
     }
 
-    .heading {
-      margin: 0;
-      font-size: 1rem;
-      letter-spacing: 0.28em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.42);
-      user-select: none;
+    .grid-shell{
+      max-height:min(68vh, 820px);
+      overflow:auto;
+      padding:16px;
     }
 
-    .apps {
-      width: min(780px, 100%);
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px 12px;
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(180px, 1fr));
+      gap:14px;
     }
 
-    .app {
-      pointer-events: auto;
-      min-height: 112px;
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(28, 28, 28, 0.8);
-      box-shadow: var(--shadow);
-      color: var(--text);
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      gap: 10px;
-      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      padding: 14px;
+    .card{
+      position:relative;
+      border-radius:18px;
+      border:1px solid var(--line);
+      overflow:hidden;
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      box-shadow: 0 12px 28px rgba(0,0,0,.28);
+      cursor:pointer;
+      transform: translateZ(0);
+      transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        border-color .2s ease,
+        background .2s ease;
+      will-change: transform;
+      isolation:isolate;
     }
 
-    .app:hover {
-      transform: translateY(-4px);
-      border-color: rgba(216,255,240,0.2);
-      background: rgba(34, 34, 34, 0.88);
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-1px;
+      background: radial-gradient(circle at 50% 0%, rgba(124,255,214,.18), transparent 38%);
+      opacity:0;
+      transition:opacity .2s ease;
+      z-index:0;
     }
 
-    .app-icon {
-      width: 34px;
-      height: 34px;
-      border-radius: 9px;
-      display: grid;
-      place-items: center;
-      font-size: 1.1rem;
-      color: white;
-      background: rgba(255,255,255,0.08);
+    .card:hover{
+      transform: translateY(-6px) scale(1.01);
+      border-color: rgba(124,255,214,.22);
+      box-shadow:
+        0 22px 44px rgba(0,0,0,.42),
+        0 0 0 1px rgba(124,255,214,.05),
+        0 0 40px rgba(124,255,214,.08);
     }
 
-    .app-label {
-      font-size: 0.92rem;
-      color: rgba(255,255,255,0.92);
+    .card:hover::before{
+      opacity:1;
     }
 
-    .app-sub {
-      font-size: 0.75rem;
-      color: rgba(255,255,255,0.48);
-    }
-
-    .library {
-      width: min(980px, 100%);
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      pointer-events: auto;
-    }
-
-    .library-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 14px;
-      padding: 14px 16px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(28, 28, 28, 0.72);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      text-align: left;
-    }
-
-    .library-bar strong {
-      display: block;
-      font-size: 1rem;
-      color: rgba(255,255,255,0.95);
-      margin-bottom: 3px;
-    }
-
-    .library-bar span {
-      font-size: 0.85rem;
-      color: rgba(255,255,255,0.52);
-    }
-
-    .library-tools {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    .tool {
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.04);
-      color: rgba(255,255,255,0.9);
-      border-radius: 999px;
-      padding: 10px 14px;
-      font: inherit;
-      cursor: pointer;
-      transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
-    }
-
-    .tool:hover {
-      transform: translateY(-2px);
-      background: rgba(255,255,255,0.08);
-      border-color: rgba(216,255,240,0.18);
-    }
-
-    #games {
-      width: 100%;
-      max-height: min(52vh, 560px);
-      overflow: auto;
-      padding: 8px 2px 4px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-      gap: 14px;
-    }
-
-    .game-card {
-      background: rgba(28, 28, 28, 0.8);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: var(--shadow);
-      cursor: pointer;
-      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
-      text-align: left;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-    }
-
-    .game-card:hover {
-      transform: translateY(-4px);
-      border-color: rgba(216,255,240,0.2);
-      background: rgba(34, 34, 34, 0.9);
-    }
-
-    .thumb {
-      height: 104px;
-      display: grid;
-      place-items: center;
+    .cover{
+      position:relative;
+      aspect-ratio: 16 / 10;
       background:
-        radial-gradient(circle at 50% 30%, rgba(255,255,255,0.08), transparent 40%),
-        linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
-      color: rgba(255,255,255,0.7);
-      font-weight: 700;
-      padding: 10px;
-      text-align: center;
+        radial-gradient(circle at 50% 30%, rgba(255,255,255,.10), transparent 35%),
+        linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+      overflow:hidden;
     }
 
-    .meta {
-      padding: 12px 12px 13px;
+    .cover img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      transition: transform .35s ease, filter .35s ease;
+      filter:saturate(1.05) contrast(1.02);
     }
 
-    .g-title {
-      font-weight: 700;
-      font-size: 0.96rem;
-      color: rgba(255,255,255,0.96);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin-bottom: 4px;
+    .card:hover .cover img{
+      transform: scale(1.08);
+      filter:saturate(1.15) contrast(1.06);
     }
 
-    .g-sub {
-      font-size: 0.8rem;
-      color: rgba(255,255,255,0.48);
+    .cover::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background: linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(0,0,0,.58) 100%);
+      pointer-events:none;
     }
 
-    .v5 {
-      position: fixed;
-      z-index: 4;
-      left: 50%;
-      top: 50%;
-      pointer-events: none;
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.24em;
-      color: rgba(255,255,255,0.38);
-      text-shadow: 0 0 10px rgba(255,255,255,0.08);
-      transform-origin: center center;
-      user-select: none;
-      animation: spin 7s linear infinite;
+    .badge{
+      position:absolute;
+      left:10px;
+      top:10px;
+      z-index:1;
+      padding:6px 9px;
+      border-radius:999px;
+      background: rgba(10, 14, 22, .74);
+      border:1px solid rgba(255,255,255,.10);
+      color: rgba(255,255,255,.9);
+      font-size:.72rem;
+      font-weight:700;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
 
-    @keyframes spin {
+    .info{
+      position:relative;
+      z-index:1;
+      padding:12px 12px 14px;
+    }
+
+    .name{
+      margin:0 0 5px;
+      font-size:.98rem;
+      font-weight:700;
+      line-height:1.15;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .small{
+      color: rgba(245,247,251,.6);
+      font-size:.8rem;
+    }
+
+    .status{
+      padding:18px 16px;
+      color: var(--muted);
+      font-size:.95rem;
+    }
+
+    .spinner{
+      display:inline-block;
+      width:14px;
+      height:14px;
+      border-radius:50%;
+      border:2px solid rgba(255,255,255,.25);
+      border-top-color: rgba(124,255,214,.95);
+      animation:spin .8s linear infinite;
+      vertical-align:-2px;
+      margin-right:8px;
+    }
+
+    @keyframes spin{ to { transform: rotate(360deg); } }
+
+    .viewer{
+      position:fixed;
+      inset:0;
+      z-index:20;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      background: rgba(0,0,0,.72);
+    }
+
+    .viewer.active{ display:flex; }
+
+    .viewer-panel{
+      width:min(1200px, 100%);
+      height:min(84vh, 880px);
+      border-radius:22px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(9,12,18,.98);
+      box-shadow: 0 30px 100px rgba(0,0,0,.72);
+      display:flex;
+      flex-direction:column;
+    }
+
+    .viewer-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px 14px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.02);
+    }
+
+    .viewer-title{
+      font-weight:700;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .viewer-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .icon-btn{
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.04);
+      color: rgba(255,255,255,.9);
+      border-radius:12px;
+      padding:9px 12px;
+      cursor:pointer;
+      font:inherit;
+      transition: background .18s ease, transform .18s ease, border-color .18s ease;
+    }
+
+    .icon-btn:hover{
+      background: rgba(255,255,255,.09);
+      transform: translateY(-1px);
+      border-color: rgba(124,255,214,.18);
+    }
+
+    .viewer-iframe{
+      flex:1;
+      width:100%;
+      border:0;
+      background:#000;
+    }
+
+    .v5{
+      position:fixed;
+      z-index:4;
+      left:50%;
+      top:50%;
+      pointer-events:none;
+      font-size:.72rem;
+      font-weight:800;
+      letter-spacing:.22em;
+      color: rgba(255,255,255,.34);
+      text-shadow: 0 0 12px rgba(255,255,255,.08);
+      transform-origin:center center;
+      user-select:none;
+      animation:spinText 8s linear infinite;
+    }
+
+    @keyframes spinText{
       from { transform: translate(-50%, -50%) rotate(0deg); }
-      to { transform: translate(-50%, -50%) rotate(360deg); }
+      to   { transform: translate(-50%, -50%) rotate(360deg); }
     }
 
-    .viewer {
-      position: fixed;
-      inset: 0;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 20;
-      background: rgba(0,0,0,0.72);
-      padding: 18px;
-    }
-
-    .viewer.active { display: flex; }
-
-    .viewer-panel {
-      width: min(1200px, 100%);
-      height: min(82vh, 860px);
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(18,18,18,0.96);
-      box-shadow: 0 28px 90px rgba(0,0,0,0.7);
-      display: flex;
-      flex-direction: column;
-    }
-
-    .viewer-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 14px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.02);
-    }
-
-    .viewer-title {
-      font-weight: 700;
-      color: rgba(255,255,255,0.95);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .viewer-actions {
-      display: flex;
-      gap: 10px;
-    }
-
-    .icon-btn {
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.04);
-      color: rgba(255,255,255,0.9);
-      border-radius: 10px;
-      padding: 9px 12px;
-      cursor: pointer;
-      font: inherit;
-    }
-
-    .icon-btn:hover {
-      background: rgba(255,255,255,0.08);
-    }
-
-    .viewer-iframe {
-      flex: 1;
-      border: 0;
-      width: 100%;
-      background: #000;
-    }
-
-    @media (max-width: 760px) {
-      .page { padding-top: 72px; padding-bottom: 72px; }
-      .shell { gap: 18px; }
-      .apps { width: min(360px, 100%); grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .app { min-height: 96px; }
-      .library-bar { flex-direction: column; align-items: flex-start; }
-      .library-tools { justify-content: flex-start; }
-      .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
-      #games { max-height: 48vh; }
+    @media (max-width: 760px){
+      body{ overflow:auto; }
+      .page{ padding-top:18px; padding-bottom:18px; }
+      .grid-shell{ max-height:none; }
+      .grid{ grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); }
+      .title{ font-size:2.3rem; }
+      .viewer-panel{ height:min(88vh, 880px); }
     }
   </style>
 </head>
@@ -419,36 +479,51 @@
 
   <main class="page">
     <section class="shell" aria-label="Velora games">
-      <div class="top-row">
-        <a class="back" href="index.html" aria-label="Back to home">
-          <span>← Back</span>
-        </a>
+      <div class="topbar">
+        <a class="back" href="index.html" aria-label="Back to home">← Back</a>
+        <div class="hero">
+          <h1 class="title">Games</h1>
+          <p class="subtitle">Browse the catalog and launch anything with one click.</p>
+        </div>
       </div>
 
-      <h1 class="brand">Velora</h1>
-      <p class="heading">games</p>
+      <div class="tools">
+        <input id="search" class="search" type="search" placeholder="Search games..." autocomplete="off" />
+        <button class="pill" id="refreshBtn" type="button">Refresh</button>
+      </div>
 
-      <div class="library">
-        <div class="library-bar">
+      <div class="meta-row">
+        <div id="countText">Loading games…</div>
+        <div id="pageText">Page 1</div>
+      </div>
+
+      <div class="grid-wrap">
+        <div class="grid-head">
           <div>
-            <strong>Browse or play 2,342 games</strong>
+            <strong>Featured catalog</strong><br>
+            <span>Simple, fast, and clean.</span>
           </div>
+          <div id="catalogInfo">Headless mode</div>
+        </div>
 
-        <div id="games" aria-live="polite" aria-label="Games container"></div>
+        <div class="grid-shell" id="gridShell">
+          <div id="status" class="status"><span class="spinner"></span>Loading games…</div>
+          <div class="grid" id="games" aria-live="polite" aria-label="Games grid"></div>
+        </div>
       </div>
     </section>
   </main>
 
   <div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="viewer-panel" role="document">
+    <div class="viewer-panel">
       <div class="viewer-top">
         <div class="viewer-title" id="viewerTitle">Loading…</div>
         <div class="viewer-actions">
-          <button class="icon-btn" id="openFullscreen" type="button">Fullscreen</button>
-          <button class="icon-btn" id="closeViewer" type="button">Back</button>
+          <button class="icon-btn" id="fullscreenBtn" type="button">Fullscreen</button>
+          <button class="icon-btn" id="closeViewer" type="button">Close</button>
         </div>
       </div>
-      <iframe id="gameFrame" class="viewer-iframe" src="about:blank" title="Game viewer"></iframe>
+      <iframe id="gameFrame" class="viewer-iframe" src="about:blank" allow="autoplay; fullscreen; pointer-lock; gamepad" allowfullscreen title="Game player"></iframe>
     </div>
   </div>
 
@@ -461,8 +536,28 @@
     const constCtx = constCanvas.getContext('2d');
     const v5 = document.getElementById('v5');
 
+    const grid = document.getElementById('games');
+    const statusEl = document.getElementById('status');
+    const countText = document.getElementById('countText');
+    const pageText = document.getElementById('pageText');
+    const search = document.getElementById('search');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const catalogInfo = document.getElementById('catalogInfo');
+
+    const viewer = document.getElementById('viewer');
+    const viewerTitle = document.getElementById('viewerTitle');
+    const gameFrame = document.getElementById('gameFrame');
+    const closeViewer = document.getElementById('closeViewer');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+
     let W = 0, H = 0;
     let stars = [];
+    let allGames = [];
+    let imageMap = new Map();
+    let currentPage = 1;
+    let totalPages = 1;
+    let loading = false;
+    let searchTerm = '';
 
     function placeV5() {
       const x = Math.max(18, Math.min(window.innerWidth - 25, Math.random() * window.innerWidth));
@@ -522,7 +617,7 @@
 
       for (let i = 0; i < stars.length; i++) {
         const s = stars[i];
-        let matches = [];
+        const matches = [];
 
         for (let j = 0; j < stars.length; j++) {
           if (i === j) continue;
@@ -575,117 +670,156 @@
       stars.forEach(s => { s.vx = 0; s.vy = 0; });
     }
 
-    try {
-      if (window.Lumin && typeof Lumin.init === 'function') {
-        Lumin.init({
-          container: '#games',
-          theme: 'dark'
-        });
-      }
-    } catch (e) {
-      console.warn('Lumin init failed or not available', e);
+    function setStatus(message) {
+      statusEl.innerHTML = message;
     }
 
-    (function populateFallbackIfEmpty(){
-      const container = document.getElementById('games');
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
 
-      const fallback = () => {
-        if (!container) return;
-        if (container.children.length === 0 || container.querySelectorAll('.game-card').length === 0) {
-          const grid = document.createElement('div');
-          grid.className = 'grid';
+    function matchesSearch(game) {
+      if (!searchTerm) return true;
+      const hay = `${game.name || ''} ${game.category || ''} ${game.id || ''}`.toLowerCase();
+      return hay.includes(searchTerm);
+    }
 
-          const demo = [
-            {id:'milkman-karlson', title:'Milkman Karlson', url:'https://example.com/game1'},
-            {id:'geometry-dash', title:'Geometry Dash Remastered', url:'https://example.com/game2'},
-            {id:'jetski-race', title:'Jetski Race', url:'https://example.com/game3'},
-            {id:'hotline-miami', title:'Hotline Miami', url:'https://example.com/game4'},
-            {id:'bad-ice-cream-3', title:'Bad Ice Cream 3', url:'https://example.com/game5'},
-            {id:'mega-man-4', title:'Mega Man 4', url:'https://example.com/game6'}
-          ];
+    function renderGrid() {
+      const filtered = allGames.filter(matchesSearch);
 
-          demo.forEach(g => {
-            const card = document.createElement('div');
-            card.className = 'game-card';
-            card.dataset.gameId = g.id;
-            card.dataset.gameUrl = g.url;
-            card.innerHTML = `
-              <div class="thumb">${g.title}</div>
-              <div class="meta">
-                <div class="g-title">${g.title}</div>
-                <div class="g-sub">HTML5 · Arcade</div>
-              </div>
-            `;
-            grid.appendChild(card);
-          });
+      grid.innerHTML = '';
+      countText.textContent = `${filtered.length.toLocaleString()} game${filtered.length === 1 ? '' : 's'} shown`;
+      pageText.textContent = `Page ${currentPage} / ${totalPages || 1}`;
 
-          container.appendChild(grid);
+      if (!filtered.length) {
+        setStatus(`No games match “${escapeHtml(search.value.trim())}”.`);
+        return;
+      }
+
+      setStatus('');
+
+      for (const game of filtered) {
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'card';
+        card.dataset.gameId = game.id;
+        card.dataset.title = game.name || game.id;
+
+        const img = imageMap.get(game.id) || '';
+        const category = game.category || 'Arcade';
+
+        card.innerHTML = `
+          <div class="cover">
+            <span class="badge">${escapeHtml(category)}</span>
+            ${img ? `<img src="${img}" alt="${escapeHtml(game.name || game.id)}">` : ''}
+          </div>
+          <div class="info">
+            <p class="name">${escapeHtml(game.name || game.id)}</p>
+            <div class="small">Click to play</div>
+          </div>
+        `;
+
+        card.addEventListener('click', () => openGame(game));
+        grid.appendChild(card);
+      }
+    }
+
+    async function loadPage(page = 1) {
+      if (!window.Lumin) {
+        setStatus('Lumin could not be loaded.');
+        return;
+      }
+
+      loading = true;
+      setStatus('<span class="spinner"></span>Loading games…');
+      catalogInfo.textContent = 'Connecting…';
+
+      try {
+        if (typeof Lumin.init === 'function') {
+          await Lumin.init({ headless: true });
         }
-      };
 
-      setTimeout(fallback, 900);
-      setTimeout(fallback, 2500);
-    })();
+        const result = await Lumin.getGames({ page, limit: 24 });
+        allGames = result.games || [];
+        currentPage = page;
+        totalPages = result.pages || 1;
 
-    const viewer = document.getElementById('viewer');
-    const viewerTitle = document.getElementById('viewerTitle');
-    const gameFrame = document.getElementById('gameFrame');
-    const closeViewer = document.getElementById('closeViewer');
-    const openFullscreen = document.getElementById('openFullscreen');
-    const globalBack = document.querySelector('.back');
+        imageMap = new Map();
+        await Promise.all(allGames.map(async (g) => {
+          try {
+            const img = await Lumin.getImageUrl(g.image_token);
+            imageMap.set(g.id, img);
+          } catch (err) {
+            imageMap.set(g.id, '');
+          }
+        }));
 
-    function openGame({id, title, url}) {
-      if (id) location.hash = '#game-' + id;
-      viewerTitle.textContent = title || 'Game';
-      gameFrame.src = url || 'about:blank';
-      viewer.classList.add('active');
-      viewer.setAttribute('aria-hidden', 'false');
-      document.body.style.overflow = 'hidden';
+        catalogInfo.textContent = 'Headless mode active';
+        loading = false;
+        renderGrid();
+      } catch (err) {
+        console.error(err);
+        loading = false;
+        catalogInfo.textContent = 'Load failed';
+        setStatus('Could not load games right now.');
+      }
+    }
+
+    async function openGame(game) {
+      try {
+        viewerTitle.textContent = game.name || 'Game';
+        viewer.classList.add('active');
+        viewer.setAttribute('aria-hidden', 'false');
+
+        if (!window.Lumin) return;
+
+        const { url } = await Lumin.getGameUrl(game.id);
+        gameFrame.src = url;
+        document.body.style.overflow = 'hidden';
+      } catch (err) {
+        console.error(err);
+        viewerTitle.textContent = 'Game';
+        gameFrame.src = 'about:blank';
+      }
     }
 
     function closeGame() {
       viewer.classList.remove('active');
       viewer.setAttribute('aria-hidden', 'true');
       gameFrame.src = 'about:blank';
-      if (location.hash && location.hash.startsWith('#game-')) {
-        history.replaceState(null, '', location.pathname + location.search);
-      }
       document.body.style.overflow = '';
     }
 
-    document.getElementById('games').addEventListener('click', function(e) {
-      const tile = e.target.closest('[data-game-id], .game-card, a[data-game-id], a.game-tile');
-      if (!tile) return;
-
-      if (tile.tagName.toLowerCase() === 'a') e.preventDefault();
-
-      const id = tile.dataset.gameId || tile.getAttribute('data-id') || tile.getAttribute('data-game');
-      const url = tile.dataset.gameUrl || tile.getAttribute('data-url') || tile.href || tile.getAttribute('data-embed') || null;
-      const title = tile.dataset.title || tile.querySelector('.g-title')?.textContent || tile.textContent.trim() || 'Game';
-
-      if (!url && tile.tagName.toLowerCase() === 'a' && tile.getAttribute('href')) {
-        const href = tile.getAttribute('href');
-        if (href.startsWith('#')) {
-          location.hash = href;
-          openGame({id: id || href.replace('#',''), title});
-          return;
-        }
-      }
-
-      openGame({id, title, url});
+    grid.addEventListener('mousemove', (e) => {
+      const card = e.target.closest('.card');
+      if (!card) return;
+      const rect = card.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width - 0.5) * 8;
+      const y = ((e.clientY - rect.top) / rect.height - 0.5) * 8;
+      card.style.transform = `translateY(-6px) scale(1.01) rotateX(${-y}deg) rotateY(${x}deg)`;
     });
+
+    grid.addEventListener('mouseleave', () => {
+      document.querySelectorAll('.card').forEach(card => {
+        card.style.transform = '';
+      });
+    });
+
+    search.addEventListener('input', () => {
+      searchTerm = search.value.trim().toLowerCase();
+      renderGrid();
+    });
+
+    refreshBtn.addEventListener('click', () => loadPage(1));
 
     closeViewer.addEventListener('click', closeGame);
-    globalBack.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (viewer.classList.contains('active')) {
-        closeGame();
-      } else {
-        history.back();
-      }
-    });
 
-    openFullscreen.addEventListener('click', async () => {
+    fullscreenBtn.addEventListener('click', async () => {
       try {
         if (gameFrame.requestFullscreen) {
           await gameFrame.requestFullscreen();
@@ -706,13 +840,7 @@
     });
 
     window.addEventListener('load', () => {
-      if (location.hash && location.hash.startsWith('#game-')) {
-        const id = location.hash.replace('#game-', '');
-        const tile = document.querySelector('[data-game-id="'+id+'"], [data-id="'+id+'"], a[href="#'+id+'"]');
-        const title = tile?.querySelector('.g-title')?.textContent || tile?.dataset.title || id;
-        const url = tile?.dataset.gameUrl || tile?.dataset.url || null;
-        openGame({id, title, url});
-      }
+      loadPage(1);
     });
   </script>
 </body>
