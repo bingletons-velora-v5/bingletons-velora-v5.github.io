@@ -1,1 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velora</title>
+    <style>
+        body {
+            background-color: darkgray;
+            overflow: hidden;
+            margin: 0;
+            position: relative;
+        }
 
+        .constellation {
+            position: absolute;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle, lightgreen 0%, transparent 30%);
+            animation: shoot 3s infinite;
+        }
+
+        @keyframes shoot {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        h1 {
+            color: lightgreen;
+            text-align: center;
+            font-size: 5em;
+            animation: shine 1s infinite;
+        }
+
+        @keyframes shine {
+            0% { text-shadow: 0 0 20px lightgreen; }
+            50% { text-shadow: 0 0 40px lightgreen; }
+            100% { text-shadow: 0 0 20px lightgreen; }
+        }
+
+        .v5 {
+            position: absolute;
+            font-size: 3em;
+            color: lightgreen;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="constellation"></div>
+    <h1>Velora</h1>
+    <div class="v5" style="top: 10%; left: 20%;">v5</div>
+    <div class="v5" style="top: 50%; left: 60%;">v5</div>
+    <div class="v5" style="top: 80%; left: 40%;">v5</div>
+</body>
+</html>
