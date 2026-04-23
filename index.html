@@ -18,6 +18,9 @@
       --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
       --panel: rgba(18, 18, 18, 0.92);
       --panel-border: rgba(255,255,255,0.10);
+      --sweep-a: rgba(255,255,255,0.00);
+      --sweep-b: rgba(180,255,230,0.18);
+      --sweep-c: rgba(255,255,255,0.85);
     }
 
     * { box-sizing: border-box; }
@@ -113,6 +116,7 @@
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       cursor: pointer;
+      font: inherit;
     }
 
     .app:hover {
@@ -287,6 +291,75 @@
       line-height: 1.5;
     }
 
+    /* sweep animation */
+    .sweep {
+      position: fixed;
+      inset: 0;
+      z-index: 18;
+      pointer-events: none;
+      opacity: 0;
+      overflow: hidden;
+      background: rgba(0,0,0,0.04);
+    }
+
+    .sweep::before,
+    .sweep::after {
+      content: "";
+      position: absolute;
+      inset: -35%;
+      transform: translateX(-160%) skewX(-20deg);
+      will-change: transform, opacity;
+    }
+
+    .sweep::before {
+      background: linear-gradient(
+        115deg,
+        var(--sweep-a) 0%,
+        var(--sweep-a) 38%,
+        rgba(255,255,255,0.03) 44%,
+        var(--sweep-b) 50%,
+        var(--sweep-c) 52%,
+        var(--sweep-b) 55%,
+        rgba(255,255,255,0.03) 60%,
+        var(--sweep-a) 66%,
+        var(--sweep-a) 100%
+      );
+      filter: blur(1px);
+    }
+
+    .sweep::after {
+      inset: -20%;
+      background: radial-gradient(circle at center, rgba(180,255,230,0.22), transparent 55%);
+      transform: translateX(-180%) scale(0.9) skewX(-18deg);
+      filter: blur(12px);
+      opacity: 0.85;
+    }
+
+    .sweep.run {
+      opacity: 1;
+    }
+
+  .sweep.run::before {
+  animation: sweepAcross 1900ms ease forwards;
+}
+
+.sweep.run::after {
+  animation: sweepGlow 1900ms ease forwards;
+}
+
+@keyframes sweepAcross {
+  0%   { transform: translateX(-160%) skewX(-20deg); opacity: 0; }
+  15%  { opacity: 1; }
+  55%  { opacity: 1; }
+  100% { transform: translateX(160%) skewX(-20deg); opacity: 0; }
+}
+
+@keyframes sweepGlow {
+  0%   { transform: translateX(-180%) scale(0.9) skewX(-18deg); opacity: 0; }
+  18%  { opacity: 1; }
+  100% { transform: translateX(180%) scale(1.1) skewX(-18deg); opacity: 0; }
+}
+
     @media (max-width: 700px) {
       .page { padding-top: 72px; padding-bottom: 72px; }
       .shell { gap: 18px; }
@@ -302,6 +375,7 @@
   <div class="overlay"></div>
 
   <div class="v5" id="v5">v5</div>
+  <div class="sweep" id="sweep"></div>
 
   <main class="page">
     <section class="shell" aria-label="Velora home">
@@ -354,6 +428,7 @@
     const constCanvas = document.getElementById('constellations');
     const constCtx = constCanvas.getContext('2d');
     const v5 = document.getElementById('v5');
+    const sweep = document.getElementById('sweep');
 
     const patchBtn = document.getElementById('patchBtn');
     const patchModal = document.getElementById('patchModal');
@@ -390,6 +465,7 @@
 
     let W = 0, H = 0;
     let stars = [];
+    let sweepTimer = null;
 
     function placeV5() {
       const x = Math.max(18, Math.min(window.innerWidth - 25, Math.random() * window.innerWidth));
@@ -512,6 +588,19 @@
       patchModal.setAttribute('aria-hidden', 'true');
     }
 
+    function playSweep(callback) {
+      if (sweepTimer) clearTimeout(sweepTimer);
+
+      sweep.classList.remove('run');
+      void sweep.offsetWidth;
+      sweep.classList.add('run');
+
+      sweepTimer = window.setTimeout(() => {
+        sweep.classList.remove('run');
+        if (typeof callback === 'function') callback();
+      }, 700);
+    }
+
     patchBtn.addEventListener('click', openPatchNotes);
     closePatchBtn.addEventListener('click', closePatchNotes);
 
@@ -523,9 +612,26 @@
       if (e.key === 'Escape') closePatchNotes();
     });
 
+    document.querySelectorAll('.app[href]').forEach((link) => {
+      link.addEventListener('click', (e) => {
+        if (link.id === 'patchBtn') return;
+
+        e.preventDefault();
+        const href = link.getAttribute('href');
+        playSweep(() => {
+          window.location.href = href;
+        });
+      });
+    });
+
     window.addEventListener('resize', resize);
     resize();
     animate();
+
+    // page open sweep
+    window.addEventListener('load', () => {
+      playSweep();
+    });
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduceMotion) {
