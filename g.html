@@ -237,6 +237,7 @@
       width: 100%;
       padding: 0;
       text-align: left;
+      color: inherit;
     }
 
     .game-card:hover {
@@ -366,7 +367,7 @@
       align-items: start;
       justify-content: space-between;
       gap: 14px;
-      padding-right: 44px;
+      padding-right: 92px;
     }
 
     .modal-title {
@@ -383,10 +384,10 @@
       line-height: 1.45;
     }
 
-    .modal-close {
+    .modal-close,
+    .modal-fullscreen {
       position: absolute;
       top: 14px;
-      right: 14px;
       width: 38px;
       height: 38px;
       border-radius: 999px;
@@ -398,6 +399,16 @@
       cursor: pointer;
       font-size: 20px;
       line-height: 1;
+    }
+
+    .modal-close { right: 14px; }
+
+    .modal-fullscreen {
+      right: 60px;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      width: 44px;
     }
 
     .modal-frame-wrap {
@@ -415,6 +426,77 @@
       border: 0;
       display: block;
       background: #000;
+    }
+
+    .search-overlay-card {
+      width: min(1180px, 100%);
+      max-height: 84vh;
+      border: 1px solid rgba(180, 255, 230, 0.18);
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at top, rgba(180,255,230,0.10), transparent 35%),
+        rgba(12, 12, 12, 0.97);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65);
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .search-top {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 14px;
+      padding-right: 52px;
+    }
+
+    .search-title {
+      margin: 0;
+      font-size: clamp(1.15rem, 2vw, 1.55rem);
+      color: #fff;
+    }
+
+    .search-subtitle {
+      margin: 6px 0 0;
+      color: rgba(255,255,255,0.62);
+      font-size: 0.95rem;
+    }
+
+    .search-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+      cursor: pointer;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .search-results {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .search-results-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    }
+
+    .search-results-grid .game-card {
+      min-height: 180px;
     }
 
     @media (max-width: 700px) {
@@ -436,18 +518,29 @@
         min-height: 680px;
       }
 
-      .modal-card {
+      .modal-card,
+      .search-overlay-card {
         width: min(100%, 520px);
         height: min(90vh, 820px);
         padding: 16px;
       }
 
-      .games-grid {
+      .games-grid,
+      .search-results-grid {
         grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
       }
 
       .pagination {
         justify-content: center;
+      }
+
+      .modal-top,
+      .search-top {
+        padding-right: 0;
+      }
+
+      .modal-fullscreen {
+        right: 60px;
       }
     }
   </style>
@@ -490,7 +583,7 @@
 
         <div class="games-grid" id="gamesGrid"></div>
 
-        <div class="pagination">
+        <div class="pagination" id="pagination">
           <button class="action-btn" id="prevPageBtn" type="button">← Previous</button>
           <div class="page-info" id="pageInfo">Page 1</div>
           <button class="action-btn" id="nextPageBtn" type="button">Next →</button>
@@ -501,6 +594,7 @@
 
   <div id="gameModal" class="modal hidden" aria-hidden="true" role="dialog" aria-modal="true">
     <div class="modal-card" id="modalCard">
+      <button class="modal-fullscreen" id="modalFullscreen" aria-label="Fullscreen">⛶</button>
       <button class="modal-close" id="modalClose" aria-label="Close popup">×</button>
 
       <div class="modal-top">
@@ -518,6 +612,23 @@
           allow="autoplay; fullscreen; pointer-lock; gamepad"
           loading="eager"
         ></iframe>
+      </div>
+    </div>
+  </div>
+
+  <div id="searchModal" class="modal hidden" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="search-overlay-card">
+      <button class="search-close" id="searchModalClose" aria-label="Close search">×</button>
+
+      <div class="search-top">
+        <div>
+          <h2 class="search-title" id="searchModalTitle">Search results</h2>
+          <p class="search-subtitle" id="searchModalSubtitle">Type a game name and click Search.</p>
+        </div>
+      </div>
+
+      <div class="search-results">
+        <div class="search-results-grid" id="searchResultsGrid"></div>
       </div>
     </div>
   </div>
@@ -540,13 +651,21 @@
       const prevPageBtn = document.getElementById('prevPageBtn');
       const nextPageBtn = document.getElementById('nextPageBtn');
       const pageInfo = document.getElementById('pageInfo');
+      const pagination = document.getElementById('pagination');
 
       const modal = document.getElementById('gameModal');
       const modalCard = document.getElementById('modalCard');
       const modalTitle = document.getElementById('modalTitle');
       const modalSubtitle = document.getElementById('modalSubtitle');
       const modalClose = document.getElementById('modalClose');
+      const modalFullscreen = document.getElementById('modalFullscreen');
       const gameFrame = document.getElementById('gameFrame');
+
+      const searchModal = document.getElementById('searchModal');
+      const searchModalClose = document.getElementById('searchModalClose');
+      const searchModalTitle = document.getElementById('searchModalTitle');
+      const searchModalSubtitle = document.getElementById('searchModalSubtitle');
+      const searchResultsGrid = document.getElementById('searchResultsGrid');
 
       let W = 0, H = 0;
       let stars = [];
@@ -557,14 +676,7 @@
       let totalPages = 1;
 
       let currentGames = [];
-      let visibleGames = [];
-      let searchTerm = '';
-
-      let activeGame = {
-        id: '',
-        title: '',
-        url: ''
-      };
+      let allGamesCache = null;
 
       function placeV5() {
         const x = Math.max(18, Math.min(window.innerWidth - 25, Math.random() * window.innerWidth));
@@ -669,8 +781,33 @@
         requestAnimationFrame(animate);
       }
 
+      function createGameCard(game, onClick) {
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'game-card';
+
+        card.innerHTML = `
+          <img class="game-thumb" src="" alt="${game.name || 'Game'}">
+          <div class="game-info">
+            <p class="game-name">${game.name || 'Untitled Game'}</p>
+            <p class="game-cat">${game.category || 'Game'}</p>
+          </div>
+        `;
+
+        if (game.image_token && window.Lumin) {
+          Lumin.getImageUrl(game.image_token)
+            .then((url) => {
+              const img = card.querySelector('.game-thumb');
+              if (img) img.src = url || '';
+            })
+            .catch(() => {});
+        }
+
+        card.addEventListener('click', onClick);
+        return card;
+      }
+
       function openPopup({ id, title, url, category }) {
-        activeGame = { id, title, url };
         modalTitle.textContent = title || 'Selected Game';
         modalSubtitle.textContent = category ? `Category: ${category}` : 'Click Fullscreen for a larger view.';
         gameFrame.src = url;
@@ -682,11 +819,24 @@
         modal.classList.add('hidden');
         modal.setAttribute('aria-hidden', 'true');
         gameFrame.src = 'about:blank';
-        activeGame = { id: '', title: '', url: '' };
+      }
+
+      function openSearchPopup() {
+        searchModal.classList.remove('hidden');
+        searchModal.setAttribute('aria-hidden', 'false');
+      }
+
+      function closeSearchPopup() {
+        searchModal.classList.add('hidden');
+        searchModal.setAttribute('aria-hidden', 'true');
       }
 
       async function goFullscreen() {
         try {
+          if (document.fullscreenElement) {
+            await document.exitFullscreen();
+            return;
+          }
           if (modalCard.requestFullscreen) {
             await modalCard.requestFullscreen();
           }
@@ -695,73 +845,35 @@
         }
       }
 
+      function updateFullscreenButton() {
+        modalFullscreen.textContent = document.fullscreenElement ? '🗗' : '⛶';
+        modalFullscreen.title = document.fullscreenElement ? 'Exit fullscreen' : 'Fullscreen';
+        modalFullscreen.setAttribute('aria-label', document.fullscreenElement ? 'Exit fullscreen' : 'Fullscreen');
+      }
+
       function updatePager() {
         prevPageBtn.disabled = currentPage <= 1;
         nextPageBtn.disabled = currentPage >= totalPages;
         pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
       }
 
-      function applySearch() {
-        const q = searchTerm.trim().toLowerCase();
-        if (!q) {
-          visibleGames = [...currentGames];
-        } else {
-          visibleGames = currentGames.filter((game) => {
-            const name = String(game.name || '').toLowerCase();
-            const category = String(game.category || '').toLowerCase();
-            return name.includes(q) || category.includes(q);
-          });
-        }
-        renderGames();
-      }
-
       function renderGames() {
         gamesGrid.innerHTML = '';
 
         const totalOnPage = currentGames.length;
-        const totalVisible = visibleGames.length;
+        gamesMeta.textContent = `${totalGames || totalOnPage} games available`;
 
-        if (searchTerm.trim()) {
-          gamesMeta.textContent = `Showing ${totalVisible} of ${totalOnPage} on this page`;
-        } else {
-          gamesMeta.textContent = `${totalGames || totalOnPage} games available`;
-        }
-
-        if (!visibleGames.length) {
+        if (!currentGames.length) {
           const empty = document.createElement('div');
           empty.className = 'empty-state';
-          empty.textContent = searchTerm.trim()
-            ? 'No games matched your search on this page.'
-            : 'No games found.';
+          empty.textContent = 'No games found.';
           gamesGrid.appendChild(empty);
           updatePager();
           return;
         }
 
-        for (const game of visibleGames) {
-          const card = document.createElement('button');
-          card.type = 'button';
-          card.className = 'game-card';
-
-          const imageUrl = game.image_token ? (window.Lumin ? '' : '') : '';
-          card.innerHTML = `
-            <img class="game-thumb" src="${imageUrl || ''}" alt="${game.name || 'Game'}">
-            <div class="game-info">
-              <p class="game-name">${game.name || 'Untitled Game'}</p>
-              <p class="game-cat">${game.category || 'Game'}</p>
-            </div>
-          `;
-
-          if (game.image_token && window.Lumin) {
-            Lumin.getImageUrl(game.image_token)
-              .then((url) => {
-                const img = card.querySelector('.game-thumb');
-                if (img) img.src = url || '';
-              })
-              .catch(() => {});
-          }
-
-          card.addEventListener('click', async () => {
+        for (const game of currentGames) {
+          const card = createGameCard(game, async () => {
             try {
               const { url, meta } = await Lumin.getGameUrl(game.id);
               openPopup({
@@ -804,8 +916,7 @@
 
           if (currentPage > totalPages) currentPage = totalPages;
 
-          applySearch();
-          updatePager();
+          renderGames();
         } catch (err) {
           console.error('LuminSDK error:', err);
           gamesMeta.textContent = 'Could not load games.';
@@ -816,45 +927,134 @@
         }
       }
 
+      async function loadAllGamesOnce() {
+        if (allGamesCache) return allGamesCache;
+        if (!window.Lumin) return [];
+
+        gamesMeta.textContent = 'Searching all games…';
+
+        const gathered = [];
+        const pagesToFetch = Math.max(1, totalPages);
+
+        for (let p = 1; p <= pagesToFetch; p++) {
+          try {
+            const result = await Lumin.getGames({ page: p, limit: pageSize });
+            gathered.push(...(result.games || []));
+          } catch (err) {
+            console.error(`Failed to load search page ${p}:`, err);
+          }
+        }
+
+        allGamesCache = gathered;
+        return gathered;
+      }
+
+      async function searchGames() {
+        const q = searchInput.value.trim();
+        if (!q) {
+          closeSearchPopup();
+          gamesMeta.textContent = `${totalGames || currentGames.length} games available`;
+          return;
+        }
+
+        const query = q.toLowerCase();
+        openSearchPopup();
+        searchModalTitle.textContent = `Search results for “${q}”`;
+        searchModalSubtitle.textContent = 'Click a game to close search and start playing.';
+        searchResultsGrid.innerHTML = `<div class="empty-state">Searching…</div>`;
+
+        const source = await loadAllGamesOnce();
+        const results = source.filter((game) => {
+          const name = String(game.name || '').toLowerCase();
+          const category = String(game.category || '').toLowerCase();
+          return name.includes(query) || category.includes(query);
+        });
+
+        searchResultsGrid.innerHTML = '';
+
+        gamesMeta.textContent = `${results.length} result${results.length === 1 ? '' : 's'} for “${q}”`;
+        pageInfo.textContent = `${results.length} result${results.length === 1 ? '' : 's'}`;
+
+        if (!results.length) {
+          const empty = document.createElement('div');
+          empty.className = 'empty-state';
+          empty.textContent = 'No games matched your search.';
+          searchResultsGrid.appendChild(empty);
+          return;
+        }
+
+        for (const game of results) {
+          const card = createGameCard(game, async () => {
+            closeSearchPopup();
+            searchInput.blur();
+
+            try {
+              const { url, meta } = await Lumin.getGameUrl(game.id);
+              openPopup({
+                id: game.id,
+                title: meta?.name || game.name || 'Selected Game',
+                url,
+                category: meta?.category || game.category || ''
+              });
+            } catch (err) {
+              console.error('Could not load game:', err);
+              modalTitle.textContent = 'Error';
+              modalSubtitle.textContent = 'That game could not be loaded.';
+              modal.classList.remove('hidden');
+              modal.setAttribute('aria-hidden', 'false');
+            }
+          });
+
+          searchResultsGrid.appendChild(card);
+        }
+      }
+
       function randomGame() {
-        const pool = visibleGames.length ? visibleGames : currentGames;
+        const pool = currentGames;
         if (!pool.length) return;
 
         const pick = pool[Math.floor(Math.random() * pool.length)];
         if (!pick) return;
 
-        openGameById(pick);
-      }
-
-      async function openGameById(game) {
-        try {
-          const { url, meta } = await Lumin.getGameUrl(game.id);
-          openPopup({
-            id: game.id,
-            title: meta?.name || game.name || 'Selected Game',
-            url,
-            category: meta?.category || game.category || ''
-          });
-        } catch (err) {
-          console.error('Could not load game:', err);
-          modalTitle.textContent = 'Error';
-          modalSubtitle.textContent = 'That game could not be loaded.';
-          modal.classList.remove('hidden');
-          modal.setAttribute('aria-hidden', 'false');
-        }
+        (async () => {
+          try {
+            const { url, meta } = await Lumin.getGameUrl(pick.id);
+            openPopup({
+              id: pick.id,
+              title: meta?.name || pick.name || 'Selected Game',
+              url,
+              category: meta?.category || pick.category || ''
+            });
+          } catch (err) {
+            console.error('Could not load game:', err);
+          }
+        })();
       }
 
       modalClose.addEventListener('click', closePopup);
+      modalFullscreen.addEventListener('click', goFullscreen);
 
       modal.addEventListener('click', (e) => {
         if (e.target === modal) closePopup();
       });
 
+      searchModalClose.addEventListener('click', () => {
+        closeSearchPopup();
+      });
+
+      searchModal.addEventListener('click', (e) => {
+        if (e.target === searchModal) closeSearchPopup();
+      });
+
       window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closePopup();
+        if (e.key === 'Escape') {
+          closePopup();
+          closeSearchPopup();
+        }
       });
 
       window.addEventListener('resize', resize);
+      document.addEventListener('fullscreenchange', updateFullscreenButton);
 
       prevPageBtn.addEventListener('click', () => {
         if (currentPage > 1) loadPage(currentPage - 1);
@@ -864,22 +1064,20 @@
         if (currentPage < totalPages) loadPage(currentPage + 1);
       });
 
-      searchBtn.addEventListener('click', () => {
-        searchTerm = searchInput.value || '';
-        applySearch();
-      });
+      searchBtn.addEventListener('click', searchGames);
 
       searchInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
-          searchTerm = searchInput.value || '';
-          applySearch();
+          e.preventDefault();
+          searchGames();
         }
       });
 
       clearBtn.addEventListener('click', () => {
         searchInput.value = '';
-        searchTerm = '';
-        applySearch();
+        closeSearchPopup();
+        gamesMeta.textContent = `${totalGames || currentGames.length} games available`;
+        updatePager();
         searchInput.focus();
       });
 
@@ -887,6 +1085,7 @@
 
       resize();
       animate();
+      updateFullscreenButton();
 
       if (!window.Lumin) {
         gamesMeta.textContent = 'LuminSDK failed to load.';
