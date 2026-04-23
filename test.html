@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Velora – Games</title>
+  <title>Velora</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -427,7 +427,22 @@
       display: block;
       background: #000;
     }
+    .modal-card.fs-mode .modal-top,
+    .modal-card.fs-mode .modal-close,
+    .modal-card.fs-mode .modal-fullscreen {
+      display: none;
+    }
 
+    .modal-card.fs-mode {
+    padding: 0;
+    background: #000;
+    border: none;
+    }
+
+.modal-card.fs-mode .modal-frame-wrap {
+  border-radius: 0;
+  border: none;
+}
     .search-overlay-card {
       width: min(1180px, 100%);
       max-height: 84vh;
@@ -916,19 +931,24 @@
         searchModal.setAttribute('aria-hidden', 'true');
       }
 
-      async function goFullscreen() {
-        try {
-          if (document.fullscreenElement) {
-            await document.exitFullscreen();
-            return;
-          }
-          if (modalCard.requestFullscreen) {
-            await modalCard.requestFullscreen();
-          }
-        } catch (err) {
-          console.error('Fullscreen failed:', err);
-        }
-      }
+     async function goFullscreen() {
+  try {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
+      return;
+    }
+
+    // hide UI
+    modalCard.classList.add('fs-mode');
+
+    // fullscreen ONLY the game container
+    if (modalFrameWrap.requestFullscreen) {
+      await modalFrameWrap.requestFullscreen();
+    }
+  } catch (err) {
+    console.error('Fullscreen failed:', err);
+  }
+}
 
       function updateFullscreenButton() {
         modalFullscreen.textContent = document.fullscreenElement ? '🗗' : '⛶';
@@ -1187,6 +1207,19 @@
       window.addEventListener('load', () => {
         playSweep();
       });
+      
+      function updateFullscreenButton() {
+  const isFS = !!document.fullscreenElement;
+
+  modalFullscreen.textContent = isFS ? '🗗' : '⛶';
+  modalFullscreen.title = isFS ? 'Exit fullscreen' : 'Fullscreen';
+  modalFullscreen.setAttribute('aria-label', isFS ? 'Exit fullscreen' : 'Fullscreen');
+
+  // restore UI when exiting
+  if (!isFS) {
+    modalCard.classList.remove('fs-mode');
+  }
+}
 
       if (!window.Lumin) {
         gamesMeta.textContent = 'LuminSDK failed to load.';
@@ -1209,4 +1242,4 @@
     });
   </script>
 </body>
-</html>
+</html> 
