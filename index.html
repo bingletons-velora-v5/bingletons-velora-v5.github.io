@@ -2,246 +2,303 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Velora</title>
-
-  <!-- Strong display font for "Velora" -->
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
-
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --bg:#04110b;           /* very dark green-black */
-      --accent:#08b85a;       /* vivid green */
-      --accent-deep:#056b3a;  /* deep green for lines */
-      --text:#e9f8ef;         /* light text */
-      --muted:#9fd9b3;
-      --panel-bg: rgba(8,184,90,0.04);
-      --panel-border: rgba(8,184,90,0.12);
+    :root {
+      --bg: #0b0b0b;
+      --bg-2: #121212;
+      --text: #f4f4f4;
+      --muted: rgba(255, 255, 255, 0.52);
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
     }
 
-    html,body{height:100%; margin:0; font-family:Inter, "Segoe UI", Roboto, Arial, sans-serif; background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; overflow:hidden;}
-
-    /* canvases */
-    canvas#starfield{ position:fixed; inset:0; z-index:0; display:block; }
-    canvas#constellation{ position:fixed; inset:0; z-index:1; pointer-events:none; mix-blend-mode:screen; }
-
-    /* subtle ambient glow */
-    .glow{ position:fixed; inset:0; z-index:1; pointer-events:none;
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      overflow: hidden;
       background:
-        radial-gradient(circle at 12% 18%, rgba(8,184,90,0.04), transparent 6%),
-        radial-gradient(circle at 72% 62%, rgba(5,107,58,0.03), transparent 8%); }
-
-    /* content sits directly on background, no box */
-    .wrap{ position:relative; z-index:3; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:48px 20px; pointer-events:auto; flex-direction:column; gap:22px; }
-
-    /* Velora display */
-    .brand{
-      font-family: 'Orbitron', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      font-weight:900;
-      font-size:110px;
-      margin:0;
-      color:var(--accent);
-      letter-spacing:8px;
-      line-height:0.9;
-      text-transform:uppercase;
-      text-shadow:
-        0 12px 40px rgba(4,107,58,0.18),
-        0 0 28px rgba(8,184,90,0.12);
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      pointer-events:auto;
+        radial-gradient(circle at 50% 45%, rgba(255,255,255,0.04), transparent 28%),
+        radial-gradient(circle at 50% 50%, rgba(122, 255, 202, 0.03), transparent 45%),
+        linear-gradient(180deg, var(--bg), var(--bg-2));
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    /* panel row for Chat / News */
-    .panel-row{ display:flex; gap:18px; align-items:center; justify-content:center; flex-wrap:wrap; width:100%; max-width:980px; padding:0 12px; box-sizing:border-box; }
-    .panel{
-      min-width:160px;
-      width:220px;
-      height:96px;
-      border-radius:14px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      flex-direction:column;
-      gap:6px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
-      border:1px solid var(--panel-border);
-      box-shadow: 0 8px 30px rgba(0,0,0,0.55);
-      cursor:pointer;
-      transition: transform .16s cubic-bezier(.2,.9,.2,1), box-shadow .16s, border-color .16s;
-      color:var(--text);
-      text-decoration:none;
-      -webkit-backdrop-filter: blur(6px);
-      backdrop-filter: blur(6px);
-    }
-    .panel:hover{
-      transform: translateY(-8px);
-      box-shadow: 0 26px 70px rgba(4,107,58,0.14);
-      border-color: rgba(8,184,90,0.28);
-    }
-    .panel .label{ font-size:18px; font-weight:700; letter-spacing:1px; color:var(--accent); }
-    .panel .sub{ font-size:13px; color:var(--muted); opacity:0.95; }
+    canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
+    #stars { z-index: 0; }
+    #constellations { z-index: 1; }
 
-    /* actions (Games / Movies) */
-    .actions{ display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:6px; }
-    .btn{
-      display:inline-flex; align-items:center; justify-content:center;
-      padding:12px 22px; font-size:16px; border-radius:999px; border:1px solid rgba(8,184,90,0.12);
-      text-decoration:none; color:var(--text); background:linear-gradient(180deg, rgba(8,184,90,0.06), rgba(5,107,58,0.03));
-      box-shadow: 0 10px 30px rgba(4,107,58,0.06); transition:transform .16s cubic-bezier(.2,.9,.2,1), box-shadow .16s;
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.015), transparent 18%),
+        radial-gradient(circle at 75% 70%, rgba(255,255,255,0.015), transparent 20%);
     }
-    .btn:hover{ transform:translateY(-6px); box-shadow: 0 20px 60px rgba(4,107,58,0.12); }
-    .btn.ghost{ background:transparent; border:1px solid rgba(255,255,255,0.03); color:var(--muted); box-shadow:none; }
 
-    @media (max-width:720px){
-      .brand{ font-size:48px; letter-spacing:4px; }
-      .panel{ width:160px; height:84px; min-width:140px; }
-      .panel .label{ font-size:16px; }
-      .btn{ padding:10px 14px; font-size:14px; }
+    .page {
+      position: relative;
+      z-index: 3;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 18px 22px;
+    }
+
+    .shell {
+      width: min(920px, 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 22px;
+      text-align: center;
+    }
+
+    .brand {
+      margin: 0;
+      font-family: "Great Vibes", cursive;
+      font-size: clamp(4.4rem, 9vw, 7.2rem);
+      line-height: 0.9;
+      font-weight: 400;
+      color: #ffffff;
+      letter-spacing: 0.03em;
+      text-shadow: 0 0 22px rgba(255,255,255,0.08);
+      transform: translateY(2px);
+      user-select: none;
+    }
+
+    .apps {
+      width: min(480px, 100%);
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px 12px;
+    }
+
+    .app {
+      pointer-events: auto;
+      height: 112px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(28, 28, 28, 0.8);
+      box-shadow: var(--shadow);
+      color: var(--text);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 10px;
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .app:hover {
+      transform: translateY(-4px);
+      border-color: rgba(216,255,240,0.2);
+      background: rgba(34, 34, 34, 0.88);
+    }
+
+    .app-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      font-size: 1.1rem;
+      color: white;
+      background: rgba(255,255,255,0.08);
+    }
+
+    .app-label {
+      font-size: 0.92rem;
+      color: rgba(255,255,255,0.92);
+    }
+
+    .v5 {
+      position: fixed;
+      z-index: 4;
+      left: 50%;
+      top: 50%;
+      pointer-events: none;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.24em;
+      color: rgba(255,255,255,0.38);
+      text-shadow: 0 0 10px rgba(255,255,255,0.08);
+      transform-origin: center center;
+      user-select: none;
+      animation: spin 7s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    @media (max-width: 700px) {
+      .page { padding-top: 72px; padding-bottom: 72px; }
+      .shell { gap: 18px; }
+      .apps { width: min(360px, 100%); }
+      .app { height: 96px; }
     }
   </style>
 </head>
 <body>
-  <canvas id="starfield" aria-hidden="true"></canvas>
-  <canvas id="constellation" aria-hidden="true"></canvas>
-  <div class="glow" aria-hidden="true"></div>
+  <canvas id="stars"></canvas>
+  <canvas id="constellations"></canvas>
+  <div class="overlay"></div>
+  <div class="v5" id="v5">v5</div>
 
-  <div class="wrap" role="banner" aria-labelledby="site-title">
-    <h1 id="site-title" class="brand">Velora</h1>
+  <main class="page">
+    <section class="shell" aria-label="Velora home">
+      <h1 class="brand">Velora</h1>
 
-
-
-    
-
-    <nav class="actions" aria-label="Primary">
-      <a class="btn" href="g.html" role="button">Games</a>
-      <a class="btn" href="m.html" role="button">Movies</a>
-      <a class="btn ghost" href="c.html" role="button">Chat</a>
-    <a class="btn ghost" href="p.html" role="button">Patch Notes</a>
-    </nav>
-  </div>
+      <div class="apps">
+        <a class="app" href="g.html">
+          <div class="app-icon">▣</div>
+          <div class="app-label">Games</div>
+        </a>
+        <a class="app" href="m.html">
+          <div class="app-icon">▤</div>
+          <div class="app-label">Movies</div>
+        </a>
+        <a class="app" href="p.html">
+          <div class="app-icon">✦</div>
+          <div class="app-label">Patch Notes</div>
+        </a>
+        <a class="app" href="c.html">
+          <div class="app-icon">◔</div>
+          <div class="app-label">Chat</div>
+        </a>
+      </div>
+    </section>
+  </main>
 
   <script>
-    // Canvas setup
-    const starCanvas = document.getElementById('starfield');
-    const starCtx = starCanvas.getContext('2d');
-    const lineCanvas = document.getElementById('constellation');
-    const lineCtx = lineCanvas.getContext('2d');
-    let W = innerWidth, H = innerHeight;
+    const starsCanvas = document.getElementById('stars');
+    const starsCtx = starsCanvas.getContext('2d');
+    const constCanvas = document.getElementById('constellations');
+    const constCtx = constCanvas.getContext('2d');
+    const v5 = document.getElementById('v5');
 
-    function resize(){
-      W = starCanvas.width = lineCanvas.width = innerWidth;
-      H = starCanvas.height = lineCanvas.height = innerHeight;
-      createStars();
-    }
-    addEventListener('resize', resize);
-
-    // Stars
+    let W = 0, H = 0;
     let stars = [];
-    function createStars(){
+
+    function placeV5() {
+      const x = Math.max(18, Math.min(window.innerWidth - 25, Math.random() * window.innerWidth));
+      const y = Math.max(18, Math.min(window.innerHeight - 25, Math.random() * window.innerHeight));
+      v5.style.left = `${x}px`;
+      v5.style.top = `${y}px`;
+    }
+
+    function resize() {
+      W = starsCanvas.width = constCanvas.width = window.innerWidth;
+      H = starsCanvas.height = constCanvas.height = window.innerHeight;
+      makeStars();
+      placeV5();
+    }
+
+    function makeStars() {
       stars = [];
-      const density = Math.max(120, Math.floor((W*H)/14000));
-      for(let i=0;i<density;i++){
+      const total = Math.max(90, Math.floor((W * H) / 16000));
+      for (let i = 0; i < total; i++) {
         stars.push({
-          x: Math.random()*W,
-          y: Math.random()*H,
-          r: Math.random()*1.6 + 0.3,
-          baseA: Math.random()*0.6 + 0.15,
-          a: 0,
-          twinkle: Math.random()*0.02 + 0.004,
-          vx: (Math.random()-0.5) * 0.02,
-          vy: (Math.random()-0.5) * 0.02
+          x: Math.random() * W,
+          y: Math.random() * H,
+          r: Math.random() * 1.5 + 0.2,
+          a: Math.random() * 0.7 + 0.15,
+          tw: Math.random() * 0.02 + 0.005,
+          vx: (Math.random() - 0.5) * 0.03,
+          vy: (Math.random() - 0.5) * 0.03
         });
       }
     }
 
-    // Draw stars
-    function drawStars(){
-      starCtx.clearRect(0,0,W,H);
-      for(const s of stars){
+    function drawStars() {
+      starsCtx.clearRect(0, 0, W, H);
+      for (const s of stars) {
         s.x += s.vx;
         s.y += s.vy;
-        if(s.x < -10) s.x = W + 10;
-        if(s.x > W + 10) s.x = -10;
-        if(s.y < -10) s.y = H + 10;
-        if(s.y > H + 10) s.y = -10;
-
-        s.a += (Math.random() - 0.5) * s.twinkle;
-        s.a = Math.max(0.06, Math.min(1, s.baseA + Math.sin(performance.now()/1000 + s.x*0.001)*0.12 + (s.a - s.baseA)*0.2));
-        starCtx.beginPath();
-        starCtx.fillStyle = 'rgba(8,184,90,' + (s.a*0.95) + ')';
-        starCtx.arc(s.x, s.y, s.r, 0, Math.PI*2);
-        starCtx.fill();
+        if (s.x < -10) s.x = W + 10;
+        if (s.x > W + 10) s.x = -10;
+        if (s.y < -10) s.y = H + 10;
+        if (s.y > H + 10) s.y = -10;
+        const pulse = 0.5 + 0.5 * Math.sin(performance.now() * 0.0015 + s.x * 0.01);
+        const alpha = Math.max(0.08, Math.min(1, s.a * (0.7 + pulse * 0.35)));
+        starsCtx.beginPath();
+        starsCtx.fillStyle = `rgba(180,255,230,${alpha * 0.95})`;
+        starsCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        starsCtx.fill();
       }
     }
 
-    // Straight-line constellation with directional motion along lines
-    let dashOffset = 0;
-    function drawConnections(){
-      lineCtx.clearRect(0,0,W,H);
-      lineCtx.lineWidth = 1;
-      dashOffset -= 0.8;
-      for(let i=0;i<stars.length;i++){
+    function drawConstellations() {
+      constCtx.clearRect(0, 0, W, H);
+      constCtx.setLineDash([7, 10]);
+      constCtx.lineCap = 'round';
+
+      const maxD = Math.max(110, Math.min(240, (W + H) / 12));
+
+      for (let i = 0; i < stars.length; i++) {
         const s = stars[i];
-        // find nearest neighbors within threshold
-        let neighbors = [];
-        for(let j=0;j<stars.length;j++){
-          if(i===j) continue;
+        let matches = [];
+        for (let j = 0; j < stars.length; j++) {
+          if (i === j) continue;
           const t = stars[j];
-          const dx = t.x - s.x, dy = t.y - s.y;
-          const dist = Math.sqrt(dx*dx + dy*dy);
-          if(dist < Math.max(120, Math.min(260, (W+H)/12))) neighbors.push({dist, t});
+          const dx = t.x - s.x;
+          const dy = t.y - s.y;
+          const d = Math.hypot(dx, dy);
+          if (d < maxD) matches.push({ t, d });
         }
-        neighbors.sort((a,b)=>a.dist-b.dist);
-        for(let k=0;k<Math.min(2, neighbors.length); k++){
-          const n = neighbors[k];
-          const t = n.t;
-          const d = n.dist;
-          const maxD = Math.max(120, Math.min(260, (W+H)/12));
-          const pulse = 0.4 + 0.25 * Math.sin((performance.now()/1200) + (s.x+s.y)*0.002 + k);
-          const alpha = Math.max(0, (1 - d/maxD) * pulse * 0.95);
+        matches.sort((a, b) => a.d - b.d);
 
-          // straight line stroke with gradient
-          const grad = lineCtx.createLinearGradient(s.x, s.y, t.x, t.y);
-          grad.addColorStop(0, `rgba(8,184,90,${alpha})`);
-          grad.addColorStop(1, `rgba(5,107,58,${alpha*0.7})`);
-          lineCtx.strokeStyle = grad;
-
-          // dashed line to create directional motion
-          lineCtx.setLineDash([8, 10]);
-          lineCtx.lineDashOffset = dashOffset * (1 + k*0.2);
-          lineCtx.beginPath();
-          lineCtx.moveTo(s.x, s.y);
-          lineCtx.lineTo(t.x, t.y);
-          lineCtx.stroke();
+        for (let k = 0; k < Math.min(2, matches.length); k++) {
+          const { t, d } = matches[k];
+          const alpha = (1 - d / maxD) * 0.22;
+          const grad = constCtx.createLinearGradient(s.x, s.y, t.x, t.y);
+          grad.addColorStop(0, `rgba(180,255,230,${alpha})`);
+          grad.addColorStop(1, `rgba(180,255,230,${alpha * 0.4})`);
+          constCtx.strokeStyle = grad;
+          constCtx.lineWidth = 1;
+          constCtx.lineDashOffset = performance.now() * -0.002 * (k + 1);
+          constCtx.beginPath();
+          constCtx.moveTo(s.x, s.y);
+          constCtx.lineTo(t.x, t.y);
+          constCtx.stroke();
         }
       }
 
-      // faint node glow
-      for(const s of stars){
-        lineCtx.beginPath();
-        lineCtx.fillStyle = `rgba(8,184,90,${Math.min(0.06, s.a*0.06)})`;
-        lineCtx.arc(s.x, s.y, s.r*2.2, 0, Math.PI*2);
-        lineCtx.fill();
+      constCtx.setLineDash([]);
+      for (const s of stars) {
+        constCtx.beginPath();
+        constCtx.fillStyle = `rgba(190,255,234,${Math.min(0.12, s.a * 0.08)})`;
+        constCtx.arc(s.x, s.y, s.r * 2.6, 0, Math.PI * 2);
+        constCtx.fill();
       }
-      lineCtx.setLineDash([]);
     }
 
-    // Animation loop
-    function animate(){
+    function animate() {
       drawStars();
-      drawConnections();
+      drawConstellations();
       requestAnimationFrame(animate);
     }
 
-    // Init
+    window.addEventListener('resize', resize);
     resize();
     animate();
 
-    // Respect reduced motion
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if(mediaQuery.matches){
-      stars.forEach(s => { s.vx = s.vy = 0; s.twinkle = 0.001; });
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) {
+      stars.forEach(s => { s.vx = 0; s.vy = 0; });
     }
   </script>
 </body>
