@@ -1,473 +1,254 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Velora — Games</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>games</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --bg:#07080b;
-      --bg2:#0d1017;
-      --card: rgba(18, 22, 31, .72);
-      --card2: rgba(255,255,255,.04);
-      --text:#f5f7fb;
-      --muted: rgba(245,247,251,.62);
-      --line: rgba(255,255,255,.08);
-      --glow: rgba(120, 255, 214, .16);
-      --accent: #7cffd6;
-      --shadow: 0 18px 50px rgba(0,0,0,.45);
-      --radius: 18px;
+    :root {
+      --bg: #0b0b0b;
+      --bg-2: #121212;
+      --text: #f4f4f4;
+      --muted: rgba(255, 255, 255, 0.52);
+      --panel: rgba(10, 14, 12, 0.5);
+      --border: rgba(180, 255, 230, 0.14);
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+      --accent: rgba(180, 255, 230, 0.9);
     }
 
     * { box-sizing: border-box; }
     html, body { height: 100%; }
-
-    body{
-      margin:0;
-      overflow:hidden;
-      color:var(--text);
-      font-family:Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    body {
+      margin: 0;
+      overflow: hidden;
       background:
-        radial-gradient(circle at 50% 20%, rgba(124,255,214,.07), transparent 22%),
-        radial-gradient(circle at 15% 80%, rgba(95,136,255,.08), transparent 20%),
-        radial-gradient(circle at 85% 75%, rgba(183,92,255,.06), transparent 18%),
-        linear-gradient(180deg, var(--bg), var(--bg2));
+        radial-gradient(circle at 50% 45%, rgba(255,255,255,0.04), transparent 28%),
+        radial-gradient(circle at 50% 50%, rgba(122, 255, 202, 0.03), transparent 45%),
+        linear-gradient(180deg, var(--bg), var(--bg-2));
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    canvas{
-      position:fixed;
-      inset:0;
-      width:100%;
-      height:100%;
-      display:block;
-      pointer-events:none;
+    canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      pointer-events: none;
     }
 
-    #stars{ z-index:0; }
-    #constellations{ z-index:1; }
+    #stars { z-index: 0; }
+    #constellations { z-index: 1; }
 
-    .overlay{
-      position:fixed;
-      inset:0;
-      z-index:2;
-      pointer-events:none;
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
       background:
-        radial-gradient(circle at 20% 30%, rgba(255,255,255,.012), transparent 18%),
-        radial-gradient(circle at 75% 70%, rgba(255,255,255,.012), transparent 20%);
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.015), transparent 18%),
+        radial-gradient(circle at 75% 70%, rgba(255,255,255,0.015), transparent 20%);
     }
 
-    .page{
-      position:relative;
-      z-index:3;
-      min-height:100vh;
-      padding:24px 18px 20px;
-      display:flex;
-      justify-content:center;
-      align-items:center;
+    .page {
+      position: relative;
+      z-index: 3;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 18px 22px;
     }
 
-    .shell{
-      width:min(1220px, 100%);
-      display:flex;
-      flex-direction:column;
-      gap:18px;
+    .shell {
+      width: min(1100px, 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 22px;
+      text-align: center;
     }
 
-    .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:14px;
-      flex-wrap:wrap;
+    .brand {
+      margin: 0;
+      font-family: "Great Vibes", cursive;
+      font-size: clamp(4.4rem, 9vw, 7.2rem);
+      line-height: 0.9;
+      font-weight: 400;
+      color: #ffffff;
+      letter-spacing: 0.03em;
+      text-shadow: 0 0 22px rgba(255,255,255,0.08);
+      transform: translateY(2px);
+      user-select: none;
     }
 
-    .back{
-      text-decoration:none;
-      color:rgba(255,255,255,.92);
-      background:rgba(18,22,31,.78);
-      border:1px solid var(--line);
-      box-shadow:var(--shadow);
-      border-radius:14px;
-      height:46px;
-      padding:0 15px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      font-weight:600;
-      transition:transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
-
-    .back:hover{
-      transform:translateY(-3px);
-      border-color: rgba(124,255,214,.22);
-      box-shadow: 0 22px 60px rgba(0,0,0,.52);
-      background: rgba(24, 30, 42, .9);
-    }
-
-    .hero{
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      align-items:flex-start;
-      padding:4px 0 2px;
-    }
-
-    .title{
-      margin:0;
-      font-size:clamp(2.3rem, 4vw, 4rem);
-      line-height:1;
-      letter-spacing:-.04em;
-      font-weight:800;
-    }
-
-    .subtitle{
-      margin:0;
-      color:var(--muted);
-      font-size:.96rem;
-    }
-
-    .tools{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      width:100%;
-    }
-
-    .search{
-      flex:1 1 280px;
-      height:48px;
-      border-radius:14px;
-      border:1px solid var(--line);
-      outline:none;
-      padding:0 16px;
-      color:var(--text);
-      background:rgba(18,22,31,.72);
-      box-shadow:var(--shadow);
-      font:inherit;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      transition:border-color .18s ease, transform .18s ease, background .18s ease;
-    }
-
-    .search::placeholder{ color: rgba(245,247,251,.38); }
-
-    .search:focus{
-      border-color: rgba(124,255,214,.24);
-      background: rgba(22, 27, 38, .88);
-      transform: translateY(-1px);
-    }
-
-    .pill{
-      height:48px;
-      padding:0 14px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:rgba(18,22,31,.72);
-      color:rgba(255,255,255,.88);
-      font:inherit;
-      cursor:pointer;
-      box-shadow:var(--shadow);
-      transition:transform .18s ease, border-color .18s ease, background .18s ease;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
-
-    .pill:hover{
-      transform:translateY(-2px);
-      border-color: rgba(124,255,214,.2);
-      background: rgba(24, 30, 42, .9);
-    }
-
-    .meta-row{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      color:var(--muted);
-      font-size:.88rem;
-      flex-wrap:wrap;
-    }
-
-    .grid-wrap{
-      position:relative;
-      border:1px solid var(--line);
-      border-radius:24px;
-      background: rgba(8, 10, 15, .4);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-    }
-
-    .grid-head{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:14px 16px;
-      border-bottom:1px solid var(--line);
-      background: rgba(255,255,255,.02);
-    }
-
-    .grid-head strong{
-      font-size:1rem;
-      letter-spacing:-.02em;
-    }
-
-    .grid-head span{
-      color:var(--muted);
-      font-size:.88rem;
-    }
-
-    .grid-shell{
-      max-height:min(68vh, 820px);
-      overflow:auto;
-      padding:16px;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fill, minmax(180px, 1fr));
-      gap:14px;
-    }
-
-    .card{
-      position:relative;
-      border-radius:18px;
-      border:1px solid var(--line);
-      overflow:hidden;
-      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
-      box-shadow: 0 12px 28px rgba(0,0,0,.28);
-      cursor:pointer;
-      transform: translateZ(0);
-      transition:
-        transform .2s ease,
-        box-shadow .2s ease,
-        border-color .2s ease,
-        background .2s ease;
-      will-change: transform;
-      isolation:isolate;
-    }
-
-    .card::before{
-      content:"";
-      position:absolute;
-      inset:-1px;
-      background: radial-gradient(circle at 50% 0%, rgba(124,255,214,.18), transparent 38%);
-      opacity:0;
-      transition:opacity .2s ease;
-      z-index:0;
-    }
-
-    .card:hover{
-      transform: translateY(-6px) scale(1.01);
-      border-color: rgba(124,255,214,.22);
-      box-shadow:
-        0 22px 44px rgba(0,0,0,.42),
-        0 0 0 1px rgba(124,255,214,.05),
-        0 0 40px rgba(124,255,214,.08);
-    }
-
-    .card:hover::before{
-      opacity:1;
-    }
-
-    .cover{
-      position:relative;
-      aspect-ratio: 16 / 10;
-      background:
-        radial-gradient(circle at 50% 30%, rgba(255,255,255,.10), transparent 35%),
-        linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
-      overflow:hidden;
-    }
-
-    .cover img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-      transition: transform .35s ease, filter .35s ease;
-      filter:saturate(1.05) contrast(1.02);
-    }
-
-    .card:hover .cover img{
-      transform: scale(1.08);
-      filter:saturate(1.15) contrast(1.06);
-    }
-
-    .cover::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      background: linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(0,0,0,.58) 100%);
-      pointer-events:none;
-    }
-
-    .badge{
-      position:absolute;
-      left:10px;
-      top:10px;
-      z-index:1;
-      padding:6px 9px;
-      border-radius:999px;
-      background: rgba(10, 14, 22, .74);
-      border:1px solid rgba(255,255,255,.10);
-      color: rgba(255,255,255,.9);
-      font-size:.72rem;
-      font-weight:700;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-    }
-
-    .info{
-      position:relative;
-      z-index:1;
-      padding:12px 12px 14px;
-    }
-
-    .name{
-      margin:0 0 5px;
-      font-size:.98rem;
-      font-weight:700;
-      line-height:1.15;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
-    .small{
-      color: rgba(245,247,251,.6);
-      font-size:.8rem;
-    }
-
-    .status{
-      padding:18px 16px;
+    .subtitle {
+      margin: 0;
       color: var(--muted);
-      font-size:.95rem;
+      font-size: 0.95rem;
+      letter-spacing: 0.02em;
     }
 
-    .spinner{
-      display:inline-block;
-      width:14px;
-      height:14px;
-      border-radius:50%;
-      border:2px solid rgba(255,255,255,.25);
-      border-top-color: rgba(124,255,214,.95);
-      animation:spin .8s linear infinite;
-      vertical-align:-2px;
-      margin-right:8px;
+    .controls {
+      width: min(760px, 100%);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(18, 18, 18, 0.76), rgba(8, 10, 9, 0.5));
+      backdrop-filter: blur(16px);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
     }
 
-    @keyframes spin{ to { transform: rotate(360deg); } }
-
-    .viewer{
-      position:fixed;
-      inset:0;
-      z-index:20;
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding:18px;
-      background: rgba(0,0,0,.72);
+    .search {
+      width: 100%;
+      appearance: none;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      border-radius: 18px;
+      padding: 14px 16px;
+      font: inherit;
+      outline: none;
     }
 
-    .viewer.active{ display:flex; }
+    .search::placeholder { color: rgba(255,255,255,0.36); }
+    .search:focus { border-color: rgba(180,255,230,0.36); box-shadow: 0 0 0 4px rgba(180,255,230,0.08); }
 
-    .viewer-panel{
-      width:min(1200px, 100%);
-      height:min(84vh, 880px);
-      border-radius:22px;
-      overflow:hidden;
-      border:1px solid rgba(255,255,255,.08);
-      background: rgba(9,12,18,.98);
-      box-shadow: 0 30px 100px rgba(0,0,0,.72);
-      display:flex;
-      flex-direction:column;
+    .button {
+      border: 0;
+      border-radius: 18px;
+      padding: 0 18px;
+      min-width: 120px;
+      font: inherit;
+      font-weight: 700;
+      color: #07120f;
+      background: linear-gradient(180deg, rgba(210,255,241,1), rgba(180,255,230,0.88));
+      cursor: pointer;
+      box-shadow: 0 12px 30px rgba(180,255,230,0.12);
     }
 
-    .viewer-top{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:12px 14px;
-      border-bottom:1px solid rgba(255,255,255,.08);
-      background: rgba(255,255,255,.02);
+    .button:active { transform: translateY(1px); }
+
+    .grid-wrap {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    .viewer-title{
-      font-weight:700;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
+    .grid-shell {
+      width: 100%;
+      max-height: calc(100vh - 340px);
+      overflow: auto;
+      padding: 8px 2px 18px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(180,255,230,0.4) transparent;
     }
 
-    .viewer-actions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
+    .grid-shell::-webkit-scrollbar { width: 10px; }
+    .grid-shell::-webkit-scrollbar-track { background: transparent; }
+    .grid-shell::-webkit-scrollbar-thumb {
+      background: rgba(180,255,230,0.28);
+      border-radius: 999px;
     }
 
-    .icon-btn{
-      border:1px solid rgba(255,255,255,.08);
-      background: rgba(255,255,255,.04);
-      color: rgba(255,255,255,.9);
-      border-radius:12px;
-      padding:9px 12px;
-      cursor:pointer;
-      font:inherit;
-      transition: background .18s ease, transform .18s ease, border-color .18s ease;
+    .status {
+      min-height: 24px;
+      color: rgba(255,255,255,0.68);
+      font-size: 0.88rem;
+      margin: 4px 0 0;
     }
 
-    .icon-btn:hover{
-      background: rgba(255,255,255,.09);
-      transform: translateY(-1px);
-      border-color: rgba(124,255,214,.18);
+    .games {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 16px;
+      width: 100%;
+      margin-top: 18px;
     }
 
-    .viewer-iframe{
-      flex:1;
-      width:100%;
-      border:0;
-      background:#000;
+    .card {
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.22);
+      cursor: pointer;
+      transform: translateY(0);
+      transition: transform .2s ease, border-color .2s ease, background .2s ease;
+      text-align: left;
+      min-height: 230px;
     }
 
-    .v5{
-      position:fixed;
-      z-index:4;
-      left:50%;
-      top:50%;
-      pointer-events:none;
-      font-size:.72rem;
-      font-weight:800;
-      letter-spacing:.22em;
-      color: rgba(255,255,255,.34);
-      text-shadow: 0 0 12px rgba(255,255,255,.08);
-      transform-origin:center center;
-      user-select:none;
-      animation:spinText 8s linear infinite;
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(180,255,230,0.26);
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
     }
 
-    @keyframes spinText{
+    .thumb {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      background: radial-gradient(circle at 50% 40%, rgba(180,255,230,0.16), rgba(255,255,255,0.04));
+      display: block;
+      object-fit: cover;
+    }
+
+    .meta {
+      padding: 12px 13px 14px;
+    }
+
+    .name {
+      display: block;
+      font-weight: 700;
+      font-size: 0.96rem;
+      line-height: 1.25;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .category {
+      display: block;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.52);
+    }
+
+    .v5 {
+      position: fixed;
+      z-index: 4;
+      left: 50%;
+      top: 50%;
+      pointer-events: none;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.24em;
+      color: rgba(255,255,255,0.38);
+      text-shadow: 0 0 10px rgba(255,255,255,0.08);
+      transform-origin: center center;
+      user-select: none;
+      animation: spin 7s linear infinite;
+    }
+
+    @keyframes spin {
       from { transform: translate(-50%, -50%) rotate(0deg); }
-      to   { transform: translate(-50%, -50%) rotate(360deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
     }
 
-    @media (max-width: 760px){
-      body{ overflow:auto; }
-      .page{ padding-top:18px; padding-bottom:18px; }
-      .grid-shell{ max-height:none; }
-      .grid{ grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); }
-      .title{ font-size:2.3rem; }
-      .viewer-panel{ height:min(88vh, 880px); }
+    @media (max-width: 700px) {
+      body { overflow: auto; }
+      .page { padding-top: 72px; padding-bottom: 72px; }
+      .shell { gap: 18px; }
+      .controls { grid-template-columns: 1fr; }
+      .button { height: 48px; }
+      .grid-shell { max-height: none; overflow: visible; }
+      .games { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
     }
   </style>
 </head>
@@ -478,86 +259,42 @@
   <div class="v5" id="v5">v5</div>
 
   <main class="page">
-    <section class="shell" aria-label="Velora games">
-      <div class="topbar">
-        <a class="back" href="index.html" aria-label="Back to home">← Back</a>
-        <div class="hero">
-          <h1 class="title">Games</h1>
-          <p class="subtitle">Browse the catalog and launch anything with one click.</p>
-        </div>
-      </div>
+    <section class="shell" aria-label="games page">
+      <h1 class="brand">games</h1>
+      <p class="subtitle">browse over 2,000 games with LuminSDK</p>
 
-      <div class="tools">
-        <input id="search" class="search" type="search" placeholder="Search games..." autocomplete="off" />
-        <button class="pill" id="refreshBtn" type="button">Refresh</button>
-      </div>
-
-      <div class="meta-row">
-        <div id="countText">Loading games…</div>
-        <div id="pageText">Page 1</div>
+      <div class="controls" role="search">
+        <input id="search" class="search" type="search" placeholder="Search games" autocomplete="off" />
+        <button id="clear" class="button" type="button">Reset</button>
       </div>
 
       <div class="grid-wrap">
-        <div class="grid-head">
-          <div>
-            <strong>Featured catalog</strong><br>
-            <span>Simple, fast, and clean.</span>
-          </div>
-          <div id="catalogInfo">Headless mode</div>
-        </div>
-
-        <div class="grid-shell" id="gridShell">
-          <div id="status" class="status"><span class="spinner"></span>Loading games…</div>
-          <div class="grid" id="games" aria-live="polite" aria-label="Games grid"></div>
+        <div class="grid-shell">
+          <p id="status" class="status">loading games…</p>
+          <div id="games" class="games" aria-live="polite"></div>
         </div>
       </div>
     </section>
   </main>
 
-  <div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="viewer-panel">
-      <div class="viewer-top">
-        <div class="viewer-title" id="viewerTitle">Loading…</div>
-        <div class="viewer-actions">
-          <button class="icon-btn" id="fullscreenBtn" type="button">Fullscreen</button>
-          <button class="icon-btn" id="closeViewer" type="button">Close</button>
-        </div>
-      </div>
-      <iframe id="gameFrame" class="viewer-iframe" src="about:blank" allow="autoplay; fullscreen; pointer-lock; gamepad" allowfullscreen title="Game player"></iframe>
-    </div>
-  </div>
-
   <script src="https://cdn.jsdelivr.net/gh/luminsdk/script@latest/lumin.min.js"></script>
-
   <script>
     const starsCanvas = document.getElementById('stars');
     const starsCtx = starsCanvas.getContext('2d');
     const constCanvas = document.getElementById('constellations');
     const constCtx = constCanvas.getContext('2d');
     const v5 = document.getElementById('v5');
-
-    const grid = document.getElementById('games');
+    const gamesEl = document.getElementById('games');
     const statusEl = document.getElementById('status');
-    const countText = document.getElementById('countText');
-    const pageText = document.getElementById('pageText');
-    const search = document.getElementById('search');
-    const refreshBtn = document.getElementById('refreshBtn');
-    const catalogInfo = document.getElementById('catalogInfo');
-
-    const viewer = document.getElementById('viewer');
-    const viewerTitle = document.getElementById('viewerTitle');
-    const gameFrame = document.getElementById('gameFrame');
-    const closeViewer = document.getElementById('closeViewer');
-    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const searchEl = document.getElementById('search');
+    const clearBtn = document.getElementById('clear');
 
     let W = 0, H = 0;
     let stars = [];
     let allGames = [];
-    let imageMap = new Map();
-    let currentPage = 1;
-    let totalPages = 1;
-    let loading = false;
-    let searchTerm = '';
+    let imageCache = new Map();
+    let initialized = false;
+    let activeRequest = 0;
 
     function placeV5() {
       const x = Math.max(18, Math.min(window.innerWidth - 25, Math.random() * window.innerWidth));
@@ -597,10 +334,8 @@
         if (s.x > W + 10) s.x = -10;
         if (s.y < -10) s.y = H + 10;
         if (s.y > H + 10) s.y = -10;
-
         const pulse = 0.5 + 0.5 * Math.sin(performance.now() * 0.0015 + s.x * 0.01);
         const alpha = Math.max(0.08, Math.min(1, s.a * (0.7 + pulse * 0.35)));
-
         starsCtx.beginPath();
         starsCtx.fillStyle = `rgba(180,255,230,${alpha * 0.95})`;
         starsCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
@@ -612,13 +347,11 @@
       constCtx.clearRect(0, 0, W, H);
       constCtx.setLineDash([7, 10]);
       constCtx.lineCap = 'round';
-
       const maxD = Math.max(110, Math.min(240, (W + H) / 12));
 
       for (let i = 0; i < stars.length; i++) {
         const s = stars[i];
         const matches = [];
-
         for (let j = 0; j < stars.length; j++) {
           if (i === j) continue;
           const t = stars[j];
@@ -627,7 +360,6 @@
           const d = Math.hypot(dx, dy);
           if (d < maxD) matches.push({ t, d });
         }
-
         matches.sort((a, b) => a.d - b.d);
 
         for (let k = 0; k < Math.min(2, matches.length); k++) {
@@ -661,187 +393,134 @@
       requestAnimationFrame(animate);
     }
 
-    window.addEventListener('resize', resize);
-    resize();
-    animate();
-
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduceMotion) {
-      stars.forEach(s => { s.vx = 0; s.vy = 0; });
-    }
-
-    function setStatus(message) {
-      statusEl.innerHTML = message;
-    }
-
     function escapeHtml(text) {
       return String(text)
         .replaceAll('&', '&amp;')
         .replaceAll('<', '&lt;')
         .replaceAll('>', '&gt;')
         .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#39;');
+        .replaceAll("'", '&#039;');
     }
 
-    function matchesSearch(game) {
-      if (!searchTerm) return true;
-      const hay = `${game.name || ''} ${game.category || ''} ${game.id || ''}`.toLowerCase();
-      return hay.includes(searchTerm);
+    function normalizeGame(game) {
+      const id = game?.id ?? '';
+      const name = game?.name ?? 'Untitled Game';
+      const category = game?.category ?? '';
+      const image_token = game?.image_token ?? '';
+      return { id, name, category, image_token };
     }
 
-    function renderGrid() {
-      const filtered = allGames.filter(matchesSearch);
+    async function getImage(token) {
+      if (!token) return '';
+      if (imageCache.has(token)) return imageCache.get(token);
+      try {
+        const url = await Lumin.getImageUrl(token);
+        imageCache.set(token, url);
+        return url;
+      } catch {
+        return '';
+      }
+    }
 
-      grid.innerHTML = '';
-      countText.textContent = `${filtered.length.toLocaleString()} game${filtered.length === 1 ? '' : 's'} shown`;
-      pageText.textContent = `Page ${currentPage} / ${totalPages || 1}`;
-
-      if (!filtered.length) {
-        setStatus(`No games match “${escapeHtml(search.value.trim())}”.`);
+    function renderGames(list) {
+      if (!list.length) {
+        gamesEl.innerHTML = '';
+        statusEl.textContent = 'no games found';
         return;
       }
 
-      setStatus('');
+      statusEl.textContent = `${list.length} games shown`;
+      gamesEl.innerHTML = list.map((game) => {
+        const img = game.imageUrl
+          ? `<img class="thumb" src="${escapeHtml(game.imageUrl)}" alt="${escapeHtml(game.name)}">`
+          : `<div class="thumb"></div>`;
 
-      for (const game of filtered) {
-        const card = document.createElement('button');
-        card.type = 'button';
-        card.className = 'card';
-        card.dataset.gameId = game.id;
-        card.dataset.title = game.name || game.id;
-
-        const img = imageMap.get(game.id) || '';
-        const category = game.category || 'Arcade';
-
-        card.innerHTML = `
-          <div class="cover">
-            <span class="badge">${escapeHtml(category)}</span>
-            ${img ? `<img src="${img}" alt="${escapeHtml(game.name || game.id)}">` : ''}
-          </div>
-          <div class="info">
-            <p class="name">${escapeHtml(game.name || game.id)}</p>
-            <div class="small">Click to play</div>
-          </div>
+        return `
+          <article class="card" data-id="${escapeHtml(game.id)}" tabindex="0" role="button" aria-label="Play ${escapeHtml(game.name)}">
+            ${img}
+            <div class="meta">
+              <span class="name">${escapeHtml(game.name)}</span>
+              <span class="category">${escapeHtml(game.category || ' ')}&nbsp;</span>
+            </div>
+          </article>
         `;
+      }).join('');
 
-        card.addEventListener('click', () => openGame(game));
-        grid.appendChild(card);
-      }
-    }
-
-    async function loadPage(page = 1) {
-      if (!window.Lumin) {
-        setStatus('Lumin could not be loaded.');
-        return;
-      }
-
-      loading = true;
-      setStatus('<span class="spinner"></span>Loading games…');
-      catalogInfo.textContent = 'Connecting…';
-
-      try {
-        if (typeof Lumin.init === 'function') {
-          await Lumin.init({ headless: true });
-        }
-
-        const result = await Lumin.getGames({ page, limit: 24 });
-        allGames = result.games || [];
-        currentPage = page;
-        totalPages = result.pages || 1;
-
-        imageMap = new Map();
-        await Promise.all(allGames.map(async (g) => {
-          try {
-            const img = await Lumin.getImageUrl(g.image_token);
-            imageMap.set(g.id, img);
-          } catch (err) {
-            imageMap.set(g.id, '');
+      gamesEl.querySelectorAll('.card').forEach((card) => {
+        const play = () => {
+          const id = card.getAttribute('data-id');
+          if (id) Lumin.loadGame(id);
+        };
+        card.addEventListener('click', play);
+        card.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            play();
           }
-        }));
-
-        catalogInfo.textContent = 'Headless mode active';
-        loading = false;
-        renderGrid();
-      } catch (err) {
-        console.error(err);
-        loading = false;
-        catalogInfo.textContent = 'Load failed';
-        setStatus('Could not load games right now.');
-      }
-    }
-
-    async function openGame(game) {
-      try {
-        viewerTitle.textContent = game.name || 'Game';
-        viewer.classList.add('active');
-        viewer.setAttribute('aria-hidden', 'false');
-
-        if (!window.Lumin) return;
-
-        const { url } = await Lumin.getGameUrl(game.id);
-        gameFrame.src = url;
-        document.body.style.overflow = 'hidden';
-      } catch (err) {
-        console.error(err);
-        viewerTitle.textContent = 'Game';
-        gameFrame.src = 'about:blank';
-      }
-    }
-
-    function closeGame() {
-      viewer.classList.remove('active');
-      viewer.setAttribute('aria-hidden', 'true');
-      gameFrame.src = 'about:blank';
-      document.body.style.overflow = '';
-    }
-
-    grid.addEventListener('mousemove', (e) => {
-      const card = e.target.closest('.card');
-      if (!card) return;
-      const rect = card.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / rect.width - 0.5) * 8;
-      const y = ((e.clientY - rect.top) / rect.height - 0.5) * 8;
-      card.style.transform = `translateY(-6px) scale(1.01) rotateX(${-y}deg) rotateY(${x}deg)`;
-    });
-
-    grid.addEventListener('mouseleave', () => {
-      document.querySelectorAll('.card').forEach(card => {
-        card.style.transform = '';
+        });
       });
-    });
+    }
 
-    search.addEventListener('input', () => {
-      searchTerm = search.value.trim().toLowerCase();
-      renderGrid();
-    });
+    function filterGames() {
+      const q = searchEl.value.trim().toLowerCase();
+      const filtered = allGames.filter((game) =>
+        !q || game.name.toLowerCase().includes(q) || (game.category || '').toLowerCase().includes(q)
+      );
+      renderGames(filtered);
+    }
 
-    refreshBtn.addEventListener('click', () => loadPage(1));
+    async function loadInitialGames() {
+      const requestId = ++activeRequest;
+      statusEl.textContent = 'loading games…';
+      gamesEl.innerHTML = '';
 
-    closeViewer.addEventListener('click', closeGame);
-
-    fullscreenBtn.addEventListener('click', async () => {
       try {
-        if (gameFrame.requestFullscreen) {
-          await gameFrame.requestFullscreen();
-        } else if (gameFrame.webkitRequestFullscreen) {
-          await gameFrame.webkitRequestFullscreen();
-        } else {
-          window.open(gameFrame.src, '_blank', 'noopener');
+        if (!initialized) {
+          await Lumin.init({ headless: true });
+          initialized = true;
         }
+
+        const { games } = await Lumin.getGames({ page: 1, limit: 24 });
+        if (requestId !== activeRequest) return;
+
+        allGames = (games || []).map(normalizeGame);
+
+        const imageResults = await Promise.all(
+          allGames.map(async (game) => ({
+            id: game.id,
+            imageUrl: await getImage(game.image_token)
+          }))
+        );
+
+        if (requestId !== activeRequest) return;
+
+        const imageMap = new Map(imageResults.map((entry) => [entry.id, entry.imageUrl]));
+        allGames = allGames.map((game) => ({ ...game, imageUrl: imageMap.get(game.id) || '' }));
+
+        filterGames();
       } catch (err) {
-        console.warn('Fullscreen failed', err);
+        console.error(err);
+        statusEl.textContent = 'could not load games';
+        gamesEl.innerHTML = '';
       }
+    }
+
+    window.addEventListener('resize', resize);
+    searchEl.addEventListener('input', filterGames);
+    clearBtn.addEventListener('click', () => {
+      searchEl.value = '';
+      filterGames();
+      searchEl.focus();
     });
 
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && viewer.classList.contains('active')) {
-        closeGame();
-      }
-    });
+    resize();
+    animate();
+    loadInitialGames();
 
-    window.addEventListener('load', () => {
-      loadPage(1);
-    });
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) {
+      stars.forEach(s => { s.vx = 0; s.vy = 0; });
+    }
   </script>
 </body>
 </html>
