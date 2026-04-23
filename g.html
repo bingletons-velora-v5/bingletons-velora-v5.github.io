@@ -499,6 +499,69 @@
       min-height: 180px;
     }
 
+    /* Sweep animation */
+    .sweep {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      pointer-events: none;
+      opacity: 0;
+      overflow: hidden;
+    }
+
+    .sweep::before,
+    .sweep::after {
+      content: "";
+      position: absolute;
+      inset: -35%;
+      transform: translateX(-160%) skewX(-20deg);
+      will-change: transform, opacity;
+    }
+
+    .sweep::before {
+      background: linear-gradient(
+        115deg,
+        transparent 0%,
+        rgba(180,255,230,0.10) 48%,
+        rgba(255,255,255,0.92) 50%,
+        rgba(180,255,230,0.10) 54%,
+        transparent 100%
+      );
+      filter: blur(1px);
+    }
+
+    .sweep::after {
+      background: radial-gradient(circle, rgba(180,255,230,0.22), transparent 60%);
+      transform: translateX(-180%) scale(0.9) skewX(-18deg);
+      filter: blur(14px);
+      opacity: 0.8;
+    }
+
+    .sweep.run {
+      opacity: 1;
+    }
+
+    .sweep.run::before {
+      animation: sweepAcross 1900ms ease forwards;
+    }
+
+    .sweep.run::after {
+      animation: sweepGlow 1900ms ease forwards;
+    }
+
+    @keyframes sweepAcross {
+      0%   { transform: translateX(-160%) skewX(-20deg); opacity: 0; }
+      12%  { opacity: 1; }
+      58%  { opacity: 1; }
+      100% { transform: translateX(160%) skewX(-20deg); opacity: 0; }
+    }
+
+    @keyframes sweepGlow {
+      0%   { transform: translateX(-180%) scale(0.9) skewX(-18deg); opacity: 0; }
+      14%  { opacity: 1; }
+      100% { transform: translateX(180%) scale(1.1) skewX(-18deg); opacity: 0; }
+    }
+
     @media (max-width: 700px) {
       body {
         overflow-x: hidden;
@@ -546,11 +609,12 @@
   </style>
 </head>
 <body>
-  <a href="index.html" class="back-btn">← Back</a>
+  <a href="index.html" class="back-btn" id="backBtn">← Back</a>
   <canvas id="stars"></canvas>
   <canvas id="constellations"></canvas>
   <div class="overlay"></div>
   <div class="v5" id="v5">v5</div>
+  <div class="sweep" id="sweep"></div>
 
   <main class="page">
     <section class="hero" aria-label="Velora games page">
@@ -636,6 +700,9 @@
   <script src="https://cdn.jsdelivr.net/gh/luminsdk/script@latest/lumin.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
+      const sweep = document.getElementById('sweep');
+      const backBtn = document.getElementById('backBtn');
+
       const starsCanvas = document.getElementById('stars');
       const starsCtx = starsCanvas.getContext('2d');
       const constCanvas = document.getElementById('constellations');
@@ -651,7 +718,6 @@
       const prevPageBtn = document.getElementById('prevPageBtn');
       const nextPageBtn = document.getElementById('nextPageBtn');
       const pageInfo = document.getElementById('pageInfo');
-      const pagination = document.getElementById('pagination');
 
       const modal = document.getElementById('gameModal');
       const modalCard = document.getElementById('modalCard');
@@ -677,6 +743,21 @@
 
       let currentGames = [];
       let allGamesCache = null;
+
+      let sweepTimer = null;
+
+      function playSweep(callback) {
+        if (sweepTimer) clearTimeout(sweepTimer);
+
+        sweep.classList.remove('run');
+        void sweep.offsetWidth;
+        sweep.classList.add('run');
+
+        sweepTimer = window.setTimeout(() => {
+          sweep.classList.remove('run');
+          if (typeof callback === 'function') callback();
+        }, 1900);
+      }
 
       function placeV5() {
         const x = Math.max(18, Math.min(window.innerWidth - 25, Math.random() * window.innerWidth));
@@ -803,11 +884,15 @@
             .catch(() => {});
         }
 
-        card.addEventListener('click', onClick);
+        card.addEventListener('click', () => {
+          playSweep();
+          onClick();
+        });
+
         return card;
       }
 
-      function openPopup({ id, title, url, category }) {
+      function openPopup({ title, url, category }) {
         modalTitle.textContent = title || 'Selected Game';
         modalSubtitle.textContent = category ? `Category: ${category}` : 'Click Fullscreen for a larger view.';
         gameFrame.src = url;
@@ -877,7 +962,6 @@
             try {
               const { url, meta } = await Lumin.getGameUrl(game.id);
               openPopup({
-                id: game.id,
                 title: meta?.name || game.name || 'Selected Game',
                 url,
                 category: meta?.category || game.category || ''
@@ -920,9 +1004,7 @@
         } catch (err) {
           console.error('LuminSDK error:', err);
           gamesMeta.textContent = 'Could not load games.';
-          gamesGrid.innerHTML = `
-            <div class="empty-state">Could not load games right now.</div>
-          `;
+          gamesGrid.innerHTML = `<div class="empty-state">Could not load games right now.</div>`;
           updatePager();
         }
       }
@@ -991,7 +1073,6 @@
             try {
               const { url, meta } = await Lumin.getGameUrl(game.id);
               openPopup({
-                id: game.id,
                 title: meta?.name || game.name || 'Selected Game',
                 url,
                 category: meta?.category || game.category || ''
@@ -1020,7 +1101,6 @@
           try {
             const { url, meta } = await Lumin.getGameUrl(pick.id);
             openPopup({
-              id: pick.id,
               title: meta?.name || pick.name || 'Selected Game',
               url,
               category: meta?.category || pick.category || ''
@@ -1057,23 +1137,30 @@
       document.addEventListener('fullscreenchange', updateFullscreenButton);
 
       prevPageBtn.addEventListener('click', () => {
+        playSweep();
         if (currentPage > 1) loadPage(currentPage - 1);
       });
 
       nextPageBtn.addEventListener('click', () => {
+        playSweep();
         if (currentPage < totalPages) loadPage(currentPage + 1);
       });
 
-      searchBtn.addEventListener('click', searchGames);
+      searchBtn.addEventListener('click', () => {
+        playSweep();
+        searchGames();
+      });
 
       searchInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
           e.preventDefault();
+          playSweep();
           searchGames();
         }
       });
 
       clearBtn.addEventListener('click', () => {
+        playSweep();
         searchInput.value = '';
         closeSearchPopup();
         gamesMeta.textContent = `${totalGames || currentGames.length} games available`;
@@ -1081,11 +1168,25 @@
         searchInput.focus();
       });
 
-      randomBtn.addEventListener('click', randomGame);
+      randomBtn.addEventListener('click', () => {
+        playSweep();
+        randomGame();
+      });
+
+      backBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        playSweep(() => {
+          window.location.href = backBtn.getAttribute('href');
+        });
+      });
 
       resize();
       animate();
       updateFullscreenButton();
+
+      window.addEventListener('load', () => {
+        playSweep();
+      });
 
       if (!window.Lumin) {
         gamesMeta.textContent = 'LuminSDK failed to load.';
