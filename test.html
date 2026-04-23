@@ -2,494 +2,676 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Velora — Games</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Velora</title>
 
-  <!-- Gothic display font -->
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=UnifrakturCook:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Great+Vibes&display=swap" rel="stylesheet">
 
   <style>
-    :root{
-      --bg:#0b0b0d;
-      --panel:#0f1113;
-      --muted:#9aa0a6;
-      --accent:#8b5cf6;
-      --glass: rgba(255,255,255,0.03);
-      --card:#0e0f11;
-      --shadow: 0 8px 30px rgba(0,0,0,0.7);
-      --radius:12px;
+    :root {
+      --bg: #070707;
+      --bg-2: #101010;
+      --text: #f4f4f4;
+      --muted: rgba(255, 255, 255, 0.58);
+      --border: rgba(180, 255, 230, 0.12);
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+      --accent: #b4ffe6;
     }
 
-    html,body{
-      height:100%;
-      margin:0;
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
       background:
-        radial-gradient(1200px 600px at 10% 10%, rgba(139,92,246,0.06), transparent 8%),
-        radial-gradient(900px 400px at 90% 90%, rgba(0,0,0,0.25), transparent 10%),
-        linear-gradient(180deg,#070708 0%, #0b0b0d 100%);
-      color:#e6e6e6;
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      overflow:hidden;
+        radial-gradient(circle at 50% 35%, rgba(255,255,255,0.04), transparent 26%),
+        radial-gradient(circle at 50% 55%, rgba(122, 255, 202, 0.04), transparent 44%),
+        linear-gradient(180deg, var(--bg), var(--bg-2));
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    /* Top chrome */
-    .topbar{
-      position:fixed;
-      top:18px;
-      left:18px;
-      right:18px;
-      display:flex;
-      align-items:center;
-      gap:18px;
-      z-index:60;
-      pointer-events:none;
+    canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      pointer-events: none;
     }
 
-    .back-btn{
-      pointer-events:auto;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      width:56px;
-      height:56px;
-      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,0.04);
-      box-shadow:var(--shadow);
-      cursor:pointer;
-      transition:transform .14s ease, background .14s ease;
-      -webkit-backdrop-filter: blur(6px);
-      backdrop-filter: blur(6px);
-    }
-    .back-btn:active{ transform:translateY(1px) scale(.995); }
-    .back-btn svg{ width:22px; height:22px; fill:transparent; stroke:#e6e6e6; stroke-width:2.2; }
+    #stars { z-index: 0; }
+    #constellations { z-index: 1; }
 
-    .brand{
-      pointer-events:auto;
-      display:flex;
-      flex-direction:column;
-      gap:2px;
-      margin-left:6px;
-    }
-    .brand .title{
-      font-family: "Cinzel Decorative", "UnifrakturCook", serif;
-      font-size:44px;
-      letter-spacing:2px;
-      line-height:1;
-      color:var(--accent);
-      text-shadow: 0 6px 30px rgba(139,92,246,0.08), 0 1px 0 rgba(0,0,0,0.6);
-      transform:translateY(-2px);
-    }
-    .brand .subtitle{
-      font-size:13px;
-      color:var(--muted);
-      text-transform:uppercase;
-      letter-spacing:1.6px;
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 18% 22%, rgba(255,255,255,0.018), transparent 16%),
+        radial-gradient(circle at 78% 74%, rgba(255,255,255,0.015), transparent 20%);
     }
 
-    /* Main layout */
-    .wrap{
-      position:fixed;
-      inset:110px 28px 28px 28px;
-      display:flex;
-      flex-direction:column;
-      gap:18px;
-      z-index:10;
+    .back-btn {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      z-index: 100;
+      text-decoration: none;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(180, 255, 230, 0.18);
+      backdrop-filter: blur(10px);
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+      transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease;
     }
 
-    .header{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      pointer-events:none;
+    .back-btn:hover {
+      transform: translateY(-1px);
+      background: rgba(180, 255, 230, 0.12);
+      border-color: rgba(180, 255, 230, 0.28);
     }
 
-    .header-left{
-      pointer-events:auto;
-      display:flex;
-      align-items:end;
-      gap:18px;
+    .page {
+      position: relative;
+      z-index: 3;
+      min-height: 100vh;
+      padding: 28px 22px 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
-    .page-title{
-      font-family: "Cinzel Decorative", serif;
-      font-size:64px;
-      margin:0;
-      color:#fff;
-      letter-spacing:1px;
-      text-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    .hero {
+      width: min(1220px, 100%);
+      text-align: center;
+      padding-top: 14px;
+      margin-bottom: 18px;
     }
 
-    .page-meta{
-      color:var(--muted);
-      font-size:14px;
-      margin-top:6px;
-      text-transform:uppercase;
-      letter-spacing:1px;
+    .brand {
+      margin: 0;
+      font-family: "Great Vibes", cursive;
+      font-size: clamp(4.1rem, 8vw, 7rem);
+      line-height: 0.9;
+      font-weight: 400;
+      color: #fff;
+      letter-spacing: 0.03em;
+      text-shadow: 0 0 22px rgba(255,255,255,0.08);
+      user-select: none;
     }
 
-    .controls{
-      pointer-events:auto;
-      display:flex;
-      gap:12px;
-      align-items:center;
+    .subtitle {
+      margin: 10px auto 0;
+      max-width: 760px;
+      color: var(--muted);
+      font-size: clamp(0.95rem, 2vw, 1.08rem);
+      line-height: 1.6;
     }
 
-    .pill{
-      background:var(--glass);
-      border:1px solid rgba(255,255,255,0.03);
-      padding:10px 14px;
-      border-radius:999px;
-      color:var(--muted);
-      font-weight:600;
-      font-size:13px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
-      cursor:pointer;
-      transition:transform .12s ease, background .12s ease;
-    }
-    .pill:hover{ transform:translateY(-3px); }
-
-    /* Games container (SDK will populate #games) */
-    #games{
-      flex:1;
-      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
-      border-radius:16px;
-      padding:18px;
-      overflow:auto;
-      box-shadow:var(--shadow);
-      border:1px solid rgba(255,255,255,0.03);
-      -webkit-overflow-scrolling:touch;
+    .content {
+      width: min(1440px, 100%);
+      flex: 1;
+      min-height: 0;
+      display: flex;
     }
 
-    /* Fallback grid if SDK doesn't populate */
-    .grid{
-      display:grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px,1fr));
-      gap:14px;
-    }
-    .game-card{
-      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-radius:12px;
-      padding:10px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      cursor:pointer;
-      transition:transform .12s ease, box-shadow .12s ease;
-      border:1px solid rgba(255,255,255,0.03);
-    }
-    .game-card:hover{ transform:translateY(-6px); box-shadow:0 18px 40px rgba(0,0,0,0.6); }
-    .thumb{
-      height:110px;
-      border-radius:8px;
-      background:linear-gradient(135deg,#222 0%, #111 100%);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color:var(--muted);
-      font-weight:700;
-      font-size:12px;
-      overflow:hidden;
-    }
-    .g-title{
-      font-weight:700;
-      font-size:14px;
-      color:#fff;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .g-sub{
-      font-size:12px;
-      color:var(--muted);
+    #games {
+      width: 100%;
+      height: auto;
+      min-height: 560px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at top, rgba(122,255,202,0.05), transparent 40%),
+        rgba(10, 10, 10, 0.18);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      padding: 18px;
     }
 
-    /* Game viewer overlay */
-    .viewer{
-      position:fixed;
-      inset:0;
-      display:none;
-      align-items:center;
-      justify-content:center;
-      z-index:120;
-      background:linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.85));
-      padding:28px;
-    }
-    .viewer.active{ display:flex; }
-
-    .viewer-panel{
-      width:100%;
-      max-width:1200px;
-      height:80vh;
-      background:linear-gradient(180deg, rgba(10,10,12,0.98), rgba(6,6,8,0.98));
-      border-radius:14px;
-      overflow:hidden;
-      box-shadow:0 40px 120px rgba(0,0,0,0.8);
-      display:flex;
-      flex-direction:column;
-      border:1px solid rgba(255,255,255,0.04);
+    .games-toolbar {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
     }
 
-    .viewer-top{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:12px 14px;
-      background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
-      border-bottom:1px solid rgba(255,255,255,0.02);
-    }
-    .viewer-title{
-      font-weight:700;
-      color:#fff;
-      font-size:16px;
-    }
-    .viewer-actions{
-      display:flex;
-      gap:10px;
-      align-items:center;
-    }
-    .icon-btn{
-      background:transparent;
-      border:1px solid rgba(255,255,255,0.04);
-      color:var(--muted);
-      padding:8px 10px;
-      border-radius:10px;
-      cursor:pointer;
-      font-weight:700;
-      transition:transform .12s ease;
-    }
-    .icon-btn:hover{ transform:translateY(-3px); color:#fff; }
-
-    .viewer-iframe{
-      flex:1;
-      border:0;
-      width:100%;
-      height:100%;
-      background:#000;
+    .games-toolbar h2 {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
     }
 
-    /* small screens */
-    @media (max-width:900px){
-      .page-title{ font-size:44px; }
-      .brand .title{ font-size:36px; }
-      .wrap{ inset:90px 14px 14px 14px; }
-      .topbar{ top:12px; left:12px; right:12px; }
+    .games-toolbar .meta {
+      color: rgba(255,255,255,0.58);
+      font-size: 0.92rem;
+    }
+
+    .games-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    }
+
+    .game-card {
+      cursor: pointer;
+      border: 1px solid rgba(180,255,230,0.12);
+      background: rgba(255,255,255,0.03);
+      border-radius: 18px;
+      overflow: hidden;
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+      min-height: 190px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .game-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(180,255,230,0.28);
+      background: rgba(180,255,230,0.06);
+    }
+
+    .game-thumb {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      background: rgba(255,255,255,0.05);
+      display: block;
+    }
+
+    .game-info {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .game-name {
+      margin: 0;
+      font-size: 0.98rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.25;
+    }
+
+    .game-cat {
+      margin: 0;
+      font-size: 0.84rem;
+      color: rgba(255,255,255,0.55);
+    }
+
+    .topline {
+      margin-top: 10px;
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.34);
+      user-select: none;
+    }
+
+    .v5 {
+      position: fixed;
+      z-index: 4;
+      left: 50%;
+      top: 50%;
+      pointer-events: none;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.24em;
+      color: rgba(255,255,255,0.38);
+      text-shadow: 0 0 10px rgba(255,255,255,0.08);
+      transform-origin: center center;
+      user-select: none;
+      animation: spin 7s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.58);
+      backdrop-filter: blur(10px);
+    }
+
+    .modal.hidden { display: none; }
+
+    .modal-card {
+      width: min(1080px, 100%);
+      height: min(88vh, 860px);
+      border: 1px solid rgba(180, 255, 230, 0.18);
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at top, rgba(180,255,230,0.10), transparent 35%),
+        rgba(12, 12, 12, 0.97);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65);
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .modal-top {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 14px;
+      padding-right: 44px;
+    }
+
+    .modal-title {
+      margin: 0;
+      font-size: clamp(1.25rem, 2vw, 1.8rem);
+      line-height: 1.15;
+      color: #fff;
+    }
+
+    .modal-subtitle {
+      margin: 6px 0 0;
+      color: rgba(255,255,255,0.62);
+      font-size: 0.96rem;
+      line-height: 1.45;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+      cursor: pointer;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .modal-frame-wrap {
+      flex: 1;
+      min-height: 0;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: #000;
+    }
+
+    .modal-frame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #000;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .modal-btn {
+      appearance: none;
+      border: 1px solid rgba(180, 255, 230, 0.22);
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+    }
+
+    .modal-btn:hover {
+      transform: translateY(-1px);
+      background: rgba(180,255,230,0.10);
+      border-color: rgba(180, 255, 230, 0.36);
+    }
+
+    @media (max-width: 700px) {
+      body {
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+
+      .page {
+        padding-top: 22px;
+        padding-bottom: 40px;
+      }
+
+      #games {
+        height: auto;
+        min-height: 680px;
+      }
+
+      .content {
+        min-height: 680px;
+      }
+
+      .modal-card {
+        width: min(100%, 520px);
+        height: min(90vh, 820px);
+        padding: 16px;
+      }
+
+      .games-grid {
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      }
     }
   </style>
 </head>
-
-<!-- SDK script must be dropped before body -->
-<script src="https://cdn.jsdelivr.net/gh/luminsdk/script@latest/lumin.min.js"></script>
-
 <body>
-  <!-- Top chrome: back button sits above everything -->
-  <div class="topbar" aria-hidden="false">
-    <button class="back-btn" id="globalBack" title="Back" aria-label="Back">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
+  <a href="index.html" class="back-btn">← Back</a>
+  <canvas id="stars"></canvas>
+  <canvas id="constellations"></canvas>
+  <div class="overlay"></div>
+  <div class="v5" id="v5">v5</div>
 
-    <div class="brand" role="banner">
-      <div class="title">Velora</div>
-      <div class="subtitle">Dark Gothic Game Vault</div>
-    </div>
-  </div>
+  <main class="page">
+    <section class="hero" aria-label="Velora games page">
+      <h1 class="brand">velora</h1>
+      <p class="subtitle">browse over 2,000 games with LuminSDK!</p>
+      <div class="topline">poki-style layout • custom popup player • fast browse</div>
+    </section>
 
-  <div class="wrap" role="main">
-    <div class="header">
-      <div class="header-left">
-        <h1 class="page-title">games</h1>
-        <div style="margin-left:12px;">
-          <div class="page-meta">play or browse <strong style="color:var(--accent)">2,342</strong> games</div>
+    <section class="content">
+      <div id="games">
+        <div class="games-toolbar">
+          <div>
+            <h2>Games</h2>
+            <div class="meta" id="gamesMeta">Loading…</div>
+          </div>
+        </div>
+        <div class="games-grid" id="gamesGrid"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="gameModal" class="modal hidden" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-card" id="modalCard">
+      <button class="modal-close" id="modalClose" aria-label="Close popup">×</button>
+
+      <div class="modal-top">
+        <div>
+          <h2 class="modal-title" id="modalTitle">Game Title</h2>
+          <p class="modal-subtitle" id="modalSubtitle">Selected game details will appear here.</p>
         </div>
       </div>
 
-    
-
-    <!-- This is the container the SDK will populate -->
-    <div id="games" aria-live="polite" aria-label="Games container"></div>
-  </div>
-
-  <!-- Viewer overlay (game iframe, fullscreen, back) -->
-  <div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="viewer-panel" role="document">
-      <div class="viewer-top">
-        <div class="viewer-title" id="viewerTitle">Loading…</div>
-        <div class="viewer-actions">
-          <button class="icon-btn" id="openFullscreen">Fullscreen</button>
-          <button class="icon-btn" id="closeViewer">Back</button>
-        </div>
+      <div class="modal-actions">
+        <button class="modal-btn" id="modalFullscreen">Fullscreen</button>
+        <button class="modal-btn" id="modalBack">Back</button>
       </div>
-      <iframe id="gameFrame" class="viewer-iframe" src="about:blank" title="Game viewer"></iframe>
+
+      <div class="modal-frame-wrap" id="modalFrameWrap">
+        <iframe
+          id="gameFrame"
+          class="modal-frame"
+          title="Game player"
+          allow="autoplay; fullscreen; pointer-lock; gamepad"
+          loading="eager"
+        ></iframe>
+      </div>
     </div>
   </div>
 
-  <!-- Initialize the SDK and add interaction logic -->
+  <script src="https://cdn.jsdelivr.net/gh/luminsdk/script@latest/lumin.min.js"></script>
   <script>
-    // Initialize Lumin SDK into the #games container
-    try {
-      if (window.Lumin && typeof Lumin.init === 'function') {
-        Lumin.init({
-          container: '#games',
-          theme: 'dark'
-        });
-      }
-    } catch (e) {
-      console.warn('Lumin init failed or not available', e);
-    }
+    document.addEventListener('DOMContentLoaded', async () => {
+      const starsCanvas = document.getElementById('stars');
+      const starsCtx = starsCanvas.getContext('2d');
+      const constCanvas = document.getElementById('constellations');
+      const constCtx = constCanvas.getContext('2d');
+      const v5 = document.getElementById('v5');
 
-    // If SDK doesn't populate quickly, provide a graceful fallback demo grid
-    (function populateFallbackIfEmpty(){
-      const container = document.getElementById('games');
-      const fallback = () => {
-        if (!container) return;
-        if (container.children.length === 0 || container.querySelectorAll('.game-card').length === 0) {
-          const grid = document.createElement('div');
-          grid.className = 'grid';
-          const demo = [
-            {id:'milkman-karlson', title:'Milkman Karlson', url:'https://example.com/game1'},
-            {id:'geometry-dash', title:'Geometry Dash Remastered', url:'https://example.com/game2'},
-            {id:'jetski-race', title:'Jetski Race', url:'https://example.com/game3'},
-            {id:'hotline-miami', title:'Hotline Miami', url:'https://example.com/game4'},
-            {id:'bad-ice-cream-3', title:'Bad Ice Cream 3', url:'https://example.com/game5'},
-            {id:'mega-man-4', title:'Mega Man 4', url:'https://example.com/game6'}
-          ];
-          demo.forEach(g=>{
-            const card = document.createElement('div');
-            card.className = 'game-card';
-            card.dataset.gameId = g.id;
-            card.dataset.gameUrl = g.url;
-            card.innerHTML = `
-              <div class="thumb">${g.title}</div>
-              <div class="g-title">${g.title}</div>
-              <div class="g-sub">HTML5 · Arcade</div>
-            `;
-            grid.appendChild(card);
-          });
-          container.appendChild(grid);
-        }
+      const gamesMeta = document.getElementById('gamesMeta');
+      const gamesGrid = document.getElementById('gamesGrid');
+
+      const modal = document.getElementById('gameModal');
+      const modalCard = document.getElementById('modalCard');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalSubtitle = document.getElementById('modalSubtitle');
+      const modalClose = document.getElementById('modalClose');
+      const modalBack = document.getElementById('modalBack');
+      const modalFullscreen = document.getElementById('modalFullscreen');
+      const gameFrame = document.getElementById('gameFrame');
+
+      let W = 0, H = 0;
+      let stars = [];
+      let activeGame = {
+        id: '',
+        title: '',
+        url: ''
       };
 
-      // Wait a short time for SDK to populate, then fallback
-      setTimeout(fallback, 900);
-      // Also fallback again after a bit longer
-      setTimeout(fallback, 2500);
-    })();
-await Lumin.init({ headless: true });
-    // Viewer logic
-    const viewer = document.getElementById('viewer');
-    const viewerTitle = document.getElementById('viewerTitle');
-    const gameFrame = document.getElementById('gameFrame');
-    const closeViewer = document.getElementById('closeViewer');
-    const openFullscreen = document.getElementById('openFullscreen');
-    const globalBack = document.getElementById('globalBack');
-
-    // Open viewer with given game info
-    function openGame({id, title, url}){
-      // Use hash for deep-linking
-      if (id) location.hash = '#game-' + id;
-      viewerTitle.textContent = title || 'Game';
-      // If the SDK provides an embed URL or iframe src, use it; otherwise use placeholder
-      gameFrame.src = url || 'about:blank';
-      viewer.classList.add('active');
-      viewer.setAttribute('aria-hidden','false');
-      // lock scroll
-      document.body.style.overflow = 'hidden';
-    }
-
-    // Close viewer and clear hash
-    function closeGame(){
-      viewer.classList.remove('active');
-      viewer.setAttribute('aria-hidden','true');
-      gameFrame.src = 'about:blank';
-      // clear hash if it matches our pattern
-      if (location.hash && location.hash.startsWith('#game-')) {
-        history.replaceState(null, '', location.pathname + location.search);
+      function placeV5() {
+        const x = Math.max(18, Math.min(window.innerWidth - 25, Math.random() * window.innerWidth));
+        const y = Math.max(18, Math.min(window.innerHeight - 25, Math.random() * window.innerHeight));
+        v5.style.left = `${x}px`;
+        v5.style.top = `${y}px`;
       }
-      document.body.style.overflow = '';
-    }
 
-    // Delegate clicks inside #games to open viewer
-    document.getElementById('games').addEventListener('click', function(e){
-      // Try to find a game tile or anchor
-      const tile = e.target.closest('[data-game-id], .game-card, a[data-game-id], a.game-tile');
-      if (!tile) return;
-      // Prevent default if it's a link
-      if (tile.tagName.toLowerCase() === 'a') e.preventDefault();
-
-      // Try to read data attributes that SDK might set
-      const id = tile.dataset.gameId || tile.getAttribute('data-id') || tile.getAttribute('data-game');
-      const url = tile.dataset.gameUrl || tile.getAttribute('data-url') || tile.href || tile.getAttribute('data-embed') || null;
-      const title = tile.dataset.title || tile.querySelector('.g-title')?.textContent || tile.textContent.trim() || 'Game';
-
-      // If SDK uses anchors with href="#something", respect that and open using hash
-      if (!url && tile.tagName.toLowerCase() === 'a' && tile.getAttribute('href')) {
-        const href = tile.getAttribute('href');
-        // If it's a hash link, just set location.hash and try to open a viewer placeholder
-        if (href.startsWith('#')) {
-          location.hash = href;
-          openGame({id: id || href.replace('#',''), title});
-          return;
+      function makeStars() {
+        stars = [];
+        const total = Math.max(90, Math.floor((W * H) / 16000));
+        for (let i = 0; i < total; i++) {
+          stars.push({
+            x: Math.random() * W,
+            y: Math.random() * H,
+            r: Math.random() * 1.5 + 0.2,
+            a: Math.random() * 0.7 + 0.15,
+            vx: (Math.random() - 0.5) * 0.03,
+            vy: (Math.random() - 0.5) * 0.03
+          });
         }
       }
 
-      // Open the viewer with the best available info
-      openGame({id, title, url});
-    });
-
-    // Back button handlers
-    closeViewer.addEventListener('click', closeGame);
-    globalBack.addEventListener('click', () => {
-      // If viewer open, close it; otherwise go back in history
-      if (viewer.classList.contains('active')) {
-        closeGame();
-      } else {
-        history.back();
+      function resize() {
+        W = starsCanvas.width = constCanvas.width = window.innerWidth;
+        H = starsCanvas.height = constCanvas.height = window.innerHeight;
+        makeStars();
+        placeV5();
       }
-    });
 
-    // Fullscreen
-    openFullscreen.addEventListener('click', async () => {
+      function drawStars() {
+        starsCtx.clearRect(0, 0, W, H);
+        for (const s of stars) {
+          s.x += s.vx;
+          s.y += s.vy;
+
+          if (s.x < -10) s.x = W + 10;
+          if (s.x > W + 10) s.x = -10;
+          if (s.y < -10) s.y = H + 10;
+          if (s.y > H + 10) s.y = -10;
+
+          const pulse = 0.5 + 0.5 * Math.sin(performance.now() * 0.0015 + s.x * 0.01);
+          const alpha = Math.max(0.08, Math.min(1, s.a * (0.7 + pulse * 0.35)));
+
+          starsCtx.beginPath();
+          starsCtx.fillStyle = `rgba(180,255,230,${alpha * 0.95})`;
+          starsCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          starsCtx.fill();
+        }
+      }
+
+      function drawConstellations() {
+        constCtx.clearRect(0, 0, W, H);
+        constCtx.setLineDash([7, 10]);
+        constCtx.lineCap = 'round';
+        const maxD = Math.max(110, Math.min(240, (W + H) / 12));
+
+        for (let i = 0; i < stars.length; i++) {
+          const s = stars[i];
+          const matches = [];
+
+          for (let j = 0; j < stars.length; j++) {
+            if (i === j) continue;
+            const t = stars[j];
+            const dx = t.x - s.x;
+            const dy = t.y - s.y;
+            const d = Math.hypot(dx, dy);
+            if (d < maxD) matches.push({ t, d });
+          }
+
+          matches.sort((a, b) => a.d - b.d);
+
+          for (let k = 0; k < Math.min(2, matches.length); k++) {
+            const { t, d } = matches[k];
+            const alpha = (1 - d / maxD) * 0.22;
+            const grad = constCtx.createLinearGradient(s.x, s.y, t.x, t.y);
+            grad.addColorStop(0, `rgba(180,255,230,${alpha})`);
+            grad.addColorStop(1, `rgba(180,255,230,${alpha * 0.4})`);
+
+            constCtx.strokeStyle = grad;
+            constCtx.lineWidth = 1;
+            constCtx.lineDashOffset = performance.now() * -0.002 * (k + 1);
+            constCtx.beginPath();
+            constCtx.moveTo(s.x, s.y);
+            constCtx.lineTo(t.x, t.y);
+            constCtx.stroke();
+          }
+        }
+
+        constCtx.setLineDash([]);
+        for (const s of stars) {
+          constCtx.beginPath();
+          constCtx.fillStyle = `rgba(190,255,234,${Math.min(0.12, s.a * 0.08)})`;
+          constCtx.arc(s.x, s.y, s.r * 2.6, 0, Math.PI * 2);
+          constCtx.fill();
+        }
+      }
+
+      function animate() {
+        drawStars();
+        drawConstellations();
+        requestAnimationFrame(animate);
+      }
+
+      function openPopup({ id, title, url, category }) {
+        activeGame = { id, title, url };
+        modalTitle.textContent = title || 'Selected Game';
+        modalSubtitle.textContent = category ? `Category: ${category}` : 'Click Fullscreen for a larger view.';
+        gameFrame.src = url;
+        modal.classList.remove('hidden');
+        modal.setAttribute('aria-hidden', 'false');
+      }
+
+      function closePopup() {
+        modal.classList.add('hidden');
+        modal.setAttribute('aria-hidden', 'true');
+        gameFrame.src = 'about:blank';
+        activeGame = { id: '', title: '', url: '' };
+      }
+
+      async function goFullscreen() {
+        try {
+          if (modalCard.requestFullscreen) {
+            await modalCard.requestFullscreen();
+          }
+        } catch (err) {
+          console.error('Fullscreen failed:', err);
+        }
+      }
+
+      modalClose.addEventListener('click', closePopup);
+      modalBack.addEventListener('click', closePopup);
+      modalFullscreen.addEventListener('click', goFullscreen);
+
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closePopup();
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closePopup();
+      });
+
+      window.addEventListener('resize', resize);
+
+      resize();
+      animate();
+
+      if (!window.Lumin) {
+        gamesMeta.textContent = 'LuminSDK failed to load.';
+        return;
+      }
+
       try {
-        if (gameFrame.requestFullscreen) {
-          await gameFrame.requestFullscreen();
-        } else if (gameFrame.webkitRequestFullscreen) {
-          await gameFrame.webkitRequestFullscreen();
-        } else {
-          // fallback: open in new tab
-          window.open(gameFrame.src, '_blank', 'noopener');
+        await Lumin.init({
+          container: '#games',
+          headless: true
+        });
+
+        const result = await Lumin.getGames({ page: 1, limit: 24 });
+        const games = result.games || [];
+
+        gamesMeta.textContent = `${result.total || games.length} games available`;
+
+        gamesGrid.innerHTML = '';
+
+        for (const game of games) {
+          const imageUrl = game.image_token ? await Lumin.getImageUrl(game.image_token) : '';
+          const card = document.createElement('button');
+          card.type = 'button';
+          card.className = 'game-card';
+          card.innerHTML = `
+            <img class="game-thumb" src="${imageUrl || ''}" alt="${game.name || 'Game'}">
+            <div class="game-info">
+              <p class="game-name">${game.name || 'Untitled Game'}</p>
+              <p class="game-cat">${game.category || 'Game'}</p>
+            </div>
+          `;
+
+          card.addEventListener('click', async () => {
+            try {
+              const { url, meta } = await Lumin.getGameUrl(game.id);
+              openPopup({
+                id: game.id,
+                title: meta?.name || game.name || 'Selected Game',
+                url,
+                category: meta?.category || game.category || ''
+              });
+            } catch (err) {
+              console.error('Could not load game:', err);
+              modalTitle.textContent = 'Error';
+              modalSubtitle.textContent = 'That game could not be loaded.';
+              modal.classList.remove('hidden');
+            }
+          });
+
+          gamesGrid.appendChild(card);
         }
+
       } catch (err) {
-        console.warn('Fullscreen failed', err);
+        console.error('LuminSDK error:', err);
+        gamesMeta.textContent = 'Could not load games.';
       }
     });
-
-    // Close viewer on Escape
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && viewer.classList.contains('active')) {
-        closeGame();
-      }
-    });
-
-    // Deep-link support: if page loaded with #game-... open viewer
-    window.addEventListener('load', () => {
-      if (location.hash && location.hash.startsWith('#game-')) {
-        const id = location.hash.replace('#game-','');
-        // Try to find a matching tile in the DOM
-        const tile = document.querySelector('[data-game-id="'+id+'"], [data-id="'+id+'"], a[href="#'+id+'"]');
-        const title = tile?.querySelector('.g-title')?.textContent || tile?.dataset.title || id;
-        const url = tile?.dataset.gameUrl || tile?.dataset.url || null;
-        openGame({id, title, url});
-      }
-    });
-
-    // If the SDK exposes events for launching games, you can hook into them here.
-    // Example (pseudocode):
-    // Lumin.on('gameLaunch', (info) => openGame(info));
-
   </script>
 </body>
 </html>
