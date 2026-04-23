@@ -277,250 +277,297 @@
     </section>
   </main>
 
+  <div id="playerModal" class="player-modal" hidden>
+    <button id="closePlayer" class="close-player" type="button">×</button>
+    <iframe
+      id="playerFrame"
+      title="Game Player"
+      allow="autoplay; fullscreen; pointer-lock; gamepad"
+      allowfullscreen
+    ></iframe>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/gh/luminsdk/script@latest/lumin.min.js"></script>
   <script>
-    const starsCanvas = document.getElementById('stars');
-    const starsCtx = starsCanvas.getContext('2d');
-    const constCanvas = document.getElementById('constellations');
-    const constCtx = constCanvas.getContext('2d');
-    const v5 = document.getElementById('v5');
-    const gamesEl = document.getElementById('games');
-    const statusEl = document.getElementById('status');
-    const searchEl = document.getElementById('search');
-    const clearBtn = document.getElementById('clear');
+    document.addEventListener('DOMContentLoaded', () => {
+      const starsCanvas = document.getElementById('stars');
+      const starsCtx = starsCanvas.getContext('2d');
+      const constCanvas = document.getElementById('constellations');
+      const constCtx = constCanvas.getContext('2d');
+      const v5 = document.getElementById('v5');
+      const gamesEl = document.getElementById('games');
+      const statusEl = document.getElementById('status');
+      const searchEl = document.getElementById('search');
+      const clearBtn = document.getElementById('clear');
 
-    let W = 0, H = 0;
-    let stars = [];
-    let allGames = [];
-    let imageCache = new Map();
-    let initialized = false;
-    let activeRequest = 0;
+      const playerModal = document.getElementById('playerModal');
+      const playerFrame = document.getElementById('playerFrame');
+      const closePlayer = document.getElementById('closePlayer');
 
-    function placeV5() {
-      const x = Math.max(18, Math.min(window.innerWidth - 25, Math.random() * window.innerWidth));
-      const y = Math.max(18, Math.min(window.innerHeight - 25, Math.random() * window.innerHeight));
-      v5.style.left = `${x}px`;
-      v5.style.top = `${y}px`;
-    }
+      let W = 0, H = 0;
+      let stars = [];
+      let allGames = [];
+      let imageCache = new Map();
+      let initialized = false;
+      let activeRequest = 0;
 
-    function resize() {
-      W = starsCanvas.width = constCanvas.width = window.innerWidth;
-      H = starsCanvas.height = constCanvas.height = window.innerHeight;
-      makeStars();
-      placeV5();
-    }
-
-    function makeStars() {
-      stars = [];
-      const total = Math.max(90, Math.floor((W * H) / 16000));
-      for (let i = 0; i < total; i++) {
-        stars.push({
-          x: Math.random() * W,
-          y: Math.random() * H,
-          r: Math.random() * 1.5 + 0.2,
-          a: Math.random() * 0.7 + 0.15,
-          vx: (Math.random() - 0.5) * 0.03,
-          vy: (Math.random() - 0.5) * 0.03
-        });
+      function placeV5() {
+        const x = Math.max(18, Math.min(window.innerWidth - 25, Math.random() * window.innerWidth));
+        const y = Math.max(18, Math.min(window.innerHeight - 25, Math.random() * window.innerHeight));
+        v5.style.left = `${x}px`;
+        v5.style.top = `${y}px`;
       }
-    }
 
-    function drawStars() {
-      starsCtx.clearRect(0, 0, W, H);
-      for (const s of stars) {
-        s.x += s.vx;
-        s.y += s.vy;
-        if (s.x < -10) s.x = W + 10;
-        if (s.x > W + 10) s.x = -10;
-        if (s.y < -10) s.y = H + 10;
-        if (s.y > H + 10) s.y = -10;
-        const pulse = 0.5 + 0.5 * Math.sin(performance.now() * 0.0015 + s.x * 0.01);
-        const alpha = Math.max(0.08, Math.min(1, s.a * (0.7 + pulse * 0.35)));
-        starsCtx.beginPath();
-        starsCtx.fillStyle = `rgba(180,255,230,${alpha * 0.95})`;
-        starsCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-        starsCtx.fill();
+      function resize() {
+        W = starsCanvas.width = constCanvas.width = window.innerWidth;
+        H = starsCanvas.height = constCanvas.height = window.innerHeight;
+        makeStars();
+        placeV5();
       }
-    }
 
-    function drawConstellations() {
-      constCtx.clearRect(0, 0, W, H);
-      constCtx.setLineDash([7, 10]);
-      constCtx.lineCap = 'round';
-      const maxD = Math.max(110, Math.min(240, (W + H) / 12));
-
-      for (let i = 0; i < stars.length; i++) {
-        const s = stars[i];
-        const matches = [];
-        for (let j = 0; j < stars.length; j++) {
-          if (i === j) continue;
-          const t = stars[j];
-          const dx = t.x - s.x;
-          const dy = t.y - s.y;
-          const d = Math.hypot(dx, dy);
-          if (d < maxD) matches.push({ t, d });
-        }
-        matches.sort((a, b) => a.d - b.d);
-
-        for (let k = 0; k < Math.min(2, matches.length); k++) {
-          const { t, d } = matches[k];
-          const alpha = (1 - d / maxD) * 0.22;
-          const grad = constCtx.createLinearGradient(s.x, s.y, t.x, t.y);
-          grad.addColorStop(0, `rgba(180,255,230,${alpha})`);
-          grad.addColorStop(1, `rgba(180,255,230,${alpha * 0.4})`);
-          constCtx.strokeStyle = grad;
-          constCtx.lineWidth = 1;
-          constCtx.lineDashOffset = performance.now() * -0.002 * (k + 1);
-          constCtx.beginPath();
-          constCtx.moveTo(s.x, s.y);
-          constCtx.lineTo(t.x, t.y);
-          constCtx.stroke();
+      function makeStars() {
+        stars = [];
+        const total = Math.max(90, Math.floor((W * H) / 16000));
+        for (let i = 0; i < total; i++) {
+          stars.push({
+            x: Math.random() * W,
+            y: Math.random() * H,
+            r: Math.random() * 1.5 + 0.2,
+            a: Math.random() * 0.7 + 0.15,
+            vx: (Math.random() - 0.5) * 0.03,
+            vy: (Math.random() - 0.5) * 0.03
+          });
         }
       }
 
-      constCtx.setLineDash([]);
-      for (const s of stars) {
-        constCtx.beginPath();
-        constCtx.fillStyle = `rgba(190,255,234,${Math.min(0.12, s.a * 0.08)})`;
-        constCtx.arc(s.x, s.y, s.r * 2.6, 0, Math.PI * 2);
-        constCtx.fill();
-      }
-    }
-
-    function animate() {
-      drawStars();
-      drawConstellations();
-      requestAnimationFrame(animate);
-    }
-
-    function escapeHtml(text) {
-      return String(text)
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#039;');
-    }
-
-    function normalizeGame(game) {
-      const id = game?.id ?? '';
-      const name = game?.name ?? 'Untitled Game';
-      const category = game?.category ?? '';
-      const image_token = game?.image_token ?? '';
-      return { id, name, category, image_token };
-    }
-
-    async function getImage(token) {
-      if (!token) return '';
-      if (imageCache.has(token)) return imageCache.get(token);
-      try {
-        const url = await Lumin.getImageUrl(token);
-        imageCache.set(token, url);
-        return url;
-      } catch {
-        return '';
-      }
-    }
-
-    function renderGames(list) {
-      if (!list.length) {
-        gamesEl.innerHTML = '';
-        statusEl.textContent = 'no games found';
-        return;
+      function drawStars() {
+        starsCtx.clearRect(0, 0, W, H);
+        for (const s of stars) {
+          s.x += s.vx;
+          s.y += s.vy;
+          if (s.x < -10) s.x = W + 10;
+          if (s.x > W + 10) s.x = -10;
+          if (s.y < -10) s.y = H + 10;
+          if (s.y > H + 10) s.y = -10;
+          const pulse = 0.5 + 0.5 * Math.sin(performance.now() * 0.0015 + s.x * 0.01);
+          const alpha = Math.max(0.08, Math.min(1, s.a * (0.7 + pulse * 0.35)));
+          starsCtx.beginPath();
+          starsCtx.fillStyle = `rgba(180,255,230,${alpha * 0.95})`;
+          starsCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          starsCtx.fill();
+        }
       }
 
-      statusEl.textContent = `${list.length} games shown`;
-      gamesEl.innerHTML = list.map((game) => {
-        const img = game.imageUrl
-          ? `<img class="thumb" src="${escapeHtml(game.imageUrl)}" alt="${escapeHtml(game.name)}">`
-          : `<div class="thumb"></div>`;
+      function drawConstellations() {
+        constCtx.clearRect(0, 0, W, H);
+        constCtx.setLineDash([7, 10]);
+        constCtx.lineCap = 'round';
+        const maxD = Math.max(110, Math.min(240, (W + H) / 12));
 
-        return `
-          <article class="card" data-id="${escapeHtml(game.id)}" tabindex="0" role="button" aria-label="Play ${escapeHtml(game.name)}">
-            ${img}
-            <div class="meta">
-              <span class="name">${escapeHtml(game.name)}</span>
-              <span class="category">${escapeHtml(game.category || ' ')}&nbsp;</span>
-            </div>
-          </article>
-        `;
-      }).join('');
-
-      gamesEl.querySelectorAll('.card').forEach((card) => {
-        const play = () => {
-          const id = card.getAttribute('data-id');
-          if (id) Lumin.loadGame(id);
-        };
-        card.addEventListener('click', play);
-        card.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            play();
+        for (let i = 0; i < stars.length; i++) {
+          const s = stars[i];
+          const matches = [];
+          for (let j = 0; j < stars.length; j++) {
+            if (i === j) continue;
+            const t = stars[j];
+            const dx = t.x - s.x;
+            const dy = t.y - s.y;
+            const d = Math.hypot(dx, dy);
+            if (d < maxD) matches.push({ t, d });
           }
-        });
-      });
-    }
+          matches.sort((a, b) => a.d - b.d);
 
-    function filterGames() {
-      const q = searchEl.value.trim().toLowerCase();
-      const filtered = allGames.filter((game) =>
-        !q || game.name.toLowerCase().includes(q) || (game.category || '').toLowerCase().includes(q)
-      );
-      renderGames(filtered);
-    }
-
-    async function loadInitialGames() {
-      const requestId = ++activeRequest;
-      statusEl.textContent = 'loading games…';
-      gamesEl.innerHTML = '';
-
-      try {
-        if (!initialized) {
-          await Lumin.init({ headless: true });
-          initialized = true;
+          for (let k = 0; k < Math.min(2, matches.length); k++) {
+            const { t, d } = matches[k];
+            const alpha = (1 - d / maxD) * 0.22;
+            const grad = constCtx.createLinearGradient(s.x, s.y, t.x, t.y);
+            grad.addColorStop(0, `rgba(180,255,230,${alpha})`);
+            grad.addColorStop(1, `rgba(180,255,230,${alpha * 0.4})`);
+            constCtx.strokeStyle = grad;
+            constCtx.lineWidth = 1;
+            constCtx.lineDashOffset = performance.now() * -0.002 * (k + 1);
+            constCtx.beginPath();
+            constCtx.moveTo(s.x, s.y);
+            constCtx.lineTo(t.x, t.y);
+            constCtx.stroke();
+          }
         }
 
-        const { games } = await Lumin.getGames({ page: 1, limit: 24 });
-        if (requestId !== activeRequest) return;
-
-        allGames = (games || []).map(normalizeGame);
-
-        const imageResults = await Promise.all(
-          allGames.map(async (game) => ({
-            id: game.id,
-            imageUrl: await getImage(game.image_token)
-          }))
-        );
-
-        if (requestId !== activeRequest) return;
-
-        const imageMap = new Map(imageResults.map((entry) => [entry.id, entry.imageUrl]));
-        allGames = allGames.map((game) => ({ ...game, imageUrl: imageMap.get(game.id) || '' }));
-
-        filterGames();
-      } catch (err) {
-        console.error(err);
-        statusEl.textContent = 'could not load games';
-        gamesEl.innerHTML = '';
+        constCtx.setLineDash([]);
+        for (const s of stars) {
+          constCtx.beginPath();
+          constCtx.fillStyle = `rgba(190,255,234,${Math.min(0.12, s.a * 0.08)}`;
+          constCtx.arc(s.x, s.y, s.r * 2.6, 0, Math.PI * 2);
+          constCtx.fill();
+        }
       }
-    }
 
-    window.addEventListener('resize', resize);
-    searchEl.addEventListener('input', filterGames);
-    clearBtn.addEventListener('click', () => {
-      searchEl.value = '';
-      filterGames();
-      searchEl.focus();
+      function animate() {
+        drawStars();
+        drawConstellations();
+        requestAnimationFrame(animate);
+      }
+
+      function escapeHtml(text) {
+        return String(text)
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+          .replaceAll('"', '&quot;')
+          .replaceAll("'", '&#039;');
+      }
+
+      function normalizeGame(game) {
+        return {
+          id: game?.id ?? '',
+          name: game?.name ?? 'Untitled Game',
+          category: game?.category ?? '',
+          image_token: game?.image_token ?? '',
+          imageUrl: ''
+        };
+      }
+
+      async function getImage(token) {
+        if (!token) return '';
+        if (imageCache.has(token)) return imageCache.get(token);
+        try {
+          const url = await Lumin.getImageUrl(token);
+          imageCache.set(token, url);
+          return url;
+        } catch {
+          return '';
+        }
+      }
+
+      function renderGames(list) {
+        if (!list.length) {
+          gamesEl.innerHTML = '';
+          statusEl.textContent = 'no games found';
+          return;
+        }
+
+        statusEl.textContent = `${list.length} games shown`;
+        gamesEl.innerHTML = list.map((game) => {
+          const img = game.imageUrl
+            ? `<img class="thumb" src="${escapeHtml(game.imageUrl)}" alt="${escapeHtml(game.name)}">`
+            : `<div class="thumb"></div>`;
+
+          return `
+            <article class="card" data-id="${escapeHtml(game.id)}" tabindex="0" role="button" aria-label="Play ${escapeHtml(game.name)}">
+              ${img}
+              <div class="meta">
+                <span class="name">${escapeHtml(game.name)}</span>
+                <span class="category">${escapeHtml(game.category || ' ')}&nbsp;</span>
+              </div>
+            </article>
+          `;
+        }).join('');
+
+        gamesEl.querySelectorAll('.card').forEach((card) => {
+          const play = async () => {
+            const id = card.getAttribute('data-id');
+            if (!id) return;
+
+            try {
+              const { url } = await Lumin.getGameUrl(id);
+              playerFrame.src = url;
+              playerModal.hidden = false;
+            } catch (err) {
+              console.error(err);
+              statusEl.textContent = 'could not open game';
+            }
+          };
+
+          card.addEventListener('click', play);
+          card.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              play();
+            }
+          });
+        });
+      }
+
+      function filterGames() {
+        const q = searchEl.value.trim().toLowerCase();
+        const filtered = allGames.filter((game) =>
+          !q || game.name.toLowerCase().includes(q) || (game.category || '').toLowerCase().includes(q)
+        );
+        renderGames(filtered);
+      }
+
+      async function loadInitialGames() {
+        const requestId = ++activeRequest;
+        statusEl.textContent = 'loading games…';
+        gamesEl.innerHTML = '';
+
+        try {
+          if (!window.Lumin) {
+            statusEl.textContent = 'Lumin script did not load';
+            return;
+          }
+
+          if (!initialized) {
+            await Lumin.init({ headless: true });
+            initialized = true;
+          }
+
+          const { games } = await Lumin.getGames({ page: 1, limit: 24 });
+          if (requestId !== activeRequest) return;
+
+          allGames = (games || []).map(normalizeGame);
+
+          const imageResults = await Promise.all(
+            allGames.map(async (game) => ({
+              id: game.id,
+              imageUrl: await getImage(game.image_token)
+            }))
+          );
+
+          if (requestId !== activeRequest) return;
+
+          const imageMap = new Map(imageResults.map((entry) => [entry.id, entry.imageUrl]));
+          allGames = allGames.map((game) => ({ ...game, imageUrl: imageMap.get(game.id) || '' }));
+
+          filterGames();
+        } catch (err) {
+          console.error(err);
+          statusEl.textContent = 'could not load games';
+          gamesEl.innerHTML = '';
+        }
+      }
+
+      function closeGame() {
+        playerFrame.src = 'about:blank';
+        playerModal.hidden = true;
+      }
+
+      window.addEventListener('resize', resize);
+      window.addEventListener('beforeunload', () => {
+        if (window.Lumin?.destroy) Lumin.destroy();
+      });
+
+      searchEl.addEventListener('input', filterGames);
+      clearBtn.addEventListener('click', () => {
+        searchEl.value = '';
+        filterGames();
+        searchEl.focus();
+      });
+
+      closePlayer.addEventListener('click', closeGame);
+      playerModal.addEventListener('click', (e) => {
+        if (e.target === playerModal) closeGame();
+      });
+
+      resize();
+      animate();
+      loadInitialGames();
+
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduceMotion) {
+        stars.forEach(s => { s.vx = 0; s.vy = 0; });
+      }
     });
-
-    resize();
-    animate();
-    loadInitialGames();
-
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduceMotion) {
-      stars.forEach(s => { s.vx = 0; s.vy = 0; });
-    }
   </script>
 </body>
 </html>
