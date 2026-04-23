@@ -5,13 +5,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Velora–Games</title>
   <style>
+    :root {
+      --dark-green: #013220;
+      --button-green: #0b5e3b;
+      --button-hover: #094b31;
+    }
     body {
       margin: 0;
-      background: #0a0a0a;
+      background: var(--dark-green);
+      color: #e6f3ea;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    .back-home {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      background: var(--button-green);
+      color: #fff;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      transition: background 0.15s ease, transform 0.08s ease;
+      z-index: 1000;
+    }
+    .back-home:hover {
+      background: var(--button-hover);
+      transform: translateY(-1px);
+    }
+    .back-home:active { transform: translateY(0); }
+    /* ensure lumin container is not hidden behind button */
+    #games {
+      padding-top: 64px;
     }
   </style>
 </head>
 <body>
+  <a href="index.html" class="back-home" aria-label="Back to home">← Home</a>
+
   <div id="games"></div>
 
   <script src="https://cdn.jsdelivr.net/gh/luminsdk/script@latest/lumin.min.js"></script>
