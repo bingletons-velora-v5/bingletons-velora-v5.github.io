@@ -725,7 +725,8 @@ const catImage = document.getElementById('catImage');
     window.addEventListener('load', () => {
       playSweep();
     });
-
+catBtn.addEventListener('click', playCatScare);
+    }
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduceMotion) {
       stars.forEach(s => { s.vx = 0; s.vy = 0; });
