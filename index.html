@@ -437,12 +437,11 @@
           <div class="app-icon">✦</div>
           <div class="app-label">Patch Notes</div>
         </button>
-
+     
         <button class="app" id="catBtn" type="button">
   <div class="app-icon">◉</div>
   <div class="app-label">Cat</div>
-</button>
-        </a>
+        </button>
       </div>
     </section>
   </main>
@@ -693,61 +692,233 @@ const catImage = document.getElementById('catImage');
         if (typeof callback === 'function') callback();
       }, 700);
     }
+<script>
+  const starsCanvas = document.getElementById('stars');
+  const starsCtx = starsCanvas.getContext('2d');
+  const constCanvas = document.getElementById('constellations');
+  const constCtx = constCanvas.getContext('2d');
+  const v5 = document.getElementById('v5');
+  const sweep = document.getElementById('sweep');
 
-    patchBtn.addEventListener('click', openPatchNotes);
-    closePatchBtn.addEventListener('click', closePatchNotes);
+  const catBtn = document.getElementById('catBtn');
+  const catScare = document.getElementById('catScare');
+  const catImage = document.getElementById('catImage');
 
-    patchModal.addEventListener('click', (e) => {
-      if (e.target === patchModal) closePatchNotes();
-    });
+  const patchBtn = document.getElementById('patchBtn');
+  const patchModal = document.getElementById('patchModal');
+  const closePatchBtn = document.getElementById('closePatchBtn');
+  const patchList = document.getElementById('patchList');
 
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closePatchNotes();
-    });
+  const PATCH_NOTES = [
+    { date: "april 23, 2026", text: "movies added, huge fullscreen revamp — V5.11" },
+    { date: "april 23, 2026", text: "ui & fullscreen update — V5.01" },
+    { date: "april 22, 2026", text: "V5 created — V5.0" },
+    { date: "march 2025", text: "Velora V4 released — breakthrough" },
+    { date: "january 2025", text: "V3 released — Velora gets its name" },
+    { date: "may 2024", text: "Velora V2 released — experimental" },
+    { date: "february 2024", text: "Velora V1 released" }
+  ];
 
-    document.querySelectorAll('.app[href]').forEach((link) => {
-      link.addEventListener('click', (e) => {
-        if (link.id === 'patchBtn') return;
+  let W = 0, H = 0;
+  let stars = [];
+  let sweepTimer = null;
+  let catTimer1 = null;
+  let catTimer2 = null;
 
-        e.preventDefault();
-        const href = link.getAttribute('href');
-        playSweep(() => {
-          window.location.href = href;
-        });
+  function placeV5() {
+    const x = Math.max(18, Math.min(window.innerWidth - 25, Math.random() * window.innerWidth));
+    const y = Math.max(18, Math.min(window.innerHeight - 25, Math.random() * window.innerHeight));
+    v5.style.left = `${x}px`;
+    v5.style.top = `${y}px`;
+  }
+
+  function resize() {
+    W = starsCanvas.width = constCanvas.width = window.innerWidth;
+    H = starsCanvas.height = constCanvas.height = window.innerHeight;
+    makeStars();
+    placeV5();
+  }
+
+  function makeStars() {
+    stars = [];
+    const total = Math.max(90, Math.floor((W * H) / 16000));
+    for (let i = 0; i < total; i++) {
+      stars.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.5 + 0.2,
+        a: Math.random() * 0.7 + 0.15,
+        tw: Math.random() * 0.02 + 0.005,
+        vx: (Math.random() - 0.5) * 0.03,
+        vy: (Math.random() - 0.5) * 0.03
+      });
+    }
+  }
+
+  function drawStars() {
+    starsCtx.clearRect(0, 0, W, H);
+    for (const s of stars) {
+      s.x += s.vx;
+      s.y += s.vy;
+      if (s.x < -10) s.x = W + 10;
+      if (s.x > W + 10) s.x = -10;
+      if (s.y < -10) s.y = H + 10;
+      if (s.y > H + 10) s.y = -10;
+
+      const pulse = 0.5 + 0.5 * Math.sin(performance.now() * 0.0015 + s.x * 0.01);
+      const alpha = Math.max(0.08, Math.min(1, s.a * (0.7 + pulse * 0.35)));
+
+      starsCtx.beginPath();
+      starsCtx.fillStyle = `rgba(180,255,230,${alpha * 0.95})`;
+      starsCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      starsCtx.fill();
+    }
+  }
+
+  function drawConstellations() {
+    constCtx.clearRect(0, 0, W, H);
+    constCtx.setLineDash([7, 10]);
+    constCtx.lineCap = 'round';
+
+    const maxD = Math.max(110, Math.min(240, (W + H) / 12));
+
+    for (let i = 0; i < stars.length; i++) {
+      const s = stars[i];
+      let matches = [];
+      for (let j = 0; j < stars.length; j++) {
+        if (i === j) continue;
+        const t = stars[j];
+        const dx = t.x - s.x;
+        const dy = t.y - s.y;
+        const d = Math.hypot(dx, dy);
+        if (d < maxD) matches.push({ t, d });
+      }
+      matches.sort((a, b) => a.d - b.d);
+
+      for (let k = 0; k < Math.min(2, matches.length); k++) {
+        const { t, d } = matches[k];
+        const alpha = (1 - d / maxD) * 0.22;
+        const grad = constCtx.createLinearGradient(s.x, s.y, t.x, t.y);
+        grad.addColorStop(0, `rgba(180,255,230,${alpha})`);
+        grad.addColorStop(1, `rgba(180,255,230,${alpha * 0.4})`);
+        constCtx.strokeStyle = grad;
+        constCtx.lineWidth = 1;
+        constCtx.lineDashOffset = performance.now() * -0.002 * (k + 1);
+        constCtx.beginPath();
+        constCtx.moveTo(s.x, s.y);
+        constCtx.lineTo(t.x, t.y);
+        constCtx.stroke();
+      }
+    }
+
+    constCtx.setLineDash([]);
+    for (const s of stars) {
+      constCtx.beginPath();
+      constCtx.fillStyle = `rgba(190,255,234,${Math.min(0.12, s.a * 0.08)})`;
+      constCtx.arc(s.x, s.y, s.r * 2.6, 0, Math.PI * 2);
+      constCtx.fill();
+    }
+  }
+
+  function animate() {
+    drawStars();
+    drawConstellations();
+    requestAnimationFrame(animate);
+  }
+
+  function renderPatchNotes() {
+    patchList.innerHTML = PATCH_NOTES.map(note => `
+      <div class="note">
+        <span class="note-date">${note.date}</span>
+        <div class="note-text">${note.text}</div>
+      </div>
+    `).join('');
+  }
+
+  function openPatchNotes() {
+    renderPatchNotes();
+    patchModal.classList.add('show');
+    patchModal.setAttribute('aria-hidden', 'false');
+  }
+
+  function closePatchNotes() {
+    patchModal.classList.remove('show');
+    patchModal.setAttribute('aria-hidden', 'true');
+  }
+
+  function playSweep(callback) {
+    if (sweepTimer) clearTimeout(sweepTimer);
+
+    sweep.classList.remove('run');
+    void sweep.offsetWidth;
+    sweep.classList.add('run');
+
+    sweepTimer = window.setTimeout(() => {
+      sweep.classList.remove('run');
+      if (typeof callback === 'function') callback();
+    }, 700);
+  }
+
+  function playCatScare() {
+    if (catTimer1) clearTimeout(catTimer1);
+    if (catTimer2) clearTimeout(catTimer2);
+
+    catScare.classList.add('show');
+    catScare.setAttribute('aria-hidden', 'false');
+
+    catImage.classList.remove('shrink-spin');
+    void catImage.offsetWidth;
+
+    catTimer1 = window.setTimeout(() => {
+      catImage.classList.add('shrink-spin');
+    }, 1000);
+
+    catTimer2 = window.setTimeout(() => {
+      catImage.classList.remove('shrink-spin');
+      catScare.classList.remove('show');
+      catScare.setAttribute('aria-hidden', 'true');
+    }, 1900);
+  }
+
+  patchBtn.addEventListener('click', openPatchNotes);
+  closePatchBtn.addEventListener('click', closePatchNotes);
+
+  patchModal.addEventListener('click', (e) => {
+    if (e.target === patchModal) closePatchNotes();
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closePatchNotes();
+      catScare.classList.remove('show');
+      catScare.setAttribute('aria-hidden', 'true');
+    }
+  });
+
+  catBtn.addEventListener('click', playCatScare);
+
+  document.querySelectorAll('.app[href]').forEach((link) => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const href = link.getAttribute('href');
+      playSweep(() => {
+        window.location.href = href;
       });
     });
+  });
 
-    window.addEventListener('resize', resize);
-    resize();
-    animate();
+  window.addEventListener('resize', resize);
+  resize();
+  animate();
 
-    // page open sweep
-    window.addEventListener('load', () => {
-      playSweep();
-    });
-catBtn.addEventListener('click', playCatScare);
-    }
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduceMotion) {
-      stars.forEach(s => { s.vx = 0; s.vy = 0; });
-    }
-    function playCatScare() {
-  catScare.classList.add('show');
-  catScare.setAttribute('aria-hidden', 'false');
+  window.addEventListener('load', () => {
+    playSweep();
+  });
 
-  catImage.classList.remove('shrink-spin');
-  void catImage.offsetWidth;
-
-  setTimeout(() => {
-    catImage.classList.add('shrink-spin');
-  }, 1000);
-
-  setTimeout(() => {
-    catImage.classList.remove('shrink-spin');
-    catScare.classList.remove('show');
-    catScare.setAttribute('aria-hidden', 'true');
-  }, 2000);
-}
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduceMotion) {
+    stars.forEach(s => { s.vx = 0; s.vy = 0; });
+  }  
   </script>
 </body>
 </html>
