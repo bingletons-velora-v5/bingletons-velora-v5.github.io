@@ -472,6 +472,10 @@
     const v5 = document.getElementById('v5');
     const sweep = document.getElementById('sweep');
 
+    const catBtn = document.getElementById('catBtn');
+const catScare = document.getElementById('catScare');
+const catImage = document.getElementById('catImage');
+
     const patchBtn = document.getElementById('patchBtn');
     const patchModal = document.getElementById('patchModal');
     const closePatchBtn = document.getElementById('closePatchBtn');
@@ -726,6 +730,23 @@
     if (reduceMotion) {
       stars.forEach(s => { s.vx = 0; s.vy = 0; });
     }
+    function playCatScare() {
+  catScare.classList.add('show');
+  catScare.setAttribute('aria-hidden', 'false');
+
+  catImage.classList.remove('shrink-spin');
+  void catImage.offsetWidth;
+
+  setTimeout(() => {
+    catImage.classList.add('shrink-spin');
+  }, 1000);
+
+  setTimeout(() => {
+    catImage.classList.remove('shrink-spin');
+    catScare.classList.remove('show');
+    catScare.setAttribute('aria-hidden', 'true');
+  }, 2000);
+}
   </script>
 </body>
 </html>
