@@ -615,16 +615,18 @@
         starsCtx.fill();
       }
     }
-    function spawnShootingStar() {
+   function spawnShootingStar() {
+  const angle = Math.PI * 0.78; // same downward angle for all
+  const speed = 6 + Math.random() * 2.5;
+
   shootingStars.push({
-    x: -80 + Math.random() * 160,
-    y: -80 + Math.random() * 160,
-    vx: 5 + Math.random() * 2.5,
-    vy: 4.5 + Math.random() * 2,
-    len: 220 + Math.random() * 260,
+    x: Math.random() * W * 1.2 - W * 0.1, // different top positions
+    y: -80 - Math.random() * 120,         // start above the screen
+    vx: Math.cos(angle) * speed,
+    vy: Math.sin(angle) * speed,
+    len: 220 + Math.random() * 220,
     life: 1,
-    decay: 0.008 + Math.random() * 0.006,
-    glow: 0.6 + Math.random() * 0.4
+    decay: 0.008 + Math.random() * 0.004
   });
 }
 
