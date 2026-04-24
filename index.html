@@ -369,6 +369,42 @@
       .app { height: 96px; }
       .modal-panel { max-height: 84vh; }
     }
+    .cat-scare {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+
+.cat-scare.show {
+  display: flex;
+}
+
+#catImage {
+  width: min(92vw, 980px);
+  height: min(92vh, 980px);
+  object-fit: contain;
+  transform-origin: center center;
+  filter: drop-shadow(0 0 22px rgba(255,255,255,0.12));
+}
+
+#catImage.shrink-spin {
+  animation: catShrinkSpin 900ms ease-in forwards;
+}
+
+@keyframes catShrinkSpin {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.05) rotate(2160deg);
+    opacity: 0;
+  }
+}
   </style>
 </head>
 <body>
@@ -378,6 +414,9 @@
 
   <div class="v5" id="v5">v5</div>
   <div class="sweep" id="sweep"></div>
+  <div class="cat-scare" id="catScare" aria-hidden="true">
+  <img src="images/cat.png" alt="cat jumpscare" id="catImage">
+</div>
 
   <main class="page">
     <section class="shell" aria-label="Velora home">
@@ -399,9 +438,10 @@
           <div class="app-label">Patch Notes</div>
         </button>
 
-        <a class="app" href="c.html">
-          <div class="app-icon">◔</div>
-          <div class="app-label">Chat</div>
+        <button class="app" id="catBtn" type="button">
+  <div class="app-icon">◉</div>
+  <div class="app-label">Cat</div>
+</button>
         </a>
       </div>
     </section>
