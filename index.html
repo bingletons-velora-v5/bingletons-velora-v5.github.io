@@ -616,16 +616,15 @@
       }
     }
     function spawnShootingStar() {
-  const fromLeft = Math.random() < 0.5;
-
   shootingStars.push({
-    x: fromLeft ? -50 : W + 50,
-    y: Math.random() * (H * 0.55),
-    vx: fromLeft ? (8 + Math.random() * 4) : -(8 + Math.random() * 4),
-    vy: 2 + Math.random() * 2,
-    len: 120 + Math.random() * 140,
+    x: -80 + Math.random() * 160,
+    y: -80 + Math.random() * 160,
+    vx: 5 + Math.random() * 2.5,
+    vy: 4.5 + Math.random() * 2,
+    len: 220 + Math.random() * 260,
     life: 1,
-    decay: 0.012 + Math.random() * 0.01
+    decay: 0.008 + Math.random() * 0.006,
+    glow: 0.6 + Math.random() * 0.4
   });
 }
 
