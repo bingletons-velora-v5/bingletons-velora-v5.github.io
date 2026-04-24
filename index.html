@@ -705,11 +705,19 @@
   });
 }
 
-    function animate() {
-      drawStars();
-      drawConstellations();
-      requestAnimationFrame(animate);
-    }
+    let shootingTimer = 0;
+
+function animate() {
+  drawStars();
+  drawConstellations();
+
+  if (performance.now() - shootingTimer > 1200) {
+    shootingTimer = performance.now();
+    if (Math.random() < 0.7) spawnShootingStar();
+  }
+
+  requestAnimationFrame(animate);
+}
 
     function renderPatchNotes() {
       patchList.innerHTML = PATCH_NOTES.map(note => `
