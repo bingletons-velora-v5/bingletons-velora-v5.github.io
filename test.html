@@ -3,7 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Velora</title>
+  <!-- Fake Google Calculator Tab -->
+<title>calculator - Google Search</title>
+<link rel="icon" type="image/png" href="images/google.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -634,8 +636,7 @@
   <main class="page">
     <section class="hero" aria-label="Velora games page">
       <h1 class="brand">velora</h1>
-      <p class="subtitle">browse over 2,000 games with LuminSDK!</p>
-      <div class="topline">poki-style layout • custom popup player • fast browse</div>
+      <p class="subtitle">browse over 1,000 games with LuminSDK!</p>
     </section>
 
     <section class="content">
@@ -741,6 +742,7 @@
       const modalClose = document.getElementById('modalClose');
       const modalFullscreen = document.getElementById('modalFullscreen');
       const gameFrame = document.getElementById('gameFrame');
+      const modalFrameWrap = document.getElementById('modalFrameWrap');
 
       const searchModal = document.getElementById('searchModal');
       const searchModalClose = document.getElementById('searchModalClose');
@@ -908,18 +910,21 @@
       }
 
       function openPopup({ title, url, category }) {
-        modalTitle.textContent = title || 'Selected Game';
-        modalSubtitle.textContent = category ? `Category: ${category}` : 'Click Fullscreen for a larger view.';
-        gameFrame.src = url;
-        modal.classList.remove('hidden');
-        modal.setAttribute('aria-hidden', 'false');
-      }
+  backBtn.style.display = 'none';
+  modalTitle.textContent = title || 'Selected Game';
+  modalSubtitle.textContent = category ? `Category: ${category}` : 'Click Fullscreen for a larger view.';
+  gameFrame.src = url;
+  modal.classList.remove('hidden');
+  modal.setAttribute('aria-hidden', 'false');
+}
 
-      function closePopup() {
-        modal.classList.add('hidden');
-        modal.setAttribute('aria-hidden', 'true');
-        gameFrame.src = 'about:blank';
-      }
+function closePopup() {
+  modal.classList.add('hidden');
+  modal.setAttribute('aria-hidden', 'true');
+  gameFrame.src = 'about:blank';
+  modalCard.classList.remove('fs-mode');
+  backBtn.style.display = '';
+}
 
       function openSearchPopup() {
         searchModal.classList.remove('hidden');
@@ -1242,4 +1247,4 @@
     });
   </script>
 </body>
-</html> 
+</html>
