@@ -144,20 +144,22 @@
     }
 
     .v5 {
-      position: fixed;
-      z-index: 4;
-      left: 50%;
-      top: 50%;
-      pointer-events: none;
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.24em;
-      color: rgba(255,255,255,0.38);
-      text-shadow: 0 0 10px rgba(255,255,255,0.08);
-      transform-origin: center center;
-      user-select: none;
-      animation: spin 7s linear infinite;
-    }
+  position: fixed;
+  z-index: 4;
+  left: 50%;
+  top: 50%;
+  pointer-events: none;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.34em;
+  color: rgba(255,255,255,0.72);
+  text-shadow:
+    0 0 8px rgba(255,255,255,0.25),
+    0 0 18px rgba(180,255,230,0.22);
+  transform-origin: center center;
+  user-select: none;
+  animation: spin 5s linear infinite;
+}
 
     @keyframes spin {
       from { transform: translate(-50%, -50%) rotate(0deg); }
@@ -557,6 +559,7 @@
 
     let W = 0, H = 0;
     let stars = [];
+    let shootingStars = [];
     let sweepTimer = null;
     let catStartTimer = null;
     let catEndTimer = null;
@@ -576,20 +579,22 @@
     }
 
     function makeStars() {
-      stars = [];
-      const total = Math.max(90, Math.floor((W * H) / 16000));
-      for (let i = 0; i < total; i++) {
-        stars.push({
-          x: Math.random() * W,
-          y: Math.random() * H,
-          r: Math.random() * 1.5 + 0.2,
-          a: Math.random() * 0.7 + 0.15,
-          tw: Math.random() * 0.02 + 0.005,
-          vx: (Math.random() - 0.5) * 0.03,
-          vy: (Math.random() - 0.5) * 0.03
-        });
-      }
-    }
+  stars = [];
+  shootingStars = [];
+
+  const total = Math.max(90, Math.floor((W * H) / 16000));
+  for (let i = 0; i < total; i++) {
+    stars.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      r: Math.random() * 1.5 + 0.2,
+      a: Math.random() * 0.7 + 0.15,
+      tw: Math.random() * 0.02 + 0.005,
+      vx: (Math.random() - 0.5) * 0.03,
+      vy: (Math.random() - 0.5) * 0.03
+    });
+  }
+}
 
     function drawStars() {
       starsCtx.clearRect(0, 0, W, H);
