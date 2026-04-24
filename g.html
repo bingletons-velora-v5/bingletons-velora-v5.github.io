@@ -742,6 +742,7 @@
       const modalClose = document.getElementById('modalClose');
       const modalFullscreen = document.getElementById('modalFullscreen');
       const gameFrame = document.getElementById('gameFrame');
+      const modalFrameWrap = document.getElementById('modalFrameWrap');
 
       const searchModal = document.getElementById('searchModal');
       const searchModalClose = document.getElementById('searchModalClose');
@@ -909,18 +910,21 @@
       }
 
       function openPopup({ title, url, category }) {
-        modalTitle.textContent = title || 'Selected Game';
-        modalSubtitle.textContent = category ? `Category: ${category}` : 'Click Fullscreen for a larger view.';
-        gameFrame.src = url;
-        modal.classList.remove('hidden');
-        modal.setAttribute('aria-hidden', 'false');
-      }
+  backBtn.style.display = 'none';
+  modalTitle.textContent = title || 'Selected Game';
+  modalSubtitle.textContent = category ? `Category: ${category}` : 'Click Fullscreen for a larger view.';
+  gameFrame.src = url;
+  modal.classList.remove('hidden');
+  modal.setAttribute('aria-hidden', 'false');
+}
 
-      function closePopup() {
-        modal.classList.add('hidden');
-        modal.setAttribute('aria-hidden', 'true');
-        gameFrame.src = 'about:blank';
-      }
+function closePopup() {
+  modal.classList.add('hidden');
+  modal.setAttribute('aria-hidden', 'true');
+  gameFrame.src = 'about:blank';
+  modalCard.classList.remove('fs-mode');
+  backBtn.style.display = '';
+}
 
       function openSearchPopup() {
         searchModal.classList.remove('hidden');
@@ -1243,4 +1247,4 @@
     });
   </script>
 </body>
-</html> 
+</html>
