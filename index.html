@@ -4,8 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- Fake Google Calculator Tab -->
-<title>calculator - Google Search</title>
-<link rel="icon" href="/images/google.png">
+  <title>calculator - Google Search</title>
+  <link rel="icon" href="/images/google.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -341,26 +341,101 @@
       opacity: 1;
     }
 
-  .sweep.run::before {
-  animation: sweepAcross 1900ms ease forwards;
-}
+    .sweep.run::before {
+      animation: sweepAcross 1900ms ease forwards;
+    }
 
-.sweep.run::after {
-  animation: sweepGlow 1900ms ease forwards;
-}
+    .sweep.run::after {
+      animation: sweepGlow 1900ms ease forwards;
+    }
 
-@keyframes sweepAcross {
-  0%   { transform: translateX(-160%) skewX(-20deg); opacity: 0; }
-  15%  { opacity: 1; }
-  55%  { opacity: 1; }
-  100% { transform: translateX(160%) skewX(-20deg); opacity: 0; }
-}
+    @keyframes sweepAcross {
+      0%   { transform: translateX(-160%) skewX(-20deg); opacity: 0; }
+      15%  { opacity: 1; }
+      55%  { opacity: 1; }
+      100% { transform: translateX(160%) skewX(-20deg); opacity: 0; }
+    }
 
-@keyframes sweepGlow {
-  0%   { transform: translateX(-180%) scale(0.9) skewX(-18deg); opacity: 0; }
-  18%  { opacity: 1; }
-  100% { transform: translateX(180%) scale(1.1) skewX(-18deg); opacity: 0; }
-}
+    @keyframes sweepGlow {
+      0%   { transform: translateX(-180%) scale(0.9) skewX(-18deg); opacity: 0; }
+      18%  { opacity: 1; }
+      100% { transform: translateX(180%) scale(1.1) skewX(-18deg); opacity: 0; }
+    }
+
+    /* cat jumpscare */
+    .cat-scare {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.82);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .cat-scare.show {
+      display: flex;
+    }
+
+    .cat-scare img {
+      width: min(92vw, 980px);
+      height: auto;
+      max-height: 92vh;
+      object-fit: contain;
+      filter: drop-shadow(0 0 28px rgba(255,255,255,0.16));
+      transform: scale(0.15) rotate(0deg);
+      opacity: 0;
+      will-change: transform, opacity;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .cat-scare.show img {
+      animation: catAppear 1000ms ease-out forwards;
+    }
+
+    .cat-scare.run img {
+      animation: catJumpscare 900ms linear forwards;
+    }
+
+    @keyframes catAppear {
+      0% {
+        transform: scale(0.15) rotate(0deg);
+        opacity: 0;
+      }
+      18% {
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+      }
+    }
+
+    @keyframes catJumpscare {
+      0% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+      }
+      20% {
+        transform: scale(1.08) rotate(540deg);
+      }
+      45% {
+        transform: scale(0.92) rotate(1240deg);
+      }
+      70% {
+        transform: scale(0.42) rotate(2200deg);
+        opacity: 0.92;
+      }
+      100% {
+        transform: scale(0) rotate(3600deg);
+        opacity: 0;
+      }
+    }
 
     @media (max-width: 700px) {
       .page { padding-top: 72px; padding-bottom: 72px; }
@@ -369,42 +444,6 @@
       .app { height: 96px; }
       .modal-panel { max-height: 84vh; }
     }
-    .cat-scare {
-  position: fixed;
-  inset: 0;
-  z-index: 30;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  background: #000;
-}
-
-.cat-scare.show {
-  display: flex;
-}
-
-#catImage {
-  width: min(92vw, 980px);
-  height: min(92vh, 980px);
-  object-fit: contain;
-  transform-origin: center center;
-  filter: drop-shadow(0 0 22px rgba(255,255,255,0.12));
-}
-
-#catImage.shrink-spin {
-  animation: catShrinkSpin 900ms ease-in forwards;
-}
-
-@keyframes catShrinkSpin {
-  0% {
-    transform: scale(1) rotate(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(0.05) rotate(2160deg);
-    opacity: 0;
-  }
-}
   </style>
 </head>
 <body>
@@ -414,9 +453,6 @@
 
   <div class="v5" id="v5">v5</div>
   <div class="sweep" id="sweep"></div>
-  <div class="cat-scare" id="catScare" aria-hidden="true">
-  <img src="images/cat.png" alt="cat jumpscare" id="catImage">
-</div>
 
   <main class="page">
     <section class="shell" aria-label="Velora home">
@@ -437,10 +473,10 @@
           <div class="app-icon">✦</div>
           <div class="app-label">Patch Notes</div>
         </button>
-     
+
         <button class="app" id="catBtn" type="button">
-  <div class="app-icon">◉</div>
-  <div class="app-label">Cat</div>
+          <div class="app-icon">🐱</div>
+          <div class="app-label">Cat</div>
         </button>
       </div>
     </section>
@@ -463,6 +499,10 @@
     </div>
   </div>
 
+  <div class="cat-scare" id="catScare" aria-hidden="true">
+    <img src="images/cat.png" alt="cat jumpscare">
+  </div>
+
   <script>
     const starsCanvas = document.getElementById('stars');
     const starsCtx = starsCanvas.getContext('2d');
@@ -471,37 +511,14 @@
     const v5 = document.getElementById('v5');
     const sweep = document.getElementById('sweep');
 
-    const catBtn = document.getElementById('catBtn');
-const catScare = document.getElementById('catScare');
-const catImage = document.getElementById('catImage');
-
     const patchBtn = document.getElementById('patchBtn');
     const patchModal = document.getElementById('patchModal');
     const closePatchBtn = document.getElementById('closePatchBtn');
     const patchList = document.getElementById('patchList');
 
+    const catBtn = document.getElementById('catBtn');
+    const catScare = document.getElementById('catScare');
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
     // Easy to edit: add new patch notes here.
     const PATCH_NOTES = [
       {
@@ -534,30 +551,11 @@ const catImage = document.getElementById('catImage');
       }
     ];
 
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     let W = 0, H = 0;
     let stars = [];
     let sweepTimer = null;
+    let catStartTimer = null;
+    let catEndTimer = null;
 
     function placeV5() {
       const x = Math.max(18, Math.min(window.innerWidth - 25, Math.random() * window.innerWidth));
@@ -680,6 +678,39 @@ const catImage = document.getElementById('catImage');
       patchModal.setAttribute('aria-hidden', 'true');
     }
 
+    function closeCatScare() {
+      if (catStartTimer) {
+        clearTimeout(catStartTimer);
+        catStartTimer = null;
+      }
+      if (catEndTimer) {
+        clearTimeout(catEndTimer);
+        catEndTimer = null;
+      }
+      catScare.classList.remove('run');
+      catScare.classList.remove('show');
+      catScare.setAttribute('aria-hidden', 'true');
+    }
+
+    function playCatScare() {
+      closeCatScare();
+
+      catScare.classList.add('show');
+      catScare.setAttribute('aria-hidden', 'false');
+
+      const img = catScare.querySelector('img');
+      img.style.animation = 'none';
+      void img.offsetWidth;
+      img.style.animation = '';
+
+      catStartTimer = window.setTimeout(() => {
+        catScare.classList.add('run');
+        catEndTimer = window.setTimeout(() => {
+          closeCatScare();
+        }, 920);
+      }, 1000);
+    }
+
     function playSweep(callback) {
       if (sweepTimer) clearTimeout(sweepTimer);
 
@@ -692,233 +723,48 @@ const catImage = document.getElementById('catImage');
         if (typeof callback === 'function') callback();
       }, 700);
     }
-<script>
-  const starsCanvas = document.getElementById('stars');
-  const starsCtx = starsCanvas.getContext('2d');
-  const constCanvas = document.getElementById('constellations');
-  const constCtx = constCanvas.getContext('2d');
-  const v5 = document.getElementById('v5');
-  const sweep = document.getElementById('sweep');
 
-  const catBtn = document.getElementById('catBtn');
-  const catScare = document.getElementById('catScare');
-  const catImage = document.getElementById('catImage');
+    patchBtn.addEventListener('click', openPatchNotes);
+    closePatchBtn.addEventListener('click', closePatchNotes);
 
-  const patchBtn = document.getElementById('patchBtn');
-  const patchModal = document.getElementById('patchModal');
-  const closePatchBtn = document.getElementById('closePatchBtn');
-  const patchList = document.getElementById('patchList');
+    patchModal.addEventListener('click', (e) => {
+      if (e.target === patchModal) closePatchNotes();
+    });
 
-  const PATCH_NOTES = [
-    { date: "april 23, 2026", text: "movies added, huge fullscreen revamp — V5.11" },
-    { date: "april 23, 2026", text: "ui & fullscreen update — V5.01" },
-    { date: "april 22, 2026", text: "V5 created — V5.0" },
-    { date: "march 2025", text: "Velora V4 released — breakthrough" },
-    { date: "january 2025", text: "V3 released — Velora gets its name" },
-    { date: "may 2024", text: "Velora V2 released — experimental" },
-    { date: "february 2024", text: "Velora V1 released" }
-  ];
+    catBtn.addEventListener('click', playCatScare);
 
-  let W = 0, H = 0;
-  let stars = [];
-  let sweepTimer = null;
-  let catTimer1 = null;
-  let catTimer2 = null;
+    catScare.addEventListener('click', closeCatScare);
 
-  function placeV5() {
-    const x = Math.max(18, Math.min(window.innerWidth - 25, Math.random() * window.innerWidth));
-    const y = Math.max(18, Math.min(window.innerHeight - 25, Math.random() * window.innerHeight));
-    v5.style.left = `${x}px`;
-    v5.style.top = `${y}px`;
-  }
-
-  function resize() {
-    W = starsCanvas.width = constCanvas.width = window.innerWidth;
-    H = starsCanvas.height = constCanvas.height = window.innerHeight;
-    makeStars();
-    placeV5();
-  }
-
-  function makeStars() {
-    stars = [];
-    const total = Math.max(90, Math.floor((W * H) / 16000));
-    for (let i = 0; i < total; i++) {
-      stars.push({
-        x: Math.random() * W,
-        y: Math.random() * H,
-        r: Math.random() * 1.5 + 0.2,
-        a: Math.random() * 0.7 + 0.15,
-        tw: Math.random() * 0.02 + 0.005,
-        vx: (Math.random() - 0.5) * 0.03,
-        vy: (Math.random() - 0.5) * 0.03
-      });
-    }
-  }
-
-  function drawStars() {
-    starsCtx.clearRect(0, 0, W, H);
-    for (const s of stars) {
-      s.x += s.vx;
-      s.y += s.vy;
-      if (s.x < -10) s.x = W + 10;
-      if (s.x > W + 10) s.x = -10;
-      if (s.y < -10) s.y = H + 10;
-      if (s.y > H + 10) s.y = -10;
-
-      const pulse = 0.5 + 0.5 * Math.sin(performance.now() * 0.0015 + s.x * 0.01);
-      const alpha = Math.max(0.08, Math.min(1, s.a * (0.7 + pulse * 0.35)));
-
-      starsCtx.beginPath();
-      starsCtx.fillStyle = `rgba(180,255,230,${alpha * 0.95})`;
-      starsCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      starsCtx.fill();
-    }
-  }
-
-  function drawConstellations() {
-    constCtx.clearRect(0, 0, W, H);
-    constCtx.setLineDash([7, 10]);
-    constCtx.lineCap = 'round';
-
-    const maxD = Math.max(110, Math.min(240, (W + H) / 12));
-
-    for (let i = 0; i < stars.length; i++) {
-      const s = stars[i];
-      let matches = [];
-      for (let j = 0; j < stars.length; j++) {
-        if (i === j) continue;
-        const t = stars[j];
-        const dx = t.x - s.x;
-        const dy = t.y - s.y;
-        const d = Math.hypot(dx, dy);
-        if (d < maxD) matches.push({ t, d });
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closePatchNotes();
+        closeCatScare();
       }
-      matches.sort((a, b) => a.d - b.d);
+    });
 
-      for (let k = 0; k < Math.min(2, matches.length); k++) {
-        const { t, d } = matches[k];
-        const alpha = (1 - d / maxD) * 0.22;
-        const grad = constCtx.createLinearGradient(s.x, s.y, t.x, t.y);
-        grad.addColorStop(0, `rgba(180,255,230,${alpha})`);
-        grad.addColorStop(1, `rgba(180,255,230,${alpha * 0.4})`);
-        constCtx.strokeStyle = grad;
-        constCtx.lineWidth = 1;
-        constCtx.lineDashOffset = performance.now() * -0.002 * (k + 1);
-        constCtx.beginPath();
-        constCtx.moveTo(s.x, s.y);
-        constCtx.lineTo(t.x, t.y);
-        constCtx.stroke();
-      }
-    }
-
-    constCtx.setLineDash([]);
-    for (const s of stars) {
-      constCtx.beginPath();
-      constCtx.fillStyle = `rgba(190,255,234,${Math.min(0.12, s.a * 0.08)})`;
-      constCtx.arc(s.x, s.y, s.r * 2.6, 0, Math.PI * 2);
-      constCtx.fill();
-    }
-  }
-
-  function animate() {
-    drawStars();
-    drawConstellations();
-    requestAnimationFrame(animate);
-  }
-
-  function renderPatchNotes() {
-    patchList.innerHTML = PATCH_NOTES.map(note => `
-      <div class="note">
-        <span class="note-date">${note.date}</span>
-        <div class="note-text">${note.text}</div>
-      </div>
-    `).join('');
-  }
-
-  function openPatchNotes() {
-    renderPatchNotes();
-    patchModal.classList.add('show');
-    patchModal.setAttribute('aria-hidden', 'false');
-  }
-
-  function closePatchNotes() {
-    patchModal.classList.remove('show');
-    patchModal.setAttribute('aria-hidden', 'true');
-  }
-
-  function playSweep(callback) {
-    if (sweepTimer) clearTimeout(sweepTimer);
-
-    sweep.classList.remove('run');
-    void sweep.offsetWidth;
-    sweep.classList.add('run');
-
-    sweepTimer = window.setTimeout(() => {
-      sweep.classList.remove('run');
-      if (typeof callback === 'function') callback();
-    }, 700);
-  }
-
-  function playCatScare() {
-    if (catTimer1) clearTimeout(catTimer1);
-    if (catTimer2) clearTimeout(catTimer2);
-
-    catScare.classList.add('show');
-    catScare.setAttribute('aria-hidden', 'false');
-
-    catImage.classList.remove('shrink-spin');
-    void catImage.offsetWidth;
-
-    catTimer1 = window.setTimeout(() => {
-      catImage.classList.add('shrink-spin');
-    }, 1000);
-
-    catTimer2 = window.setTimeout(() => {
-      catImage.classList.remove('shrink-spin');
-      catScare.classList.remove('show');
-      catScare.setAttribute('aria-hidden', 'true');
-    }, 1900);
-  }
-
-  patchBtn.addEventListener('click', openPatchNotes);
-  closePatchBtn.addEventListener('click', closePatchNotes);
-
-  patchModal.addEventListener('click', (e) => {
-    if (e.target === patchModal) closePatchNotes();
-  });
-
-  window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      closePatchNotes();
-      catScare.classList.remove('show');
-      catScare.setAttribute('aria-hidden', 'true');
-    }
-  });
-
-  catBtn.addEventListener('click', playCatScare);
-
-  document.querySelectorAll('.app[href]').forEach((link) => {
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-      const href = link.getAttribute('href');
-      playSweep(() => {
-        window.location.href = href;
+    document.querySelectorAll('.app[href]').forEach((link) => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const href = link.getAttribute('href');
+        playSweep(() => {
+          window.location.href = href;
+        });
       });
     });
-  });
 
-  window.addEventListener('resize', resize);
-  resize();
-  animate();
+    window.addEventListener('resize', resize);
+    resize();
+    animate();
 
-  window.addEventListener('load', () => {
-    playSweep();
-  });
+    // page open sweep
+    window.addEventListener('load', () => {
+      playSweep();
+    });
 
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reduceMotion) {
-    stars.forEach(s => { s.vx = 0; s.vy = 0; });
-  }  
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) {
+      stars.forEach(s => { s.vx = 0; s.vy = 0; });
+    }
   </script>
 </body>
 </html>
