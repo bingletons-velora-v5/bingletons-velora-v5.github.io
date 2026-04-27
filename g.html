@@ -1067,6 +1067,9 @@
       }
 
 function refreshGame() {
+  if (!currentOpenGame?.id) return;
+
+  localStorage.setItem('reloadGameId', currentOpenGame.id);
   window.location.reload();
 }
 
