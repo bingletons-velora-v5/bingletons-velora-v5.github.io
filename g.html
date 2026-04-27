@@ -1028,8 +1028,9 @@
         }
 
         card.addEventListener('click', () => {
-          playSweep();
-          onClick();
+          playSweep(() => {
+            onClick();
+          });
         });
 
         return card;
@@ -1066,12 +1067,12 @@
         updateFavoriteButton();
       }
 
-function refreshGame() {
-  if (!currentOpenGame?.id) return;
+      function refreshGame() {
+        if (!currentOpenGame?.id) return;
 
-  localStorage.setItem('reloadGameId', currentOpenGame.id);
-  window.location.reload();
-}
+        localStorage.setItem('reloadGameId', String(currentOpenGame.id));
+        window.location.reload();
+      }
 
       function openSearchPopup() {
         searchModal.classList.remove('hidden');
@@ -1295,6 +1296,29 @@ function refreshGame() {
         })();
       }
 
+      async function restoreReloadedGame() {
+        const reloadId = localStorage.getItem('reloadGameId');
+        if (!reloadId) return;
+
+        localStorage.removeItem('reloadGameId');
+
+        try {
+          const result = await Lumin.getGameUrl(reloadId);
+          if (!result || !result.url) throw new Error('Invalid game data');
+
+          const { url, meta } = result;
+
+          openPopup({
+            id: reloadId,
+            name: meta?.name || 'Selected Game',
+            category: meta?.category || '',
+            image_token: meta?.image_token || ''
+          }, url);
+        } catch (err) {
+          console.error('Failed to restore game:', err);
+        }
+      }
+
       modalClose.addEventListener('click', closePopup);
       modalFullscreen.addEventListener('click', goFullscreen);
       modalRefresh.addEventListener('click', refreshGame);
@@ -1388,32 +1412,13 @@ function refreshGame() {
         });
 
         await loadPage(1);
+        await restoreReloadedGame();
       } catch (err) {
         console.error('LuminSDK error:', err);
         gamesMeta.textContent = 'Could not load games.';
         gamesGrid.innerHTML = '<div class="empty-state">Could not load games.</div>';
       }
-
-const reloadId = localStorage.getItem('reloadGameId');
-if (reloadId) {
-  localStorage.removeItem('reloadGameId');
-
-  setTimeout(async () => {
-    try {
-      const { url, meta } = await Lumin.getGameUrl(reloadId);
-
-      openPopup({
-        id: reloadId,
-        name: meta?.name || 'Selected Game',
-        category: meta?.category || '',
-        image_token: ''
-      }, url);
-
-    } catch (err) {
-      console.error('Failed to restore game:', err);
-    }
-  }, 300);
-}
-</script>
+    });
+  </script>
 </body>
 </html>
