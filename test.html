@@ -5,28 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- Fake Google Calculator Tab -->
   <title>calculator - Google Search</title>
-  <link rel="icon" href="/images/google.png">
+  <link rel="icon" type="image/png" href="images/google.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Great+Vibes&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg: #05070b;
-      --bg-2: #0a1020;
-      --bg-3: #08151a;
+      --bg: #070707;
+      --bg-2: #101010;
       --text: #f4f4f4;
-      --muted: rgba(255, 255, 255, 0.52);
+      --muted: rgba(255, 255, 255, 0.58);
+      --border: rgba(180, 255, 230, 0.12);
       --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
-      --panel: rgba(18, 18, 18, 0.92);
-      --panel-border: rgba(255,255,255,0.10);
-      --sweep-a: rgba(255,255,255,0.00);
-      --sweep-b: rgba(180,255,230,0.18);
-      --sweep-c: rgba(255,255,255,0.85);
-      --aurora-a: rgba(90, 255, 210, 0.14);
-      --aurora-b: rgba(120, 145, 255, 0.12);
-      --aurora-c: rgba(255, 130, 210, 0.10);
+      --accent: #b4ffe6;
+      --favorite: #ff7aa8;
     }
 
     * { box-sizing: border-box; }
@@ -34,55 +28,14 @@
 
     body {
       margin: 0;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: auto;
+      background:
+        radial-gradient(circle at 50% 35%, rgba(255,255,255,0.04), transparent 26%),
+        radial-gradient(circle at 50% 55%, rgba(122, 255, 202, 0.04), transparent 44%),
+        linear-gradient(180deg, var(--bg), var(--bg-2));
       color: var(--text);
       font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at 50% 45%, rgba(255,255,255,0.04), transparent 22%),
-        radial-gradient(circle at 50% 50%, rgba(122, 255, 202, 0.03), transparent 38%),
-        radial-gradient(circle at 20% 20%, rgba(96, 141, 255, 0.08), transparent 18%),
-        radial-gradient(circle at 80% 30%, rgba(255, 118, 214, 0.06), transparent 18%),
-        linear-gradient(180deg, var(--bg), var(--bg-2) 52%, var(--bg-3));
-    }
-
-    body::before,
-    body::after {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    body::before {
-      background:
-        radial-gradient(circle at 15% 20%, var(--aurora-a), transparent 22%),
-        radial-gradient(circle at 78% 18%, var(--aurora-b), transparent 24%),
-        radial-gradient(circle at 52% 72%, var(--aurora-c), transparent 25%),
-        radial-gradient(circle at 35% 85%, rgba(120,255,220,0.07), transparent 20%);
-      filter: blur(26px);
-      opacity: 0.95;
-      animation: driftGlow 18s ease-in-out infinite alternate;
-    }
-
-    body::after {
-      background:
-        linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
-      background-size: 48px 48px;
-      mask-image: radial-gradient(circle at center, black 20%, rgba(0,0,0,0.7) 55%, transparent 85%);
-      opacity: 0.16;
-      transform: perspective(900px) rotateX(64deg) translateY(16%);
-      transform-origin: center;
-    }
-
-    @keyframes driftGlow {
-      0% {
-        transform: translate3d(-1.5%, -1%, 0) scale(1);
-      }
-      100% {
-        transform: translate3d(1.5%, 1%, 0) scale(1.04);
-      }
     }
 
     canvas {
@@ -103,95 +56,261 @@
       z-index: 2;
       pointer-events: none;
       background:
-        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.02), transparent 18%),
-        radial-gradient(circle at 75% 70%, rgba(255,255,255,0.02), transparent 20%),
-        radial-gradient(circle at 50% 50%, transparent 45%, rgba(0,0,0,0.18) 100%);
-      box-shadow: inset 0 0 160px rgba(0,0,0,0.45);
+        radial-gradient(circle at 18% 22%, rgba(255,255,255,0.018), transparent 16%),
+        radial-gradient(circle at 78% 74%, rgba(255,255,255,0.015), transparent 20%);
+    }
+
+    .back-btn {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      z-index: 100;
+      text-decoration: none;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(180, 255, 230, 0.18);
+      backdrop-filter: blur(10px);
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+      transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+    }
+
+    .back-btn:hover {
+      transform: translateY(-1px);
+      background: rgba(180, 255, 230, 0.12);
+      border-color: rgba(180, 255, 230, 0.28);
     }
 
     .page {
       position: relative;
       z-index: 3;
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 28px 18px 22px;
-    }
-
-    .shell {
-      width: min(920px, 100%);
+      padding: 28px 22px 80px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 22px;
+    }
+
+    .hero {
+      width: min(1220px, 100%);
       text-align: center;
+      padding-top: 14px;
+      margin-bottom: 18px;
     }
 
     .brand {
       margin: 0;
       font-family: "Great Vibes", cursive;
-      font-size: clamp(4.4rem, 9vw, 7.2rem);
+      font-size: clamp(4.1rem, 8vw, 7rem);
       line-height: 0.9;
       font-weight: 400;
-      color: #ffffff;
+      color: #fff;
       letter-spacing: 0.03em;
-      text-shadow:
-        0 0 22px rgba(255,255,255,0.08),
-        0 0 40px rgba(120,255,220,0.08);
-      transform: translateY(2px);
+      text-shadow: 0 0 22px rgba(255,255,255,0.08);
       user-select: none;
     }
 
-    .apps {
-      width: min(480px, 100%);
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px 12px;
+    .subtitle {
+      margin: 10px auto 0;
+      max-width: 760px;
+      color: var(--muted);
+      font-size: clamp(0.95rem, 2vw, 1.08rem);
+      line-height: 1.6;
     }
 
-    .app {
-      pointer-events: auto;
-      height: 112px;
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(28, 28, 28, 0.8);
+    .content {
+      width: min(1440px, 100%);
+      flex: 1;
+      min-height: 0;
+      display: flex;
+    }
+
+    #games {
+      width: 100%;
+      min-height: 560px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at top, rgba(122,255,202,0.05), transparent 40%),
+        rgba(10, 10, 10, 0.18);
+      backdrop-filter: blur(10px);
       box-shadow: var(--shadow);
-      color: var(--text);
-      text-decoration: none;
+      overflow: hidden;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .games-toolbar {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .games-toolbar h2 {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+
+    .games-toolbar .meta {
+      color: rgba(255,255,255,0.58);
+      font-size: 0.92rem;
+      margin-top: 4px;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      width: 100%;
+      margin-top: 2px;
+    }
+
+    .search-input {
+      flex: 1 1 280px;
+      min-width: 220px;
+      border: 1px solid rgba(180,255,230,0.14);
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      border-radius: 14px;
+      padding: 12px 14px;
+      outline: none;
+      font: inherit;
+      transition: border-color 0.16s ease, background 0.16s ease;
+    }
+
+    .search-input::placeholder {
+      color: rgba(255,255,255,0.42);
+    }
+
+    .search-input:focus {
+      border-color: rgba(180,255,230,0.34);
+      background: rgba(255,255,255,0.07);
+    }
+
+    .action-btn {
+      appearance: none;
+      border: 1px solid rgba(180, 255, 230, 0.22);
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease, opacity 0.16s ease;
+      white-space: nowrap;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-1px);
+      background: rgba(180,255,230,0.10);
+      border-color: rgba(180, 255, 230, 0.36);
+    }
+
+    .action-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .games-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    }
+
+    .game-card {
+      cursor: pointer;
+      border: 1px solid rgba(180,255,230,0.12);
+      background: rgba(255,255,255,0.03);
+      border-radius: 18px;
+      overflow: hidden;
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+      min-height: 190px;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      padding: 0;
+      text-align: left;
+      color: inherit;
+    }
+
+    .game-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(180,255,230,0.28);
+      background: rgba(180,255,230,0.06);
+    }
+
+    .game-thumb {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      background: rgba(255,255,255,0.05);
+      display: block;
+    }
+
+    .game-info {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .game-name {
+      margin: 0;
+      font-size: 0.98rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.25;
+    }
+
+    .game-cat {
+      margin: 0;
+      font-size: 0.84rem;
+      color: rgba(255,255,255,0.55);
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      padding: 26px 16px;
+      border: 1px dashed rgba(180,255,230,0.16);
+      border-radius: 18px;
+      color: rgba(255,255,255,0.64);
+      text-align: center;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .pagination {
+      margin-top: 2px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      gap: 10px;
-      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      cursor: pointer;
-      font: inherit;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      padding-top: 16px;
     }
 
-    .app:hover {
-      transform: translateY(-4px);
-      border-color: rgba(216,255,240,0.2);
-      background: rgba(34, 34, 34, 0.88);
-      box-shadow: 0 20px 55px rgba(0,0,0,0.52);
-    }
-
-    .app-icon {
-      width: 34px;
-      height: 34px;
-      border-radius: 9px;
-      display: grid;
-      place-items: center;
-      font-size: 1.1rem;
-      color: white;
-      background: rgba(255,255,255,0.08);
-    }
-
-    .app-label {
+    .pagination .page-info {
+      color: rgba(255,255,255,0.62);
       font-size: 0.92rem;
-      color: rgba(255,255,255,0.92);
+    }
+
+    .topline {
+      margin-top: 10px;
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.34);
+      user-select: none;
     }
 
     .v5 {
@@ -200,16 +319,14 @@
       left: 50%;
       top: 50%;
       pointer-events: none;
-      font-size: 1.15rem;
-      font-weight: 800;
-      letter-spacing: 0.34em;
-      color: rgba(255,255,255,0.72);
-      text-shadow:
-        0 0 8px rgba(255,255,255,0.25),
-        0 0 18px rgba(180,255,230,0.22);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.24em;
+      color: rgba(255,255,255,0.38);
+      text-shadow: 0 0 10px rgba(255,255,255,0.08);
       transform-origin: center center;
       user-select: none;
-      animation: spin 5s linear infinite;
+      animation: spin 7s linear infinite;
     }
 
     @keyframes spin {
@@ -220,142 +337,229 @@
     .modal {
       position: fixed;
       inset: 0;
-      z-index: 20;
-      display: none;
+      z-index: 50;
+      display: flex;
       align-items: center;
       justify-content: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.58);
+      backdrop-filter: blur(10px);
+    }
+
+    .modal.hidden { display: none; }
+
+    .modal-card {
+      width: min(1080px, 100%);
+      height: min(88vh, 860px);
+      border: 1px solid rgba(180, 255, 230, 0.18);
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at top, rgba(180,255,230,0.10), transparent 35%),
+        rgba(12, 12, 12, 0.97);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65);
       padding: 18px;
-      background: rgba(0, 0, 0, 0.62);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-    }
-
-    .modal.show {
-      display: flex;
-    }
-
-    .modal-panel {
-      width: min(700px, 100%);
-      max-height: min(78vh, 760px);
+      position: relative;
       overflow: hidden;
-      border-radius: 18px;
-      border: 1px solid var(--panel-border);
-      background: var(--panel);
-      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.65);
       display: flex;
       flex-direction: column;
+      gap: 14px;
     }
 
-    .modal-header {
-      position: sticky;
-      top: 0;
-      z-index: 1;
+    .modal-top {
       display: flex;
-      align-items: center;
+      align-items: start;
       justify-content: space-between;
-      gap: 12px;
-      padding: 18px 18px 14px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      background: rgba(18, 18, 18, 0.98);
-    }
-
-    .modal-title-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      text-align: left;
+      gap: 14px;
+      padding-right: 176px;
     }
 
     .modal-title {
-      font-size: 1.1rem;
-      font-weight: 700;
       margin: 0;
+      font-size: clamp(1.25rem, 2vw, 1.8rem);
+      line-height: 1.15;
       color: #fff;
-      letter-spacing: 0.02em;
     }
 
     .modal-subtitle {
-      font-size: 0.85rem;
-      color: var(--muted);
+      margin: 6px 0 0;
+      color: rgba(255,255,255,0.62);
+      font-size: 0.96rem;
+      line-height: 1.45;
     }
 
-    .close-btn {
-      border: 1px solid rgba(255,255,255,0.1);
-      background: rgba(255,255,255,0.05);
-      color: white;
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
+    .modal-close,
+    .modal-fullscreen,
+    .modal-favorite,
+    .modal-refresh {
+      position: absolute;
+      top: 14px;
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: #fff;
       cursor: pointer;
-      font-size: 1.1rem;
+      font-size: 20px;
       line-height: 1;
-      transition: transform 0.15s ease, background 0.15s ease;
+      transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
     }
 
-    .close-btn:hover {
-      transform: scale(1.04);
-      background: rgba(255,255,255,0.09);
+    .modal-close:hover,
+    .modal-fullscreen:hover,
+    .modal-favorite:hover,
+    .modal-refresh:hover {
+      transform: translateY(-1px);
+      background: rgba(180,255,230,0.10);
+      border-color: rgba(180,255,230,0.30);
     }
 
-    .modal-body {
-      overflow: auto;
+    .modal-close { right: 14px; }
+
+    .modal-fullscreen {
+      right: 60px;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      width: 44px;
+    }
+
+    .modal-refresh {
+      right: 112px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .modal-favorite {
+      right: 164px;
+      font-size: 18px;
+      font-weight: 800;
+      color: rgba(255,255,255,0.92);
+    }
+
+    .modal-favorite.active {
+      color: var(--favorite);
+      border-color: rgba(255, 122, 168, 0.38);
+      background: rgba(255, 122, 168, 0.12);
+    }
+
+    .modal-frame-wrap {
+      flex: 1;
+      min-height: 0;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: #000;
+    }
+
+    .modal-frame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #000;
+    }
+
+    .modal-card.fs-mode .modal-top,
+    .modal-card.fs-mode .modal-close,
+    .modal-card.fs-mode .modal-fullscreen,
+    .modal-card.fs-mode .modal-favorite,
+    .modal-card.fs-mode .modal-refresh {
+      display: none;
+    }
+
+    .modal-card.fs-mode {
+      padding: 0;
+      background: #000;
+      border: none;
+    }
+
+    .modal-card.fs-mode .modal-frame-wrap {
+      border-radius: 0;
+      border: none;
+    }
+
+    .search-overlay-card {
+      width: min(1180px, 100%);
+      max-height: 84vh;
+      border: 1px solid rgba(180, 255, 230, 0.18);
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at top, rgba(180,255,230,0.10), transparent 35%),
+        rgba(12, 12, 12, 0.97);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65);
       padding: 18px;
-    }
-
-    .sticky-note {
-      position: sticky;
-      top: 0;
-      z-index: 2;
-      margin-bottom: 16px;
-      padding: 12px 14px;
-      border-radius: 14px;
-      border: 1px solid rgba(122,255,202,0.22);
-      background: rgba(122,255,202,0.08);
-      color: #eafff7;
-      font-weight: 700;
-      letter-spacing: 0.03em;
-      text-transform: lowercase;
-      backdrop-filter: blur(8px);
-    }
-
-    .note-list {
+      position: relative;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
     }
 
-    .note {
-      padding: 14px 15px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.03);
-      text-align: left;
+    .search-top {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 14px;
+      padding-right: 52px;
     }
 
-    .note-date {
-      display: block;
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: #ffffff;
-      margin-bottom: 6px;
-      text-transform: capitalize;
+    .search-title {
+      margin: 0;
+      font-size: clamp(1.15rem, 2vw, 1.55rem);
+      color: #fff;
     }
 
-    .note-text {
+    .search-subtitle {
+      margin: 6px 0 0;
+      color: rgba(255,255,255,0.62);
       font-size: 0.95rem;
-      color: rgba(255,255,255,0.86);
-      line-height: 1.5;
     }
 
-    /* sweep animation */
+    .search-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+      cursor: pointer;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .search-results {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .search-results-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    }
+
+    .search-results-grid .game-card {
+      min-height: 180px;
+    }
+
+    /* Sweep animation */
     .sweep {
       position: fixed;
       inset: 0;
-      z-index: 18;
+      z-index: 200;
       pointer-events: none;
       opacity: 0;
       overflow: hidden;
-      background: rgba(0,0,0,0.04);
     }
 
     .sweep::before,
@@ -370,25 +574,20 @@
     .sweep::before {
       background: linear-gradient(
         115deg,
-        var(--sweep-a) 0%,
-        var(--sweep-a) 38%,
-        rgba(255,255,255,0.03) 44%,
-        var(--sweep-b) 50%,
-        var(--sweep-c) 52%,
-        var(--sweep-b) 55%,
-        rgba(255,255,255,0.03) 60%,
-        var(--sweep-a) 66%,
-        var(--sweep-a) 100%
+        transparent 0%,
+        rgba(180,255,230,0.10) 48%,
+        rgba(255,255,255,0.92) 50%,
+        rgba(180,255,230,0.10) 54%,
+        transparent 100%
       );
       filter: blur(1px);
     }
 
     .sweep::after {
-      inset: -20%;
-      background: radial-gradient(circle at center, rgba(180,255,230,0.22), transparent 55%);
+      background: radial-gradient(circle, rgba(180,255,230,0.22), transparent 60%);
       transform: translateX(-180%) scale(0.9) skewX(-18deg);
-      filter: blur(12px);
-      opacity: 0.85;
+      filter: blur(14px);
+      opacity: 0.8;
     }
 
     .sweep.run {
@@ -405,520 +604,799 @@
 
     @keyframes sweepAcross {
       0%   { transform: translateX(-160%) skewX(-20deg); opacity: 0; }
-      15%  { opacity: 1; }
-      55%  { opacity: 1; }
+      12%  { opacity: 1; }
+      58%  { opacity: 1; }
       100% { transform: translateX(160%) skewX(-20deg); opacity: 0; }
     }
 
     @keyframes sweepGlow {
       0%   { transform: translateX(-180%) scale(0.9) skewX(-18deg); opacity: 0; }
-      18%  { opacity: 1; }
+      14%  { opacity: 1; }
       100% { transform: translateX(180%) scale(1.1) skewX(-18deg); opacity: 0; }
     }
 
-    /* cat jumpscare */
-    .cat-scare {
-      position: fixed;
-      inset: 0;
-      z-index: 30;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0, 0, 0, 0.82);
-      backdrop-filter: blur(2px);
-      -webkit-backdrop-filter: blur(2px);
-      pointer-events: none;
-      overflow: hidden;
-    }
-
-    .cat-scare.show {
-      display: flex;
-    }
-
-    .cat-scare img {
-      width: min(92vw, 980px);
-      height: auto;
-      max-height: 92vh;
-      object-fit: contain;
-      filter: drop-shadow(0 0 28px rgba(255,255,255,0.16));
-      transform: scale(0.15) rotate(0deg);
-      opacity: 0;
-      will-change: transform, opacity;
-      user-select: none;
-      -webkit-user-drag: none;
-    }
-
-    .cat-scare.show img {
-      animation: catAppear 1000ms ease-out forwards;
-    }
-
-    .cat-scare.run img {
-      animation: catJumpscare 900ms linear forwards;
-    }
-
-    @keyframes catAppear {
-      0% {
-        transform: scale(0.15) rotate(0deg);
-        opacity: 0;
-      }
-      18% {
-        opacity: 1;
-      }
-      100% {
-        transform: scale(1) rotate(0deg);
-        opacity: 1;
-      }
-    }
-
-    @keyframes catJumpscare {
-      0% {
-        transform: scale(1) rotate(0deg);
-        opacity: 1;
-      }
-      20% {
-        transform: scale(1.08) rotate(540deg);
-      }
-      45% {
-        transform: scale(0.92) rotate(1240deg);
-      }
-      70% {
-        transform: scale(0.42) rotate(2200deg);
-        opacity: 0.92;
-      }
-      100% {
-        transform: scale(0) rotate(3600deg);
-        opacity: 0;
-      }
-    }
-
     @media (max-width: 700px) {
-      .page { padding-top: 72px; padding-bottom: 72px; }
-      .shell { gap: 18px; }
-      .apps { width: min(360px, 100%); }
-      .app { height: 96px; }
-      .modal-panel { max-height: 84vh; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      body::before,
-      .v5,
-      .sweep.run::before,
-      .sweep.run::after,
-      .cat-scare.show img,
-      .cat-scare.run img {
-        animation: none !important;
+      body {
+        overflow-x: hidden;
+        overflow-y: auto;
       }
+
+      .page {
+        padding-top: 22px;
+        padding-bottom: 40px;
+      }
+
+      #games {
+        min-height: 680px;
+      }
+
+      .content {
+        min-height: 680px;
+      }
+
+      .modal-card,
+      .search-overlay-card {
+        width: min(100%, 520px);
+        height: min(90vh, 820px);
+        padding: 16px;
+      }
+
+      .games-grid,
+      .search-results-grid {
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      }
+
+      .pagination {
+        justify-content: center;
+      }
+
+      .modal-top,
+      .search-top {
+        padding-right: 0;
+      }
+
+      .modal-refresh { right: 112px; }
+      .modal-fullscreen { right: 60px; }
+      .modal-favorite { right: 164px; }
     }
   </style>
 </head>
 <body>
+  <a href="index.html" class="back-btn" id="backBtn">← Back</a>
   <canvas id="stars"></canvas>
   <canvas id="constellations"></canvas>
   <div class="overlay"></div>
-
   <div class="v5" id="v5">v5</div>
   <div class="sweep" id="sweep"></div>
 
   <main class="page">
-    <section class="shell" aria-label="Velora home">
-      <h1 class="brand">Velora</h1>
+    <section class="hero" aria-label="Velora games page">
+      <h1 class="brand">velora</h1>
+      <p class="subtitle">browse over 1,000 games with LuminSDK!</p>
+    </section>
 
-      <div class="apps">
-        <a class="app" href="g.html">
-          <div class="app-icon">⛫</div>
-          <div class="app-label">Games</div>
-        </a>
+    <section class="content">
+      <div id="games">
+        <div class="games-toolbar">
+          <div>
+            <h2>Games</h2>
+            <div class="meta" id="gamesMeta">Loading…</div>
+          </div>
+        </div>
 
-        <a class="app" href="m.html">
-          <div class="app-icon"> ்۪۪☽</div>
-          <div class="app-label">Movies</div>
-        </a>
+        <div class="search-row">
+          <input
+            id="searchInput"
+            class="search-input"
+            type="search"
+            placeholder="Search games..."
+            aria-label="Search games"
+          />
+          <button class="action-btn" id="searchBtn" type="button">Search</button>
+          <button class="action-btn" id="clearBtn" type="button">Clear</button>
+          <button class="action-btn" id="randomBtn" type="button">Random Game</button>
+        </div>
 
-        <button class="app" id="patchBtn" type="button">
-          <div class="app-icon">✦</div>
-          <div class="app-label">Patch Notes</div>
-        </button>
+        <div class="games-grid" id="gamesGrid"></div>
 
-        <button class="app" id="catBtn" type="button">
-          <div class="app-icon">⩊፟</div>
-          <div class="app-label">Cat</div>
-        </button>
+        <div class="pagination" id="pagination">
+          <button class="action-btn" id="prevPageBtn" type="button">← Previous</button>
+          <div class="page-info" id="pageInfo">Page 1</div>
+          <button class="action-btn" id="nextPageBtn" type="button">Next →</button>
+        </div>
       </div>
     </section>
   </main>
 
-  <div class="modal" id="patchModal" aria-hidden="true">
-    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="patchTitle">
-      <div class="modal-header">
-        <div class="modal-title-wrap">
-          <h2 class="modal-title" id="patchTitle">Patch Notes</h2>
-          <div class="modal-subtitle">Velora timeline and updates</div>
+  <div id="gameModal" class="modal hidden" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-card" id="modalCard">
+      <button class="modal-favorite" id="modalFavorite" aria-label="Add to favorites" title="Add to favorites">♡</button>
+      <button class="modal-refresh" id="modalRefresh" aria-label="Refresh game" title="Refresh game">↻</button>
+      <button class="modal-fullscreen" id="modalFullscreen" aria-label="Fullscreen">⛶</button>
+      <button class="modal-close" id="modalClose" aria-label="Close popup">×</button>
+
+      <div class="modal-top">
+        <div>
+          <h2 class="modal-title" id="modalTitle">Game Title</h2>
+          <p class="modal-subtitle" id="modalSubtitle">Selected game details will appear here.</p>
         </div>
-        <button class="close-btn" id="closePatchBtn" type="button" aria-label="Close patch notes">×</button>
       </div>
 
-      <div class="modal-body">
-        <div class="sticky-note">new updates underway</div>
-        <div class="note-list" id="patchList"></div>
+      <div class="modal-frame-wrap" id="modalFrameWrap">
+        <iframe
+          id="gameFrame"
+          class="modal-frame"
+          title="Game player"
+          allow="autoplay; fullscreen; pointer-lock; gamepad"
+          loading="eager"
+        ></iframe>
       </div>
     </div>
   </div>
 
-  <div class="cat-scare" id="catScare" aria-hidden="true">
-    <img src="images/cat.png" alt="cat jumpscare">
+  <div id="searchModal" class="modal hidden" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="search-overlay-card">
+      <button class="search-close" id="searchModalClose" aria-label="Close search">×</button>
+
+      <div class="search-top">
+        <div>
+          <h2 class="search-title" id="searchModalTitle">Search results</h2>
+          <p class="search-subtitle" id="searchModalSubtitle">Type a game name and click Search.</p>
+        </div>
+      </div>
+
+      <div class="search-results">
+        <div class="search-results-grid" id="searchResultsGrid"></div>
+      </div>
+    </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/gh/luminsdk/script@latest/lumin.min.js"></script>
   <script>
-    const starsCanvas = document.getElementById('stars');
-    const starsCtx = starsCanvas.getContext('2d');
-    const constCanvas = document.getElementById('constellations');
-    const constCtx = constCanvas.getContext('2d');
-    const v5 = document.getElementById('v5');
-    const sweep = document.getElementById('sweep');
+    document.addEventListener('DOMContentLoaded', async () => {
+      const FAVORITES_KEY = 'veloraFavorites_v1';
+      const MAX_FAVORITES = 12;
 
-    const patchBtn = document.getElementById('patchBtn');
-    const patchModal = document.getElementById('patchModal');
-    const closePatchBtn = document.getElementById('closePatchBtn');
-    const patchList = document.getElementById('patchList');
+      const sweep = document.getElementById('sweep');
+      const backBtn = document.getElementById('backBtn');
 
-    const catBtn = document.getElementById('catBtn');
-    const catScare = document.getElementById('catScare');
+      const starsCanvas = document.getElementById('stars');
+      const starsCtx = starsCanvas.getContext('2d');
+      const constCanvas = document.getElementById('constellations');
+      const constCtx = constCanvas.getContext('2d');
+      const v5 = document.getElementById('v5');
 
-    // Easy to edit: add new patch notes here.
-    const PATCH_NOTES = [
-      {
-        date: "april 27, 2026",
-        text: "easter egg added :smirk: — V5.26"
-      },
-      {
-        date: "april 26, 2026",
-        text: "big movie ui fix & dev features — V5.25"
-      },
-      {
-        date: "april 24, 2026",
-        text: "favirotes added — V5.21"
-      },
-      {
-        date: "april 24, 2026",
-        text: "kitty implimented — V5.2"
-      },
-      {
-        date: "april 23, 2026",
-        text: "movies added, huge fullscreen revamp — V5.11"
-      },
-      {
-        date: "april 23, 2026",
-        text: "ui & fullscreen update — V5.01"
-      },
-      {
-        date: "april 22, 2026",
-        text: "V5 created — V5.0"
-      },
-      {
-        date: "march 2025",
-        text: "Velora V4 released — breakthrough"
-      },
-      {
-        date: "january 2025",
-        text: "V3 released — Velora gets its name"
-      },
-      {
-        date: "may 2024",
-        text: "Velora V2 released — experimental"
-      },
-      {
-        date: "february 2024",
-        text: "Velora V1 released"
+      const gamesMeta = document.getElementById('gamesMeta');
+      const gamesGrid = document.getElementById('gamesGrid');
+      const searchInput = document.getElementById('searchInput');
+      const searchBtn = document.getElementById('searchBtn');
+      const clearBtn = document.getElementById('clearBtn');
+      const randomBtn = document.getElementById('randomBtn');
+      const prevPageBtn = document.getElementById('prevPageBtn');
+      const nextPageBtn = document.getElementById('nextPageBtn');
+      const pageInfo = document.getElementById('pageInfo');
+
+      const modal = document.getElementById('gameModal');
+      const modalCard = document.getElementById('modalCard');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalSubtitle = document.getElementById('modalSubtitle');
+      const modalClose = document.getElementById('modalClose');
+      const modalFullscreen = document.getElementById('modalFullscreen');
+      const modalFavorite = document.getElementById('modalFavorite');
+      const modalRefresh = document.getElementById('modalRefresh');
+      const gameFrame = document.getElementById('gameFrame');
+      const modalFrameWrap = document.getElementById('modalFrameWrap');
+
+      const searchModal = document.getElementById('searchModal');
+      const searchModalClose = document.getElementById('searchModalClose');
+      const searchModalTitle = document.getElementById('searchModalTitle');
+      const searchModalSubtitle = document.getElementById('searchModalSubtitle');
+      const searchResultsGrid = document.getElementById('searchResultsGrid');
+
+      let W = 0, H = 0;
+      let stars = [];
+
+      let currentPage = 1;
+      const pageSize = 24;
+      let totalGames = 0;
+      let totalPages = 1;
+
+      let currentGames = [];
+      let allGamesCache = null;
+
+      let sweepTimer = null;
+      let favorites = loadFavorites();
+      let currentOpenGame = null;
+      let currentGameUrl = '';
+
+      function safeString(value) {
+        return String(value ?? '').trim();
       }
-    ];
 
-    let W = 0, H = 0;
-    let stars = [];
-    let shootingStars = [];
-    let sweepTimer = null;
-    let catStartTimer = null;
-    let catEndTimer = null;
-
-    function placeV5() {
-      const x = Math.max(18, Math.min(window.innerWidth - 25, Math.random() * window.innerWidth));
-      const y = Math.max(18, Math.min(window.innerHeight - 25, Math.random() * window.innerHeight));
-      v5.style.left = `${x}px`;
-      v5.style.top = `${y}px`;
-    }
-
-    function resize() {
-      W = starsCanvas.width = constCanvas.width = window.innerWidth;
-      H = starsCanvas.height = constCanvas.height = window.innerHeight;
-      makeStars();
-      placeV5();
-    }
-
-    function makeStars() {
-      stars = [];
-      shootingStars = [];
-
-      const total = Math.max(110, Math.floor((W * H) / 14000));
-      for (let i = 0; i < total; i++) {
-        stars.push({
-          x: Math.random() * W,
-          y: Math.random() * H,
-          r: Math.random() * 1.5 + 0.25,
-          a: Math.random() * 0.7 + 0.12,
-          tw: Math.random() * 0.02 + 0.005,
-          vx: (Math.random() - 0.5) * 0.02,
-          vy: (Math.random() - 0.5) * 0.02
-        });
+      function normalizeFavorite(game) {
+        if (!game || game.id == null) return null;
+        return {
+          id: game.id,
+          name: game.name || 'Untitled Game',
+          category: game.category || 'Game',
+          image_token: game.image_token || ''
+        };
       }
-    }
 
-    function drawStars() {
-      starsCtx.clearRect(0, 0, W, H);
-
-      for (const s of stars) {
-        s.x += s.vx;
-        s.y += s.vy;
-        if (s.x < -10) s.x = W + 10;
-        if (s.x > W + 10) s.x = -10;
-        if (s.y < -10) s.y = H + 10;
-        if (s.y > H + 10) s.y = -10;
-
-        const pulse = 0.5 + 0.5 * Math.sin(performance.now() * 0.0015 + s.x * 0.01);
-        const alpha = Math.max(0.08, Math.min(1, s.a * (0.72 + pulse * 0.36)));
-
-        starsCtx.beginPath();
-        starsCtx.fillStyle = `rgba(180,255,230,${alpha * 0.95})`;
-        starsCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-        starsCtx.fill();
-
-        if (s.r > 1.2) {
-          starsCtx.beginPath();
-          starsCtx.strokeStyle = `rgba(255,255,255,${alpha * 0.12})`;
-          starsCtx.lineWidth = 1;
-          starsCtx.moveTo(s.x - 3, s.y);
-          starsCtx.lineTo(s.x + 3, s.y);
-          starsCtx.moveTo(s.x, s.y - 3);
-          starsCtx.lineTo(s.x, s.y + 3);
-          starsCtx.stroke();
-        }
-      }
-    }
-
-    function spawnShootingStar() {
-      const angle = Math.PI * 0.78;
-      const speed = 6 + Math.random() * 2.5;
-
-      shootingStars.push({
-        x: Math.random() * W * 1.2 - W * 0.1,
-        y: -80 - Math.random() * 120,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        len: 220 + Math.random() * 220,
-        life: 1,
-        decay: 0.008 + Math.random() * 0.004
-      });
-    }
-
-    function drawConstellations() {
-      constCtx.clearRect(0, 0, W, H);
-      constCtx.setLineDash([7, 10]);
-      constCtx.lineCap = 'round';
-
-      const maxD = Math.max(110, Math.min(240, (W + H) / 12));
-
-      for (let i = 0; i < stars.length; i++) {
-        const s = stars[i];
-        let matches = [];
-        for (let j = 0; j < stars.length; j++) {
-          if (i === j) continue;
-          const t = stars[j];
-          const dx = t.x - s.x;
-          const dy = t.y - s.y;
-          const d = Math.hypot(dx, dy);
-          if (d < maxD) matches.push({ t, d });
-        }
-        matches.sort((a, b) => a.d - b.d);
-
-        for (let k = 0; k < Math.min(2, matches.length); k++) {
-          const { t, d } = matches[k];
-          const alpha = (1 - d / maxD) * 0.20;
-          const grad = constCtx.createLinearGradient(s.x, s.y, t.x, t.y);
-          grad.addColorStop(0, `rgba(180,255,230,${alpha})`);
-          grad.addColorStop(1, `rgba(180,255,230,${alpha * 0.4})`);
-          constCtx.strokeStyle = grad;
-          constCtx.lineWidth = 1;
-          constCtx.lineDashOffset = performance.now() * -0.002 * (k + 1);
-          constCtx.beginPath();
-          constCtx.moveTo(s.x, s.y);
-          constCtx.lineTo(t.x, t.y);
-          constCtx.stroke();
+      function loadFavorites() {
+        try {
+          const raw = localStorage.getItem(FAVORITES_KEY);
+          if (!raw) return [];
+          const parsed = JSON.parse(raw);
+          if (!Array.isArray(parsed)) return [];
+          return parsed
+            .filter((g) => g && g.id != null)
+            .map((g) => normalizeFavorite(g))
+            .filter(Boolean)
+            .slice(0, MAX_FAVORITES);
+        } catch {
+          return [];
         }
       }
 
-      constCtx.setLineDash([]);
-
-      for (const s of stars) {
-        constCtx.beginPath();
-        constCtx.fillStyle = `rgba(190,255,234,${Math.min(0.12, s.a * 0.08)})`;
-        constCtx.arc(s.x, s.y, s.r * 2.6, 0, Math.PI * 2);
-        constCtx.fill();
+      function saveFavorites(nextFavorites) {
+        favorites = nextFavorites.slice(0, MAX_FAVORITES);
+        try {
+          localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+        } catch (err) {
+          console.warn('Could not save favorites:', err);
+        }
       }
 
-      for (const s of shootingStars) {
-        const trailX = s.x - s.vx * s.len * 0.12;
-        const trailY = s.y - s.vy * s.len * 0.12;
-
-        const grad = constCtx.createLinearGradient(s.x, s.y, trailX, trailY);
-        grad.addColorStop(0, `rgba(255,255,255,${0.95 * s.life})`);
-        grad.addColorStop(0.35, `rgba(180,255,230,${0.7 * s.life})`);
-        grad.addColorStop(1, `rgba(180,255,230,0)`);
-
-        constCtx.strokeStyle = grad;
-        constCtx.lineWidth = 2.5;
-        constCtx.beginPath();
-        constCtx.moveTo(s.x, s.y);
-        constCtx.lineTo(trailX, trailY);
-        constCtx.stroke();
-
-        constCtx.beginPath();
-        constCtx.fillStyle = `rgba(255,255,255,${s.life})`;
-        constCtx.arc(s.x, s.y, 2.2, 0, Math.PI * 2);
-        constCtx.fill();
-
-        s.x += s.vx;
-        s.y += s.vy;
-        s.life -= s.decay;
+      function isFavorite(gameId) {
+        return favorites.some((g) => safeString(g.id) === safeString(gameId));
       }
 
-      shootingStars = shootingStars.filter(s => {
-        return s.life > 0 && s.x > -200 && s.x < W + 200 && s.y < H + 200;
-      });
-    }
-
-    let shootingTimer = 0;
-
-    function animate() {
-      drawStars();
-      drawConstellations();
-
-      if (performance.now() - shootingTimer > 1200) {
-        shootingTimer = performance.now();
-        if (Math.random() < 0.7) spawnShootingStar();
+      function updateFavoriteButton() {
+        const active = !!currentOpenGame?.id && isFavorite(currentOpenGame.id);
+        modalFavorite.textContent = active ? '♥' : '♡';
+        modalFavorite.classList.toggle('active', active);
+        modalFavorite.setAttribute('aria-label', active ? 'Remove from favorites' : 'Add to favorites');
+        modalFavorite.title = active ? 'Remove from favorites' : (favorites.length >= MAX_FAVORITES ? 'Favorites max reached' : 'Add to favorites');
+        modalFavorite.disabled = !currentOpenGame?.id;
       }
 
-      requestAnimationFrame(animate);
-    }
+      function toggleFavoriteCurrentGame() {
+        if (!currentOpenGame?.id) return;
 
-    function renderPatchNotes() {
-      patchList.innerHTML = PATCH_NOTES.map(note => `
-        <div class="note">
-          <span class="note-date">${note.date}</span>
-          <div class="note-text">${note.text}</div>
-        </div>
-      `).join('');
-    }
+        const id = safeString(currentOpenGame.id);
+        const existingIndex = favorites.findIndex((g) => safeString(g.id) === id);
 
-    function openPatchNotes() {
-      renderPatchNotes();
-      patchModal.classList.add('show');
-      patchModal.setAttribute('aria-hidden', 'false');
-    }
+        let next = favorites.slice();
 
-    function closePatchNotes() {
-      patchModal.classList.remove('show');
-      patchModal.setAttribute('aria-hidden', 'true');
-    }
+        if (existingIndex >= 0) {
+          next.splice(existingIndex, 1);
+        } else {
+          const entry = normalizeFavorite(currentOpenGame);
+          if (!entry) return;
+          next = next.filter((g) => safeString(g.id) !== id);
+          next.unshift(entry);
+          if (next.length > MAX_FAVORITES) next = next.slice(0, MAX_FAVORITES);
+        }
 
-    function closeCatScare() {
-      if (catStartTimer) {
-        clearTimeout(catStartTimer);
-        catStartTimer = null;
+        saveFavorites(next);
+        updateFavoriteButton();
+
+        if (currentPage === 1) {
+          renderGames();
+        }
       }
-      if (catEndTimer) {
-        clearTimeout(catEndTimer);
-        catEndTimer = null;
-      }
-      catScare.classList.remove('run');
-      catScare.classList.remove('show');
-      catScare.setAttribute('aria-hidden', 'true');
-    }
 
-    function playCatScare() {
-      closeCatScare();
+      function playSweep(callback) {
+        if (sweepTimer) clearTimeout(sweepTimer);
 
-      catScare.classList.add('show');
-      catScare.setAttribute('aria-hidden', 'false');
-
-      const img = catScare.querySelector('img');
-      img.style.animation = 'none';
-      void img.offsetWidth;
-      img.style.animation = '';
-
-      catStartTimer = window.setTimeout(() => {
-        catScare.classList.add('run');
-        catEndTimer = window.setTimeout(() => {
-          closeCatScare();
-        }, 920);
-      }, 1000);
-    }
-
-    function playSweep(callback) {
-      if (sweepTimer) clearTimeout(sweepTimer);
-
-      sweep.classList.remove('run');
-      void sweep.offsetWidth;
-      sweep.classList.add('run');
-
-      sweepTimer = window.setTimeout(() => {
         sweep.classList.remove('run');
-        if (typeof callback === 'function') callback();
-      }, 700);
-    }
+        void sweep.offsetWidth;
+        sweep.classList.add('run');
 
-    patchBtn.addEventListener('click', openPatchNotes);
-    closePatchBtn.addEventListener('click', closePatchNotes);
-
-    patchModal.addEventListener('click', (e) => {
-      if (e.target === patchModal) closePatchNotes();
-    });
-
-    catBtn.addEventListener('click', playCatScare);
-
-    catScare.addEventListener('click', closeCatScare);
-
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        closePatchNotes();
-        closeCatScare();
+        sweepTimer = window.setTimeout(() => {
+          sweep.classList.remove('run');
+          if (typeof callback === 'function') callback();
+        }, 1900);
       }
 
-      if (e.shiftKey && e.key.toLowerCase() === 'b') {
-        window.location.href = 'ignore/sm.html';
+      function placeV5() {
+        const x = Math.max(18, Math.min(window.innerWidth - 25, Math.random() * window.innerWidth));
+        const y = Math.max(18, Math.min(window.innerHeight - 25, Math.random() * window.innerHeight));
+        v5.style.left = `${x}px`;
+        v5.style.top = `${y}px`;
       }
-    });
 
-    document.querySelectorAll('.app[href]').forEach((link) => {
-      link.addEventListener('click', (e) => {
+      function makeStars() {
+        stars = [];
+        const total = Math.max(90, Math.floor((W * H) / 16000));
+        for (let i = 0; i < total; i++) {
+          stars.push({
+            x: Math.random() * W,
+            y: Math.random() * H,
+            r: Math.random() * 1.5 + 0.2,
+            a: Math.random() * 0.7 + 0.15,
+            vx: (Math.random() - 0.5) * 0.03,
+            vy: (Math.random() - 0.5) * 0.03
+          });
+        }
+      }
+
+      function resize() {
+        W = starsCanvas.width = constCanvas.width = window.innerWidth;
+        H = starsCanvas.height = constCanvas.height = window.innerHeight;
+        makeStars();
+        placeV5();
+      }
+
+      function drawStars() {
+        starsCtx.clearRect(0, 0, W, H);
+        for (const s of stars) {
+          s.x += s.vx;
+          s.y += s.vy;
+
+          if (s.x < -10) s.x = W + 10;
+          if (s.x > W + 10) s.x = -10;
+          if (s.y < -10) s.y = H + 10;
+          if (s.y > H + 10) s.y = -10;
+
+          const pulse = 0.5 + 0.5 * Math.sin(performance.now() * 0.0015 + s.x * 0.01);
+          const alpha = Math.max(0.08, Math.min(1, s.a * (0.7 + pulse * 0.35)));
+
+          starsCtx.beginPath();
+          starsCtx.fillStyle = `rgba(180,255,230,${alpha * 0.95})`;
+          starsCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          starsCtx.fill();
+        }
+      }
+
+      function drawConstellations() {
+        constCtx.clearRect(0, 0, W, H);
+        constCtx.setLineDash([7, 10]);
+        constCtx.lineCap = 'round';
+        const maxD = Math.max(110, Math.min(240, (W + H) / 12));
+
+        for (let i = 0; i < stars.length; i++) {
+          const s = stars[i];
+          const matches = [];
+
+          for (let j = 0; j < stars.length; j++) {
+            if (i === j) continue;
+            const t = stars[j];
+            const dx = t.x - s.x;
+            const dy = t.y - s.y;
+            const d = Math.hypot(dx, dy);
+            if (d < maxD) matches.push({ t, d });
+          }
+
+          matches.sort((a, b) => a.d - b.d);
+
+          for (let k = 0; k < Math.min(2, matches.length); k++) {
+            const { t, d } = matches[k];
+            const alpha = (1 - d / maxD) * 0.22;
+            const grad = constCtx.createLinearGradient(s.x, s.y, t.x, t.y);
+            grad.addColorStop(0, `rgba(180,255,230,${alpha})`);
+            grad.addColorStop(1, `rgba(180,255,230,${alpha * 0.4})`);
+
+            constCtx.strokeStyle = grad;
+            constCtx.lineWidth = 1;
+            constCtx.lineDashOffset = performance.now() * -0.002 * (k + 1);
+            constCtx.beginPath();
+            constCtx.moveTo(s.x, s.y);
+            constCtx.lineTo(t.x, t.y);
+            constCtx.stroke();
+          }
+        }
+
+        constCtx.setLineDash([]);
+        for (const s of stars) {
+          constCtx.beginPath();
+          constCtx.fillStyle = `rgba(190,255,234,${Math.min(0.12, s.a * 0.08)})`;
+          constCtx.arc(s.x, s.y, s.r * 2.6, 0, Math.PI * 2);
+          constCtx.fill();
+        }
+      }
+
+      function animate() {
+        drawStars();
+        drawConstellations();
+        requestAnimationFrame(animate);
+      }
+
+      function createGameCard(game, onClick) {
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'game-card';
+
+        const favBadge = isFavorite(game.id) ? ' ♥' : '';
+
+        card.innerHTML = `
+          <img class="game-thumb" src="" alt="${game.name || 'Game'}">
+          <div class="game-info">
+            <p class="game-name">${game.name || 'Untitled Game'}${favBadge}</p>
+            <p class="game-cat">${game.category || 'Game'}</p>
+          </div>
+        `;
+
+        if (game.image_token && window.Lumin) {
+          Lumin.getImageUrl(game.image_token)
+            .then((url) => {
+              const img = card.querySelector('.game-thumb');
+              if (img) img.src = url || '';
+            })
+            .catch(() => {});
+        }
+
+        card.addEventListener('click', () => {
+          playSweep();
+          onClick();
+        });
+
+        return card;
+      }
+
+      function openPopup(game, url) {
+        currentOpenGame = {
+          id: game?.id ?? null,
+          name: game?.name || 'Selected Game',
+          category: game?.category || '',
+          image_token: game?.image_token || ''
+        };
+
+        currentGameUrl = url || 'about:blank';
+        backBtn.style.display = 'none';
+        modalTitle.textContent = currentOpenGame.name || 'Selected Game';
+        modalSubtitle.textContent = currentOpenGame.category
+          ? `Category: ${currentOpenGame.category}`
+          : 'Click Fullscreen for a larger view.';
+        gameFrame.src = currentGameUrl;
+        modal.classList.remove('hidden');
+        modal.setAttribute('aria-hidden', 'false');
+        updateFavoriteButton();
+      }
+
+      function closePopup() {
+        modal.classList.add('hidden');
+        modal.setAttribute('aria-hidden', 'true');
+        gameFrame.src = 'about:blank';
+        modalCard.classList.remove('fs-mode');
+        backBtn.style.display = '';
+        currentOpenGame = null;
+        currentGameUrl = '';
+        updateFavoriteButton();
+      }
+
+      function refreshGame() {
+        if (!currentGameUrl || currentGameUrl === 'about:blank') return;
+
+        const url = currentGameUrl;
+        gameFrame.src = 'about:blank';
+        requestAnimationFrame(() => {
+          gameFrame.src = url;
+        });
+      }
+
+      function openSearchPopup() {
+        searchModal.classList.remove('hidden');
+        searchModal.setAttribute('aria-hidden', 'false');
+      }
+
+      function closeSearchPopup() {
+        searchModal.classList.add('hidden');
+        searchModal.setAttribute('aria-hidden', 'true');
+      }
+
+      async function goFullscreen() {
+        try {
+          if (document.fullscreenElement) {
+            await document.exitFullscreen();
+            return;
+          }
+
+          modalCard.classList.add('fs-mode');
+
+          if (modalFrameWrap.requestFullscreen) {
+            await modalFrameWrap.requestFullscreen();
+          } else {
+            modalCard.classList.remove('fs-mode');
+          }
+        } catch (err) {
+          console.error('Fullscreen failed:', err);
+          modalCard.classList.remove('fs-mode');
+        }
+      }
+
+      function updateFullscreenButton() {
+        const isFS = !!document.fullscreenElement;
+
+        modalFullscreen.textContent = isFS ? '🗗' : '⛶';
+        modalFullscreen.title = isFS ? 'Exit fullscreen' : 'Fullscreen';
+        modalFullscreen.setAttribute('aria-label', isFS ? 'Exit fullscreen' : 'Fullscreen');
+
+        if (!isFS) {
+          modalCard.classList.remove('fs-mode');
+        }
+      }
+
+      function updatePager() {
+        prevPageBtn.disabled = currentPage <= 1;
+        nextPageBtn.disabled = currentPage >= totalPages;
+        pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+      }
+
+      function getDisplayGamesForPage() {
+        if (currentPage !== 1) return currentGames;
+
+        const favIds = new Set(favorites.map((g) => safeString(g.id)));
+        const pinned = favorites.slice(0, MAX_FAVORITES);
+        const rest = currentGames.filter((g) => !favIds.has(safeString(g.id)));
+
+        return [...pinned, ...rest].slice(0, pageSize);
+      }
+
+      function renderGames() {
+        gamesGrid.innerHTML = '';
+
+        const displayGames = getDisplayGamesForPage();
+        const totalOnPage = displayGames.length;
+
+        if (currentPage === 1 && favorites.length > 0) {
+          gamesMeta.textContent = `${totalGames || totalOnPage} games available · ${favorites.length} favorite${favorites.length === 1 ? '' : 's'} pinned`;
+        } else {
+          gamesMeta.textContent = `${totalGames || totalOnPage} games available`;
+        }
+
+        if (!displayGames.length) {
+          const empty = document.createElement('div');
+          empty.className = 'empty-state';
+          empty.textContent = 'No games found.';
+          gamesGrid.appendChild(empty);
+          updatePager();
+          return;
+        }
+
+        for (const game of displayGames) {
+          const card = createGameCard(game, async () => {
+            await openGame(game);
+          });
+
+          gamesGrid.appendChild(card);
+        }
+
+        updatePager();
+      }
+
+      async function openGame(game) {
+        try {
+          const { url, meta } = await Lumin.getGameUrl(game.id);
+          openPopup({
+            id: game.id,
+            name: meta?.name || game.name || 'Selected Game',
+            category: meta?.category || game.category || '',
+            image_token: game.image_token || ''
+          }, url);
+        } catch (err) {
+          console.error('Could not load game:', err);
+          modalTitle.textContent = 'Error';
+          modalSubtitle.textContent = 'That game could not be loaded.';
+          currentOpenGame = null;
+          currentGameUrl = '';
+          updateFavoriteButton();
+          modal.classList.remove('hidden');
+          modal.setAttribute('aria-hidden', 'false');
+        }
+      }
+
+      async function loadPage(page = 1) {
+        if (!window.Lumin) {
+          gamesMeta.textContent = 'LuminSDK failed to load.';
+          return;
+        }
+
+        currentPage = page;
+        gamesMeta.textContent = 'Loading…';
+        gamesGrid.innerHTML = '';
+        updatePager();
+
+        try {
+          const result = await Lumin.getGames({ page: currentPage, limit: pageSize });
+          currentGames = result.games || [];
+          totalGames = result.total || currentGames.length;
+          totalPages = Math.max(1, Math.ceil(totalGames / pageSize));
+
+          if (currentPage > totalPages) currentPage = totalPages;
+
+          renderGames();
+        } catch (err) {
+          console.error('LuminSDK error:', err);
+          gamesMeta.textContent = 'Could not load games.';
+          gamesGrid.innerHTML = `<div class="empty-state">Could not load games right now.</div>`;
+          updatePager();
+        }
+      }
+
+      async function loadAllGamesOnce() {
+        if (allGamesCache) return allGamesCache;
+        if (!window.Lumin) return [];
+
+        gamesMeta.textContent = 'Searching all games…';
+
+        const gathered = [];
+        const pagesToFetch = Math.max(1, totalPages);
+
+        for (let p = 1; p <= pagesToFetch; p++) {
+          try {
+            const result = await Lumin.getGames({ page: p, limit: pageSize });
+            gathered.push(...(result.games || []));
+          } catch (err) {
+            console.error(`Failed to load search page ${p}:`, err);
+          }
+        }
+
+        allGamesCache = gathered;
+        return gathered;
+      }
+
+      async function searchGames() {
+        const q = searchInput.value.trim();
+        if (!q) {
+          closeSearchPopup();
+          gamesMeta.textContent = `${totalGames || currentGames.length} games available`;
+          return;
+        }
+
+        const query = q.toLowerCase();
+        openSearchPopup();
+        searchModalTitle.textContent = `Search results for “${q}”`;
+        searchModalSubtitle.textContent = 'Click a game to close search and start playing.';
+        searchResultsGrid.innerHTML = `<div class="empty-state">Searching…</div>`;
+
+        const source = await loadAllGamesOnce();
+        const results = source.filter((game) => {
+          const name = String(game.name || '').toLowerCase();
+          const category = String(game.category || '').toLowerCase();
+          return name.includes(query) || category.includes(query);
+        });
+
+        searchResultsGrid.innerHTML = '';
+
+        gamesMeta.textContent = `${results.length} result${results.length === 1 ? '' : 's'} for “${q}”`;
+        pageInfo.textContent = `${results.length} result${results.length === 1 ? '' : 's'}`;
+
+        if (!results.length) {
+          const empty = document.createElement('div');
+          empty.className = 'empty-state';
+          empty.textContent = 'No games matched your search.';
+          searchResultsGrid.appendChild(empty);
+          return;
+        }
+
+        for (const game of results) {
+          const card = createGameCard(game, async () => {
+            closeSearchPopup();
+            searchInput.blur();
+            await openGame(game);
+          });
+
+          searchResultsGrid.appendChild(card);
+        }
+      }
+
+      function randomGame() {
+        const pool = currentGames;
+        if (!pool.length) return;
+
+        const pick = pool[Math.floor(Math.random() * pool.length)];
+        if (!pick) return;
+
+        (async () => {
+          try {
+            await openGame(pick);
+          } catch (err) {
+            console.error('Could not load game:', err);
+          }
+        })();
+      }
+
+      modalClose.addEventListener('click', closePopup);
+      modalFullscreen.addEventListener('click', goFullscreen);
+      modalRefresh.addEventListener('click', refreshGame);
+      modalFavorite.addEventListener('click', toggleFavoriteCurrentGame);
+
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closePopup();
+      });
+
+      searchModalClose.addEventListener('click', () => {
+        closeSearchPopup();
+      });
+
+      searchModal.addEventListener('click', (e) => {
+        if (e.target === searchModal) closeSearchPopup();
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closePopup();
+          closeSearchPopup();
+        }
+      });
+
+      window.addEventListener('resize', resize);
+      document.addEventListener('fullscreenchange', updateFullscreenButton);
+
+      prevPageBtn.addEventListener('click', () => {
+        playSweep();
+        if (currentPage > 1) loadPage(currentPage - 1);
+      });
+
+      nextPageBtn.addEventListener('click', () => {
+        playSweep();
+        if (currentPage < totalPages) loadPage(currentPage + 1);
+      });
+
+      searchBtn.addEventListener('click', () => {
+        playSweep();
+        searchGames();
+      });
+
+      searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          playSweep();
+          searchGames();
+        }
+      });
+
+      clearBtn.addEventListener('click', () => {
+        playSweep();
+        searchInput.value = '';
+        closeSearchPopup();
+        gamesMeta.textContent = `${totalGames || currentGames.length} games available`;
+        updatePager();
+        searchInput.focus();
+      });
+
+      randomBtn.addEventListener('click', () => {
+        playSweep();
+        randomGame();
+      });
+
+      backBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        const href = link.getAttribute('href');
         playSweep(() => {
-          window.location.href = href;
+          window.location.href = backBtn.getAttribute('href');
         });
       });
+
+      resize();
+      animate();
+      updateFullscreenButton();
+      updateFavoriteButton();
+
+      window.addEventListener('load', () => {
+        playSweep();
+      });
+
+      if (!window.Lumin) {
+        gamesMeta.textContent = 'LuminSDK failed to load.';
+        gamesGrid.innerHTML = '<div class="empty-state">LuminSDK failed to load.</div>';
+        return;
+      }
+
+      try {
+        await Lumin.init({
+          container: '#games',
+          headless: true
+        });
+
+        await loadPage(1);
+      } catch (err) {
+        console.error('LuminSDK error:', err);
+        gamesMeta.textContent = 'Could not load games.';
+        gamesGrid.innerHTML = '<div class="empty-state">Could not load games.</div>';
+      }
     });
-
-    window.addEventListener('resize', resize);
-    resize();
-    animate();
-
-    // page open sweep
-    window.addEventListener('load', () => {
-      playSweep();
-    });
-
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduceMotion) {
-      stars.forEach(s => { s.vx = 0; s.vy = 0; });
-    }
   </script>
 </body>
 </html>
