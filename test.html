@@ -3,10 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- Fake Google Calculator Tab -->
-<title>calculator - Google Search</title>
-<link rel="icon" type="image/png" href="images/google.png">
-
+  <title>calculator - Google Search</title>
+  <link rel="icon" type="image/png" href="images/google.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Great+Vibes&display=swap" rel="stylesheet">
@@ -125,7 +123,7 @@
       display: flex;
     }
 
-    #games {
+    #movies {
       width: 100%;
       min-height: 560px;
       border: 1px solid rgba(255, 255, 255, 0.07);
@@ -142,7 +140,7 @@
       gap: 16px;
     }
 
-    .games-toolbar {
+    .toolbar {
       display: flex;
       gap: 12px;
       align-items: center;
@@ -150,14 +148,14 @@
       flex-wrap: wrap;
     }
 
-    .games-toolbar h2 {
+    .toolbar h2 {
       margin: 0;
       font-size: 1.05rem;
       font-weight: 800;
       letter-spacing: 0.02em;
     }
 
-    .games-toolbar .meta {
+    .toolbar .meta {
       color: rgba(255,255,255,0.58);
       font-size: 0.92rem;
       margin-top: 4px;
@@ -185,9 +183,7 @@
       transition: border-color 0.16s ease, background 0.16s ease;
     }
 
-    .search-input::placeholder {
-      color: rgba(255,255,255,0.42);
-    }
+    .search-input::placeholder { color: rgba(255,255,255,0.42); }
 
     .search-input:focus {
       border-color: rgba(180,255,230,0.34);
@@ -220,50 +216,124 @@
       transform: none;
     }
 
-    .games-grid {
+    .movies-grid {
       display: grid;
       gap: 14px;
       grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     }
 
-    .game-card {
+    .movie-card {
+      text-decoration: none;
       cursor: pointer;
       border: 1px solid rgba(180,255,230,0.12);
       background: rgba(255,255,255,0.03);
       border-radius: 18px;
       overflow: hidden;
       transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
-      min-height: 190px;
+      min-height: 250px;
       display: flex;
       flex-direction: column;
       width: 100%;
-      padding: 0;
-      text-align: left;
       color: inherit;
     }
 
-    .game-card:hover {
+    .movie-card:hover {
       transform: translateY(-3px);
       border-color: rgba(180,255,230,0.28);
       background: rgba(180,255,230,0.06);
     }
 
-    .game-thumb {
+    .poster {
+      position: relative;
       width: 100%;
       aspect-ratio: 16 / 10;
-      object-fit: cover;
-      background: rgba(255,255,255,0.05);
-      display: block;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(180,255,230,0.12), rgba(255,255,255,0.06));
     }
 
-    .game-info {
+    .poster::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 30% 25%, rgba(255,255,255,0.22), transparent 24%),
+        radial-gradient(circle at 70% 75%, rgba(255,255,255,0.10), transparent 30%);
+      opacity: 0.65;
+    }
+
+    .poster::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent, rgba(0,0,0,0.55));
+    }
+
+    .poster-glow {
+      position: absolute;
+      width: 150%;
+      height: 150%;
+      background: radial-gradient(circle, rgba(255,255,255,0.18), transparent 55%);
+      filter: blur(18px);
+      opacity: 0.55;
+      transform: translateY(-10%);
+    }
+
+    .poster-icon {
+      position: relative;
+      z-index: 1;
+      width: 62px;
+      height: 62px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(0,0,0,0.22);
+      backdrop-filter: blur(8px);
+      font-size: 1.25rem;
+      padding-left: 3px;
+      box-shadow: 0 0 28px rgba(255,255,255,0.06);
+    }
+
+    .poster-badge {
+      position: absolute;
+      z-index: 1;
+      left: 10px;
+      bottom: 10px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.34);
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(8px);
+      max-width: calc(100% - 20px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .poster-0 { background: linear-gradient(135deg, rgba(180,255,230,0.36), rgba(255,255,255,0.06)); }
+    .poster-1 { background: linear-gradient(135deg, rgba(255,122,168,0.34), rgba(255,255,255,0.06)); }
+    .poster-2 { background: linear-gradient(135deg, rgba(107,188,255,0.34), rgba(255,255,255,0.06)); }
+    .poster-3 { background: linear-gradient(135deg, rgba(255,197,87,0.34), rgba(255,255,255,0.06)); }
+    .poster-4 { background: linear-gradient(135deg, rgba(157,111,255,0.34), rgba(255,255,255,0.06)); }
+    .poster-5 { background: linear-gradient(135deg, rgba(122,255,202,0.34), rgba(255,255,255,0.06)); }
+    .poster-6 { background: linear-gradient(135deg, rgba(255,143,84,0.34), rgba(255,255,255,0.06)); }
+    .poster-7 { background: linear-gradient(135deg, rgba(181,255,122,0.34), rgba(255,255,255,0.06)); }
+
+    .movie-info {
       padding: 12px;
       display: flex;
       flex-direction: column;
       gap: 6px;
+      flex: 1;
     }
 
-    .game-name {
+    .movie-name {
       margin: 0;
       font-size: 0.98rem;
       font-weight: 800;
@@ -271,7 +341,7 @@
       line-height: 1.25;
     }
 
-    .game-cat {
+    .movie-cat {
       margin: 0;
       font-size: 0.84rem;
       color: rgba(255,255,255,0.55);
@@ -333,295 +403,13 @@
       to { transform: translate(-50%, -50%) rotate(360deg); }
     }
 
-    .modal {
-      position: fixed;
-      inset: 0;
-      z-index: 50;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      background: rgba(0, 0, 0, 0.58);
-      backdrop-filter: blur(10px);
-    }
-
-    .modal.hidden { display: none; }
-
-    .modal-card {
-      width: min(1080px, 100%);
-      height: min(88vh, 860px);
-      border: 1px solid rgba(180, 255, 230, 0.18);
-      border-radius: 24px;
-      background:
-        radial-gradient(circle at top, rgba(180,255,230,0.10), transparent 35%),
-        rgba(12, 12, 12, 0.97);
-      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65);
-      padding: 18px;
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .modal-top {
-      display: flex;
-      align-items: start;
-      justify-content: space-between;
-      gap: 14px;
-      padding-right: 92px;
-    }
-
-    .modal-title {
-      margin: 0;
-      font-size: clamp(1.25rem, 2vw, 1.8rem);
-      line-height: 1.15;
-      color: #fff;
-    }
-
-    .modal-subtitle {
-      margin: 6px 0 0;
-      color: rgba(255,255,255,0.62);
-      font-size: 0.96rem;
-      line-height: 1.45;
-    }
-
-    .modal-close,
-    .modal-fullscreen {
-      position: absolute;
-      top: 14px;
-      width: 38px;
-      height: 38px;
-      border-radius: 999px;
-      display: grid;
-      place-items: center;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.06);
-      color: #fff;
-      cursor: pointer;
-      font-size: 20px;
-      line-height: 1;
-    }
-
-    .modal-close { right: 14px; }
-
-    .modal-fullscreen {
-      right: 60px;
-      font-size: 15px;
-      font-weight: 800;
-      letter-spacing: 0.02em;
-      width: 44px;
-    }
-
-    .modal-frame-wrap {
-      flex: 1;
-      min-height: 0;
-      border-radius: 18px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: #000;
-    }
-
-    .modal-frame {
-      width: 100%;
-      height: 100%;
-      border: 0;
-      display: block;
-      background: #000;
-    }
-    .modal-card.fs-mode .modal-top,
-    .modal-card.fs-mode .modal-close,
-    .modal-card.fs-mode .modal-fullscreen {
-      display: none;
-    }
-
-    .modal-card.fs-mode {
-    padding: 0;
-    background: #000;
-    border: none;
-    }
-
-.modal-card.fs-mode .modal-frame-wrap {
-  border-radius: 0;
-  border: none;
-}
-    .search-overlay-card {
-      width: min(1180px, 100%);
-      max-height: 84vh;
-      border: 1px solid rgba(180, 255, 230, 0.18);
-      border-radius: 24px;
-      background:
-        radial-gradient(circle at top, rgba(180,255,230,0.10), transparent 35%),
-        rgba(12, 12, 12, 0.97);
-      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65);
-      padding: 18px;
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .search-top {
-      display: flex;
-      align-items: start;
-      justify-content: space-between;
-      gap: 14px;
-      padding-right: 52px;
-    }
-
-    .search-title {
-      margin: 0;
-      font-size: clamp(1.15rem, 2vw, 1.55rem);
-      color: #fff;
-    }
-
-    .search-subtitle {
-      margin: 6px 0 0;
-      color: rgba(255,255,255,0.62);
-      font-size: 0.95rem;
-    }
-
-    .search-close {
-      position: absolute;
-      top: 14px;
-      right: 14px;
-      width: 38px;
-      height: 38px;
-      border-radius: 999px;
-      display: grid;
-      place-items: center;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.06);
-      color: #fff;
-      cursor: pointer;
-      font-size: 20px;
-      line-height: 1;
-    }
-
-    .search-results {
-      flex: 1;
-      min-height: 0;
-      overflow: auto;
-      padding-right: 4px;
-    }
-
-    .search-results-grid {
-      display: grid;
-      gap: 14px;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    }
-
-    .search-results-grid .game-card {
-      min-height: 180px;
-    }
-
-    /* Sweep animation */
-    .sweep {
-      position: fixed;
-      inset: 0;
-      z-index: 200;
-      pointer-events: none;
-      opacity: 0;
-      overflow: hidden;
-    }
-
-    .sweep::before,
-    .sweep::after {
-      content: "";
-      position: absolute;
-      inset: -35%;
-      transform: translateX(-160%) skewX(-20deg);
-      will-change: transform, opacity;
-    }
-
-    .sweep::before {
-      background: linear-gradient(
-        115deg,
-        transparent 0%,
-        rgba(180,255,230,0.10) 48%,
-        rgba(255,255,255,0.92) 50%,
-        rgba(180,255,230,0.10) 54%,
-        transparent 100%
-      );
-      filter: blur(1px);
-    }
-
-    .sweep::after {
-      background: radial-gradient(circle, rgba(180,255,230,0.22), transparent 60%);
-      transform: translateX(-180%) scale(0.9) skewX(-18deg);
-      filter: blur(14px);
-      opacity: 0.8;
-    }
-
-    .sweep.run {
-      opacity: 1;
-    }
-
-    .sweep.run::before {
-      animation: sweepAcross 1900ms ease forwards;
-    }
-
-    .sweep.run::after {
-      animation: sweepGlow 1900ms ease forwards;
-    }
-
-    @keyframes sweepAcross {
-      0%   { transform: translateX(-160%) skewX(-20deg); opacity: 0; }
-      12%  { opacity: 1; }
-      58%  { opacity: 1; }
-      100% { transform: translateX(160%) skewX(-20deg); opacity: 0; }
-    }
-
-    @keyframes sweepGlow {
-      0%   { transform: translateX(-180%) scale(0.9) skewX(-18deg); opacity: 0; }
-      14%  { opacity: 1; }
-      100% { transform: translateX(180%) scale(1.1) skewX(-18deg); opacity: 0; }
-    }
-
     @media (max-width: 700px) {
-      body {
-        overflow-x: hidden;
-        overflow-y: auto;
-      }
-
-      .page {
-        padding-top: 22px;
-        padding-bottom: 40px;
-      }
-
-      #games {
-        min-height: 680px;
-      }
-
-      .content {
-        min-height: 680px;
-      }
-
-      .modal-card,
-      .search-overlay-card {
-        width: min(100%, 520px);
-        height: min(90vh, 820px);
-        padding: 16px;
-      }
-
-      .games-grid,
-      .search-results-grid {
-        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      }
-
-      .pagination {
-        justify-content: center;
-      }
-
-      .modal-top,
-      .search-top {
-        padding-right: 0;
-      }
-
-      .modal-fullscreen {
-        right: 60px;
-      }
+      body { overflow-x: hidden; overflow-y: auto; }
+      .page { padding-top: 22px; padding-bottom: 40px; }
+      #movies { min-height: 680px; }
+      .content { min-height: 680px; }
+      .movies-grid { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
+      .pagination { justify-content: center; }
     }
   </style>
 </head>
@@ -631,37 +419,1122 @@
   <canvas id="constellations"></canvas>
   <div class="overlay"></div>
   <div class="v5" id="v5">v5</div>
-  <div class="sweep" id="sweep"></div>
 
   <main class="page">
-    <section class="hero" aria-label="Velora games page">
+    <section class="hero" aria-label="Velora movies page">
       <h1 class="brand">velora</h1>
-      <p class="subtitle">browse over 1,000 games with LuminSDK!</p>
+      <p class="subtitle">browse the movie collection — tap a card to open it in a new tab</p>
     </section>
 
     <section class="content">
-      <div id="games">
-        <div class="games-toolbar">
+      <div id="movies">
+        <div class="toolbar">
           <div>
-            <h2>Games</h2>
-            <div class="meta" id="gamesMeta">Loading…</div>
+            <h2>Movies</h2>
+            <div class="meta" id="moviesMeta">Loading…</div>
           </div>
         </div>
 
         <div class="search-row">
-          <input
-            id="searchInput"
-            class="search-input"
-            type="search"
-            placeholder="Search games..."
-            aria-label="Search games"
-          />
+          <input id="searchInput" class="search-input" type="search" placeholder="Search movies..." aria-label="Search movies" />
           <button class="action-btn" id="searchBtn" type="button">Search</button>
           <button class="action-btn" id="clearBtn" type="button">Clear</button>
-          <button class="action-btn" id="randomBtn" type="button">Random Game</button>
+          <button class="action-btn" id="randomBtn" type="button">Random Movie</button>
         </div>
 
-        <div class="games-grid" id="gamesGrid"></div>
+        <div class="movies-grid" id="moviesGrid">
+          
+        <a class="movie-card" href="https://drive.google.com/drive/folders/1j_K1YV4w_sHAzwEAaUMl-qSk4qjrYSJ_" target="_blank" rel="noopener noreferrer" data-title="the cuphead show" data-category="no category">
+          <div class="poster poster-0">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">No Category</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">The CupHead Show</p>
+            <p class="movie-cat">No Category</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1OyO1OdhtfwR883Uvi0QPP5iooGcxTVSY/view?usp=drive_link" target="_blank" rel="noopener noreferrer" data-title="five nights at freddy&#x27;s full movie" data-category="no category">
+          <div class="poster poster-1">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">No Category</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Five Nights at Freddy&#x27;s full movie</p>
+            <p class="movie-cat">No Category</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/drive/u/0/folders/1LawIFQ48UCdP3-VUan7iWTm4l5EonWYw" target="_blank" rel="noopener noreferrer" data-title="kirby: right back at ya!" data-category="no category">
+          <div class="poster poster-2">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">No Category</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Kirby: Right Back At Ya!</p>
+            <p class="movie-cat">No Category</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/drive/folders/1rkjwmHMR8j2nqD2DmM2qHt1vVRmNwrXd?usp=drive_link" target="_blank" rel="noopener noreferrer" data-title="smiling critters series" data-category="no category">
+          <div class="poster poster-3">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">No Category</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Smiling Critters Series</p>
+            <p class="movie-cat">No Category</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/drive/folders/1I7-ZUInlg9jb4R6LGq0qX3n7bjGKPFFO" target="_blank" rel="noopener noreferrer" data-title="pokémon series" data-category="no category">
+          <div class="poster poster-4">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">No Category</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Pokémon series</p>
+            <p class="movie-cat">No Category</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1_5PiiaO_lwVMh3_4Px-TU0modiH11V8r/view?usp=drive_link" target="_blank" rel="noopener noreferrer" data-title="pokémon - the first movie - mewtwo strikes back" data-category="pokémon">
+          <div class="poster poster-5">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Pokémon</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Pokémon - The First Movie - Mewtwo Strikes Back</p>
+            <p class="movie-cat">Pokémon</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1Vbux2rKqR7SsUGDYYFZpKbTKxoa31r9U/view?usp=drive_link" target="_blank" rel="noopener noreferrer" data-title="pokémon mewtwo returns" data-category="pokémon">
+          <div class="poster poster-6">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Pokémon</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Pokémon Mewtwo Returns</p>
+            <p class="movie-cat">Pokémon</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1AoToS8Ettg_wVvjDxQz3BiWLu-ewi6RG/view?usp=drive_link" target="_blank" rel="noopener noreferrer" data-title="pokémon - the movie 2000" data-category="pokémon">
+          <div class="poster poster-7">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Pokémon</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Pokémon - The Movie 2000</p>
+            <p class="movie-cat">Pokémon</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/13fTi-G4RAShFYX_UK0GMP4byLOjL8Tzf/view?usp=drive_link" target="_blank" rel="noopener noreferrer" data-title="pokémon 3 - the movie" data-category="pokémon">
+          <div class="poster poster-0">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Pokémon</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Pokémon 3 - The Movie</p>
+            <p class="movie-cat">Pokémon</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1BE--u5k8B7YLOuAhwm-HV2kjy2cchfSC/view?usp=drive_link" target="_blank" rel="noopener noreferrer" data-title="pokémon 4ever" data-category="pokémon">
+          <div class="poster poster-1">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Pokémon</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Pokémon 4Ever</p>
+            <p class="movie-cat">Pokémon</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1yrnL1o47TUJrs37KXj6XwdwuJMwig5Yg/view?usp=drive_link" target="_blank" rel="noopener noreferrer" data-title="pokémon jirachi wish maker" data-category="pokémon">
+          <div class="poster poster-2">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Pokémon</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Pokémon Jirachi Wish Maker</p>
+            <p class="movie-cat">Pokémon</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1UKCK7zdXb374ZiDB-79zubOVtBU-8Q2D/view?usp=drive_link" target="_blank" rel="noopener noreferrer" data-title="pokémon the movie: i choose you!" data-category="pokémon">
+          <div class="poster poster-3">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Pokémon</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Pokémon the Movie: I Choose You!</p>
+            <p class="movie-cat">Pokémon</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1lbcxI_SXJBrqnxe4GnZYIk5VDhKxCgoF/view?usp=drive_link" target="_blank" rel="noopener noreferrer" data-title="pokémon detective pikachu" data-category="pokémon">
+          <div class="poster poster-4">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Pokémon</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Pokémon Detective Pikachu</p>
+            <p class="movie-cat">Pokémon</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/drive/folders/1x8OrNtdQ0KcunMJGMmUNs881lnHUDd2I?usp=drive_link" target="_blank" rel="noopener noreferrer" data-title="the adventures of super mario brothers 3" data-category="mario">
+          <div class="poster poster-5">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Mario</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">The Adventures of Super Mario Brothers 3</p>
+            <p class="movie-cat">Mario</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/drive/folders/1u2FRXPJq6TFc4DH6pqk8bhe5_Ymgu6GY?usp=drive_link" target="_blank" rel="noopener noreferrer" data-title="super mario super show" data-category="mario">
+          <div class="poster poster-6">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Mario</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Super Mario Super Show</p>
+            <p class="movie-cat">Mario</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/drive/folders/1nw7hzEpAuL_0QVZ-dP4GLstPrTlGg2OI?usp=drive_link" target="_blank" rel="noopener noreferrer" data-title="super mario world" data-category="mario">
+          <div class="poster poster-7">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Mario</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Super Mario World</p>
+            <p class="movie-cat">Mario</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1OsyF2LKJqjtv0b2Xd9GWOLcYkzny3VZo/view?usp=drive_link" target="_blank" rel="noopener noreferrer" data-title="the super mario bros. movie" data-category="mario">
+          <div class="poster poster-0">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Mario</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">The Super Mario Bros. Movie</p>
+            <p class="movie-cat">Mario</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1HaXeNylNfZXhRudGTNLUWtrN-oAmone4/view" target="_blank" rel="noopener noreferrer" data-title="sonic the hedgehog" data-category="sonic movies">
+          <div class="poster poster-1">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Sonic Movies</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Sonic the Hedgehog</p>
+            <p class="movie-cat">Sonic Movies</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/13YPdlfR1BTzXfqwmfbzfiuPycjQsh0Yb/view" target="_blank" rel="noopener noreferrer" data-title="sonic the hedgehog 2" data-category="sonic movies">
+          <div class="poster poster-2">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Sonic Movies</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Sonic the Hedgehog 2</p>
+            <p class="movie-cat">Sonic Movies</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/13pgT7HSDRXYeXvkU0RAEqbdrHrFxPiIm/preview" target="_blank" rel="noopener noreferrer" data-title="sonic the hedgehog 3" data-category="sonic movies">
+          <div class="poster poster-3">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Sonic Movies</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Sonic the Hedgehog 3</p>
+            <p class="movie-cat">Sonic Movies</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/drive/folders/1P08W5o2K-hyR7w5F11mWo9ltAw3ZLbkA" target="_blank" rel="noopener noreferrer" data-title="knuckles series" data-category="sonic movies">
+          <div class="poster poster-4">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Sonic Movies</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Knuckles Series</p>
+            <p class="movie-cat">Sonic Movies</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/drive/folders/1DN2ZHPmwQYAGwH351RYGbuwapqohGgbV?usp=drive_link" target="_blank" rel="noopener noreferrer" data-title="adventures of sonic the hedgehog" data-category="sonic series">
+          <div class="poster poster-5">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Sonic Series</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Adventures of Sonic the Hedgehog</p>
+            <p class="movie-cat">Sonic Series</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/drive/folders/1XbAygEBBhC7K0d5ZrU1c3VMk1A2AEcXm?usp=drive_link" target="_blank" rel="noopener noreferrer" data-title="sonic boom" data-category="sonic series">
+          <div class="poster poster-6">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Sonic Series</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Sonic Boom</p>
+            <p class="movie-cat">Sonic Series</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/drive/folders/1WORzHz85bNI-xPruLAEdcTvX9fRION4G?usp=drive_link" target="_blank" rel="noopener noreferrer" data-title="sonic for hire full series" data-category="sonic series">
+          <div class="poster poster-7">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Sonic Series</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Sonic for hire full series</p>
+            <p class="movie-cat">Sonic Series</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/drive/folders/1q_NeRaY-fU59j9eiZQMs5bu-uFDb7oK9?usp=drive_link" target="_blank" rel="noopener noreferrer" data-title="sonic prime" data-category="sonic series">
+          <div class="poster poster-0">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Sonic Series</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Sonic Prime</p>
+            <p class="movie-cat">Sonic Series</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/drive/folders/1lRpUrOPlpKu3UfRmE2Bfhwtyt4LW8tmB?usp=drive_link" target="_blank" rel="noopener noreferrer" data-title="sonic the hedgehog 1993" data-category="sonic series">
+          <div class="poster poster-1">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Sonic Series</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Sonic the hedgehog 1993</p>
+            <p class="movie-cat">Sonic Series</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/drive/folders/1sPnb40kcPEmi_ZuV0DJGdLphn7HejJFK?usp=drive_link" target="_blank" rel="noopener noreferrer" data-title="sonic underground" data-category="sonic series">
+          <div class="poster poster-2">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Sonic Series</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Sonic Underground</p>
+            <p class="movie-cat">Sonic Series</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/drive/u/5/folders/1rM_wiU6k3TbIDvrp3kt72-4BFWO4GC7G" target="_blank" rel="noopener noreferrer" data-title="sonic x full series dvd ripped" data-category="sonic series">
+          <div class="poster poster-3">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Sonic Series</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Sonic X full series DVD Ripped</p>
+            <p class="movie-cat">Sonic Series</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/106N7zd611ShtPMOx97XwFSxkg8theQLN/view" target="_blank" rel="noopener noreferrer" data-title="cars (2006)" data-category="disney">
+          <div class="poster poster-4">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Cars (2006)</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/194M4dGCwh1hTxVM1-_axnLSdt4trnbK2/view" target="_blank" rel="noopener noreferrer" data-title="coco (2017)" data-category="disney">
+          <div class="poster poster-5">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Coco (2017)</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1y5q4v_Sx6Kj9nIrNjaAbCVcX36nRC3qB/view?ts=6717b8cf" target="_blank" rel="noopener noreferrer" data-title="encanto (2021)" data-category="disney">
+          <div class="poster poster-6">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Encanto (2021)</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/11CN0fT7CwCHgz__mY4FWjcoT5w_wZD9S/view" target="_blank" rel="noopener noreferrer" data-title="finding nemo" data-category="disney">
+          <div class="poster poster-7">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Finding Nemo</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1hpUpKEdeT9ta-8FjSpMUAXw17E-8uwIY/view" target="_blank" rel="noopener noreferrer" data-title="frozen ii" data-category="disney">
+          <div class="poster poster-0">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Frozen II</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1tVsDrCHeADhoZRkQZnXIIj3R5kpB2une/view" target="_blank" rel="noopener noreferrer" data-title="the incredibles" data-category="disney">
+          <div class="poster poster-1">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">The Incredibles</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1SABVZNMwHTME4hsFwL9IWyWZPKDTBSoT/view" target="_blank" rel="noopener noreferrer" data-title="inside out 2" data-category="disney">
+          <div class="poster poster-2">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Inside Out 2</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1yx66GkjBaCwjcMNoovV8w9yPNlZ7Q4Gu/view" target="_blank" rel="noopener noreferrer" data-title="maleficent" data-category="disney">
+          <div class="poster poster-3">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Maleficent</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1EsX8k7nfYQrzC6apqJqnyfH7HLAHl31G/view" target="_blank" rel="noopener noreferrer" data-title="moana" data-category="disney">
+          <div class="poster poster-4">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Moana</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1iVJq1FsNG577gesP7CaTWPLgdqAtnaEg/view" target="_blank" rel="noopener noreferrer" data-title="moana 2" data-category="disney">
+          <div class="poster poster-5">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Moana 2</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1lmlVArBa1cDynHvvDOddrMnCPvYaFVeK/view" target="_blank" rel="noopener noreferrer" data-title="monsters, inc." data-category="disney">
+          <div class="poster poster-6">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Monsters, Inc.</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/drive/folders/0ByibEzjq_Q9LdHlaVzVTLXB5Slk?resourcekey=0-vt41araB3egbisfGtub81g" target="_blank" rel="noopener noreferrer" data-title="mulan saga" data-category="disney">
+          <div class="poster poster-7">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Mulan Saga</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1VcUlwoH5kBsHK6vYEMYMJuhpYgTCng20/view" target="_blank" rel="noopener noreferrer" data-title="luca (2021)" data-category="disney">
+          <div class="poster poster-0">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Luca (2021)</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1D4fFFOThEcYDjLQqISw-29Le-xKt27pg/view" target="_blank" rel="noopener noreferrer" data-title="pirates of the caribbean: the curse of the black pearl" data-category="disney">
+          <div class="poster poster-1">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Pirates of the Caribbean: The Curse of the Black Pearl</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1HuD4_RlXiHOUYHvi56h0t8D7__dCEH1Y/view" target="_blank" rel="noopener noreferrer" data-title="pirates of the caribbean: at world&#x27;s end" data-category="disney">
+          <div class="poster poster-2">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Pirates of the Caribbean: At World&#x27;s End</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1Nc5QxL1XnvFJy6aNQ2s1j_TwtwqWRjoY/view" target="_blank" rel="noopener noreferrer" data-title="pirates of the caribbean: on stranger tides" data-category="disney">
+          <div class="poster poster-3">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Pirates of the Caribbean: On Stranger Tides</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1q6DtsWQ-dFjBydahDLvLOtzW4-N8OIZf/view" target="_blank" rel="noopener noreferrer" data-title="peter pan" data-category="disney">
+          <div class="poster poster-4">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Peter Pan</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1kjVDdXtZ3-O0SndMHeIwMXe4jNZJ4w2C/view" target="_blank" rel="noopener noreferrer" data-title="ratatouille" data-category="disney">
+          <div class="poster poster-5">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Ratatouille</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1lfgeKem8CjfY7LHA67xfbdIv1SWliNVp/view" target="_blank" rel="noopener noreferrer" data-title="simpson.mp4" data-category="disney">
+          <div class="poster poster-6">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">simpson.mp4</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1vELzmz9u6vQ18YtMipK9nSWJhZLP6KaH/view" target="_blank" rel="noopener noreferrer" data-title="the good dinosaur" data-category="disney">
+          <div class="poster poster-7">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">The Good Dinosaur</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1GM7QyJzFwEKM2fM42SWb7oIRN2UPUzqM/view" target="_blank" rel="noopener noreferrer" data-title="the little mermaid ariel unda da sea" data-category="disney">
+          <div class="poster poster-0">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">The Little Mermaid Ariel unda da sea</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1sFYkkRX85JK-a2LRl8_QmZPhYkYIn6KG/view" target="_blank" rel="noopener noreferrer" data-title="the little mermaid (2023)" data-category="disney">
+          <div class="poster poster-1">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">The Little Mermaid (2023)</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1fpkFiPnyvjxCtN6a89i-U2H1cr5_Y_HC/view" target="_blank" rel="noopener noreferrer" data-title="the lion king" data-category="disney">
+          <div class="poster poster-2">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">The Lion King</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/drive/folders/1cmpDGlJ-vvs5g1wJKKoimdjPg28MPS39" target="_blank" rel="noopener noreferrer" data-title="toy story trilogy" data-category="disney">
+          <div class="poster poster-3">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Toy Story Trilogy</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1fW6Ov5NIaRh4h78-qBpWeln_Vs9oEXOQ/view" target="_blank" rel="noopener noreferrer" data-title="toy story (1995)" data-category="disney">
+          <div class="poster poster-4">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Toy Story (1995)</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1k3RVDc_Vah1H9lFsXQZJ6mE3KqdDcK_T/view?usp=drive_link" target="_blank" rel="noopener noreferrer" data-title="toy story 2" data-category="disney">
+          <div class="poster poster-5">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Toy Story 2</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/13msxxmyEco7CRBkO_Ju1SMx5KK4r4Su8/view" target="_blank" rel="noopener noreferrer" data-title="toy story 3" data-category="disney">
+          <div class="poster poster-6">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Toy Story 3</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1bFUbsQ9VEazeCt5l_VBVDtjCsbJmZ_Vr/preview" target="_blank" rel="noopener noreferrer" data-title="toy story 4" data-category="disney">
+          <div class="poster poster-7">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Toy Story 4</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/0B9konOTuvSYRQTl2Nmp6NkpjSG8/view?resourcekey=0-gT34eT_Bn7WLDxwX3U41fw" target="_blank" rel="noopener noreferrer" data-title="wall·e" data-category="disney">
+          <div class="poster poster-0">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">WALL·E</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1HYeIrbf8A-vfvJsvYP59AQzG9l8nt03h/view" target="_blank" rel="noopener noreferrer" data-title="zootopia" data-category="disney">
+          <div class="poster poster-1">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Disney</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Zootopia</p>
+            <p class="movie-cat">Disney</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1UsxNtlBxGFp955GwEB-s8wYJCA6bXt7e/view" target="_blank" rel="noopener noreferrer" data-title="avengers: endgame" data-category="marvel">
+          <div class="poster poster-2">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Marvel</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Avengers: Endgame</p>
+            <p class="movie-cat">Marvel</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1AstKQ5KLX94k7RFIlsu2St9um8sS_w_M/view" target="_blank" rel="noopener noreferrer" data-title="ant-man and the wasp" data-category="marvel">
+          <div class="poster poster-3">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Marvel</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Ant-Man and the Wasp</p>
+            <p class="movie-cat">Marvel</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1GdMksUpH7ghCBF1j4sEmJU9hmZ3pPpkn/view" target="_blank" rel="noopener noreferrer" data-title="black panther" data-category="marvel">
+          <div class="poster poster-4">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Marvel</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Black Panther</p>
+            <p class="movie-cat">Marvel</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1VH_yELQQxJxhuyxsU80q8eMsEeaxNomz/view" target="_blank" rel="noopener noreferrer" data-title="deadpool" data-category="marvel">
+          <div class="poster poster-5">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Marvel</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Deadpool</p>
+            <p class="movie-cat">Marvel</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1wcE3D19t54BnWtLNl5cruklfPVPh92nY/view" target="_blank" rel="noopener noreferrer" data-title="deadpool 2" data-category="marvel">
+          <div class="poster poster-6">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Marvel</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Deadpool 2</p>
+            <p class="movie-cat">Marvel</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1aBzsoTJAjhZeFFDkIV2SN7p7ZHagUEDc/view?t=1" target="_blank" rel="noopener noreferrer" data-title="deadpool &amp; wolverine" data-category="marvel">
+          <div class="poster poster-7">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Marvel</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Deadpool &amp; Wolverine</p>
+            <p class="movie-cat">Marvel</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1pFavPs7Mi9rx_BrAjxbeHNWg7ClAB2_K/view" target="_blank" rel="noopener noreferrer" data-title="guardians of the galaxy vol. 3" data-category="marvel">
+          <div class="poster poster-0">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Marvel</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Guardians of the Galaxy Vol. 3</p>
+            <p class="movie-cat">Marvel</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1u1glpdPyZvJ1MAgTrxAnTrS8Wvys3Bdt/view" target="_blank" rel="noopener noreferrer" data-title="iron man 2" data-category="marvel">
+          <div class="poster poster-1">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Marvel</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Iron Man 2</p>
+            <p class="movie-cat">Marvel</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1f7AlYvxrURwU7138fr2CzyTmN0qK43rp/view" target="_blank" rel="noopener noreferrer" data-title="iron man 3" data-category="marvel">
+          <div class="poster poster-2">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Marvel</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Iron Man 3</p>
+            <p class="movie-cat">Marvel</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1xBiVuAnW0hFxIhG3samjzJJ-czMAKxN0/view" target="_blank" rel="noopener noreferrer" data-title="shang-chi and the legend of the ten rings" data-category="marvel">
+          <div class="poster poster-3">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Marvel</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Shang-Chi and the Legend of the Ten Rings</p>
+            <p class="movie-cat">Marvel</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/0BzeqnwcztH5cRERqUGl6TFkyc3M/view?usp=drive_link&amp;resourcekey=0--S8rnshNZ6cP5uYrkFu3WA" target="_blank" rel="noopener noreferrer" data-title="the wolverine" data-category="marvel">
+          <div class="poster poster-4">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Marvel</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">The Wolverine</p>
+            <p class="movie-cat">Marvel</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/10r1UB_bpBRfG8HykNJ2j63nwUawm-3FS/view" target="_blank" rel="noopener noreferrer" data-title="thor: the dark world" data-category="marvel">
+          <div class="poster poster-5">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Marvel</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Thor: The Dark World</p>
+            <p class="movie-cat">Marvel</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/13d5gq3Kx3koobcfRTVyH9Hhum3s8Fxag/view" target="_blank" rel="noopener noreferrer" data-title="venom: let there be carnage" data-category="marvel">
+          <div class="poster poster-6">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Marvel</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Venom: Let There Be Carnage</p>
+            <p class="movie-cat">Marvel</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1C6aUcmJeLpm8ysdYwnt7HRZFAT6k0oQs/view?usp=drive_link" target="_blank" rel="noopener noreferrer" data-title="venom: the last dance" data-category="marvel">
+          <div class="poster poster-7">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Marvel</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Venom: The Last Dance</p>
+            <p class="movie-cat">Marvel</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/0BxvqXivT-hg5d2VmZDdsNlBNUzQ/view?usp=drive_link&amp;resourcekey=0-QWd9FlwAU9FUyU3Ejx_Cqw" target="_blank" rel="noopener noreferrer" data-title="x-men origins: wolverine" data-category="marvel">
+          <div class="poster poster-0">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Marvel</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">X-Men Origins: Wolverine</p>
+            <p class="movie-cat">Marvel</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1XOhalDbPc-27oTHBEoiQCRjsXrktB4aY/view?usp=drive_link" target="_blank" rel="noopener noreferrer" data-title="x-men: apocalypse" data-category="marvel">
+          <div class="poster poster-1">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Marvel</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">X-Men: Apocalypse</p>
+            <p class="movie-cat">Marvel</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/14BaJhmDRr3veoH436CKdPDp9r-j5214I/view?usp=drive_link" target="_blank" rel="noopener noreferrer" data-title="spider-man" data-category="spider-man">
+          <div class="poster poster-2">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Spider-Man</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Spider-Man</p>
+            <p class="movie-cat">Spider-Man</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1yV7ZmEkfOVOLdV51wN6vSeDf3_tQqBvf/view" target="_blank" rel="noopener noreferrer" data-title="spider-man 2" data-category="spider-man">
+          <div class="poster poster-3">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Spider-Man</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Spider-Man 2</p>
+            <p class="movie-cat">Spider-Man</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1ExTfRPC3YGmCSg8W2uFSYkUMw7a1vcTR/view" target="_blank" rel="noopener noreferrer" data-title="spider-man 3" data-category="spider-man">
+          <div class="poster poster-4">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Spider-Man</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Spider-Man 3</p>
+            <p class="movie-cat">Spider-Man</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1jom1D1Dc3eF3ZmCXVzh8lhlXrFGOBpXK/view" target="_blank" rel="noopener noreferrer" data-title="the amazing spider-man" data-category="spider-man">
+          <div class="poster poster-5">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Spider-Man</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">The Amazing Spider-Man</p>
+            <p class="movie-cat">Spider-Man</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1bQpgzMav6AHi3UYnAagHPsGyraC0GWK_/view" target="_blank" rel="noopener noreferrer" data-title="the amazing spider-man 2" data-category="spider-man">
+          <div class="poster poster-6">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Spider-Man</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">The Amazing Spider-Man 2</p>
+            <p class="movie-cat">Spider-Man</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/16nP21GFh_p9LNNW59oX2pMmTznKV43K4/view" target="_blank" rel="noopener noreferrer" data-title="spider-man: homecoming" data-category="spider-man">
+          <div class="poster poster-7">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Spider-Man</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Spider-Man: Homecoming</p>
+            <p class="movie-cat">Spider-Man</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1YFUpSLmxb6xIlbdJXScIkRYvwYxvJ_18/view?usp=drive_link" target="_blank" rel="noopener noreferrer" data-title="spider-man: far from home" data-category="spider-man">
+          <div class="poster poster-0">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Spider-Man</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Spider-Man: Far From Home</p>
+            <p class="movie-cat">Spider-Man</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1V3Bq0lrDQUxJay5DDs3gK69ZvRNb1j2u/view" target="_blank" rel="noopener noreferrer" data-title="into the spider-verse" data-category="spider-man">
+          <div class="poster poster-1">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Spider-Man</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Into the Spider-Verse</p>
+            <p class="movie-cat">Spider-Man</p>
+          </div>
+        </a>
+    
+
+        <a class="movie-card" href="https://drive.google.com/file/d/1Sd1l_LhKRp_2OE5gRJJyPubnZjJccLgQ/view" target="_blank" rel="noopener noreferrer" data-title="spider-man: across the spider-verse" data-category="spider-man">
+          <div class="poster poster-2">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Spider-Man</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Spider-Man: Across the Spider-Verse</p>
+            <p class="movie-cat">Spider-Man</p>
+          </div>
+        </a>
+
+                  <a class="movie-card" href="https://drive.google.com/drive/folders/1OwoKydzUQUUp6n-Nh7CCAQXGLfchU8Ta" target="_blank" rel="noopener noreferrer" data-title="adventure time" data-category="Cartoons">
+          <div class="poster poster-2">
+            <div class="poster-glow"></div>
+            <div class="poster-icon">▶</div>
+            <div class="poster-badge">Adventure Time</div>
+          </div>
+          <div class="movie-info">
+            <p class="movie-name">Adventure Time</p>
+            <p class="movie-cat">Cartoons</p>
+          </div>
+        </a>
+    
+        </div>
 
         <div class="pagination" id="pagination">
           <button class="action-btn" id="prevPageBtn" type="button">← Previous</button>
@@ -672,52 +1545,15 @@
     </section>
   </main>
 
-  <div id="gameModal" class="modal hidden" aria-hidden="true" role="dialog" aria-modal="true">
-    <div class="modal-card" id="modalCard">
-      <button class="modal-fullscreen" id="modalFullscreen" aria-label="Fullscreen">⛶</button>
-      <button class="modal-close" id="modalClose" aria-label="Close popup">×</button>
-
-      <div class="modal-top">
-        <div>
-          <h2 class="modal-title" id="modalTitle">Game Title</h2>
-          <p class="modal-subtitle" id="modalSubtitle">Selected game details will appear here.</p>
-        </div>
-      </div>
-
-      <div class="modal-frame-wrap" id="modalFrameWrap">
-        <iframe
-          id="gameFrame"
-          class="modal-frame"
-          title="Game player"
-          allow="autoplay; fullscreen; pointer-lock; gamepad"
-          loading="eager"
-        ></iframe>
-      </div>
-    </div>
-  </div>
-
-  <div id="searchModal" class="modal hidden" aria-hidden="true" role="dialog" aria-modal="true">
-    <div class="search-overlay-card">
-      <button class="search-close" id="searchModalClose" aria-label="Close search">×</button>
-
-      <div class="search-top">
-        <div>
-          <h2 class="search-title" id="searchModalTitle">Search results</h2>
-          <p class="search-subtitle" id="searchModalSubtitle">Type a game name and click Search.</p>
-        </div>
-      </div>
-
-      <div class="search-results">
-        <div class="search-results-grid" id="searchResultsGrid"></div>
-      </div>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/gh/luminsdk/script@latest/lumin.min.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', async () => {
-      const sweep = document.getElementById('sweep');
-      const backBtn = document.getElementById('backBtn');
+    document.addEventListener('DOMContentLoaded', () => {
+      const allMovies = Array.from(document.querySelectorAll('.movie-card')).map((card) => {
+        return {
+          title: card.dataset.title || '',
+          category: card.dataset.category || '',
+          element: card
+        };
+      });
 
       const starsCanvas = document.getElementById('stars');
       const starsCtx = starsCanvas.getContext('2d');
@@ -725,8 +1561,8 @@
       const constCtx = constCanvas.getContext('2d');
       const v5 = document.getElementById('v5');
 
-      const gamesMeta = document.getElementById('gamesMeta');
-      const gamesGrid = document.getElementById('gamesGrid');
+      const moviesMeta = document.getElementById('moviesMeta');
+      const moviesGrid = document.getElementById('moviesGrid');
       const searchInput = document.getElementById('searchInput');
       const searchBtn = document.getElementById('searchBtn');
       const clearBtn = document.getElementById('clearBtn');
@@ -734,47 +1570,13 @@
       const prevPageBtn = document.getElementById('prevPageBtn');
       const nextPageBtn = document.getElementById('nextPageBtn');
       const pageInfo = document.getElementById('pageInfo');
-
-      const modal = document.getElementById('gameModal');
-      const modalCard = document.getElementById('modalCard');
-      const modalTitle = document.getElementById('modalTitle');
-      const modalSubtitle = document.getElementById('modalSubtitle');
-      const modalClose = document.getElementById('modalClose');
-      const modalFullscreen = document.getElementById('modalFullscreen');
-      const gameFrame = document.getElementById('gameFrame');
-      const modalFrameWrap = document.getElementById('modalFrameWrap');
-
-      const searchModal = document.getElementById('searchModal');
-      const searchModalClose = document.getElementById('searchModalClose');
-      const searchModalTitle = document.getElementById('searchModalTitle');
-      const searchModalSubtitle = document.getElementById('searchModalSubtitle');
-      const searchResultsGrid = document.getElementById('searchResultsGrid');
+      const backBtn = document.getElementById('backBtn');
 
       let W = 0, H = 0;
       let stars = [];
-
       let currentPage = 1;
       const pageSize = 24;
-      let totalGames = 0;
-      let totalPages = 1;
-
-      let currentGames = [];
-      let allGamesCache = null;
-
-      let sweepTimer = null;
-
-      function playSweep(callback) {
-        if (sweepTimer) clearTimeout(sweepTimer);
-
-        sweep.classList.remove('run');
-        void sweep.offsetWidth;
-        sweep.classList.add('run');
-
-        sweepTimer = window.setTimeout(() => {
-          sweep.classList.remove('run');
-          if (typeof callback === 'function') callback();
-        }, 1900);
-      }
+      let filtered = allMovies.slice();
 
       function placeV5() {
         const x = Math.max(18, Math.min(window.innerWidth - 25, Math.random() * window.innerWidth));
@@ -810,15 +1612,12 @@
         for (const s of stars) {
           s.x += s.vx;
           s.y += s.vy;
-
           if (s.x < -10) s.x = W + 10;
           if (s.x > W + 10) s.x = -10;
           if (s.y < -10) s.y = H + 10;
           if (s.y > H + 10) s.y = -10;
-
           const pulse = 0.5 + 0.5 * Math.sin(performance.now() * 0.0015 + s.x * 0.01);
           const alpha = Math.max(0.08, Math.min(1, s.a * (0.7 + pulse * 0.35)));
-
           starsCtx.beginPath();
           starsCtx.fillStyle = `rgba(180,255,230,${alpha * 0.95})`;
           starsCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
@@ -831,11 +1630,9 @@
         constCtx.setLineDash([7, 10]);
         constCtx.lineCap = 'round';
         const maxD = Math.max(110, Math.min(240, (W + H) / 12));
-
         for (let i = 0; i < stars.length; i++) {
           const s = stars[i];
           const matches = [];
-
           for (let j = 0; j < stars.length; j++) {
             if (i === j) continue;
             const t = stars[j];
@@ -844,16 +1641,13 @@
             const d = Math.hypot(dx, dy);
             if (d < maxD) matches.push({ t, d });
           }
-
           matches.sort((a, b) => a.d - b.d);
-
           for (let k = 0; k < Math.min(2, matches.length); k++) {
             const { t, d } = matches[k];
             const alpha = (1 - d / maxD) * 0.22;
             const grad = constCtx.createLinearGradient(s.x, s.y, t.x, t.y);
             grad.addColorStop(0, `rgba(180,255,230,${alpha})`);
             grad.addColorStop(1, `rgba(180,255,230,${alpha * 0.4})`);
-
             constCtx.strokeStyle = grad;
             constCtx.lineWidth = 1;
             constCtx.lineDashOffset = performance.now() * -0.002 * (k + 1);
@@ -863,14 +1657,7 @@
             constCtx.stroke();
           }
         }
-
         constCtx.setLineDash([]);
-        for (const s of stars) {
-          constCtx.beginPath();
-          constCtx.fillStyle = `rgba(190,255,234,${Math.min(0.12, s.a * 0.08)})`;
-          constCtx.arc(s.x, s.y, s.r * 2.6, 0, Math.PI * 2);
-          constCtx.fill();
-        }
       }
 
       function animate() {
@@ -879,371 +1666,92 @@
         requestAnimationFrame(animate);
       }
 
-      function createGameCard(game, onClick) {
-        const card = document.createElement('button');
-        card.type = 'button';
-        card.className = 'game-card';
-
-        card.innerHTML = `
-          <img class="game-thumb" src="" alt="${game.name || 'Game'}">
-          <div class="game-info">
-            <p class="game-name">${game.name || 'Untitled Game'}</p>
-            <p class="game-cat">${game.category || 'Game'}</p>
-          </div>
-        `;
-
-        if (game.image_token && window.Lumin) {
-          Lumin.getImageUrl(game.image_token)
-            .then((url) => {
-              const img = card.querySelector('.game-thumb');
-              if (img) img.src = url || '';
-            })
-            .catch(() => {});
-        }
-
-        card.addEventListener('click', () => {
-          playSweep();
-          onClick();
-        });
-
-        return card;
-      }
-
-      function openPopup({ title, url, category }) {
-  backBtn.style.display = 'none';
-  modalTitle.textContent = title || 'Selected Game';
-  modalSubtitle.textContent = category ? `Category: ${category}` : 'Click Fullscreen for a larger view.';
-  gameFrame.src = url;
-  modal.classList.remove('hidden');
-  modal.setAttribute('aria-hidden', 'false');
-}
-
-function closePopup() {
-  modal.classList.add('hidden');
-  modal.setAttribute('aria-hidden', 'true');
-  gameFrame.src = 'about:blank';
-  modalCard.classList.remove('fs-mode');
-  backBtn.style.display = '';
-}
-
-      function openSearchPopup() {
-        searchModal.classList.remove('hidden');
-        searchModal.setAttribute('aria-hidden', 'false');
-      }
-
-      function closeSearchPopup() {
-        searchModal.classList.add('hidden');
-        searchModal.setAttribute('aria-hidden', 'true');
-      }
-
-     async function goFullscreen() {
-  try {
-    if (document.fullscreenElement) {
-      await document.exitFullscreen();
-      return;
-    }
-
-    // hide UI
-    modalCard.classList.add('fs-mode');
-
-    // fullscreen ONLY the game container
-    if (modalFrameWrap.requestFullscreen) {
-      await modalFrameWrap.requestFullscreen();
-    }
-  } catch (err) {
-    console.error('Fullscreen failed:', err);
-  }
-}
-
-      function updateFullscreenButton() {
-        modalFullscreen.textContent = document.fullscreenElement ? '🗗' : '⛶';
-        modalFullscreen.title = document.fullscreenElement ? 'Exit fullscreen' : 'Fullscreen';
-        modalFullscreen.setAttribute('aria-label', document.fullscreenElement ? 'Exit fullscreen' : 'Fullscreen');
-      }
-
       function updatePager() {
+        const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+        if (currentPage > totalPages) currentPage = totalPages;
         prevPageBtn.disabled = currentPage <= 1;
         nextPageBtn.disabled = currentPage >= totalPages;
         pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+        moviesMeta.textContent = `${filtered.length} movie${filtered.length === 1 ? '' : 's'} available`;
       }
 
-      function renderGames() {
-        gamesGrid.innerHTML = '';
+      function render() {
+        const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+        if (currentPage > totalPages) currentPage = totalPages;
+        const start = (currentPage - 1) * pageSize;
+        const pageItems = filtered.slice(start, start + pageSize);
 
-        const totalOnPage = currentGames.length;
-        gamesMeta.textContent = `${totalGames || totalOnPage} games available`;
-
-        if (!currentGames.length) {
+        moviesGrid.innerHTML = '';
+        if (!pageItems.length) {
           const empty = document.createElement('div');
           empty.className = 'empty-state';
-          empty.textContent = 'No games found.';
-          gamesGrid.appendChild(empty);
-          updatePager();
-          return;
-        }
-
-        for (const game of currentGames) {
-          const card = createGameCard(game, async () => {
-            try {
-              const { url, meta } = await Lumin.getGameUrl(game.id);
-              openPopup({
-                title: meta?.name || game.name || 'Selected Game',
-                url,
-                category: meta?.category || game.category || ''
-              });
-            } catch (err) {
-              console.error('Could not load game:', err);
-              modalTitle.textContent = 'Error';
-              modalSubtitle.textContent = 'That game could not be loaded.';
-              modal.classList.remove('hidden');
-              modal.setAttribute('aria-hidden', 'false');
-            }
-          });
-
-          gamesGrid.appendChild(card);
-        }
-
-        updatePager();
-      }
-
-      async function loadPage(page = 1) {
-        if (!window.Lumin) {
-          gamesMeta.textContent = 'LuminSDK failed to load.';
-          return;
-        }
-
-        currentPage = page;
-        gamesMeta.textContent = 'Loading…';
-        gamesGrid.innerHTML = '';
-        updatePager();
-
-        try {
-          const result = await Lumin.getGames({ page: currentPage, limit: pageSize });
-          currentGames = result.games || [];
-          totalGames = result.total || currentGames.length;
-          totalPages = Math.max(1, Math.ceil(totalGames / pageSize));
-
-          if (currentPage > totalPages) currentPage = totalPages;
-
-          renderGames();
-        } catch (err) {
-          console.error('LuminSDK error:', err);
-          gamesMeta.textContent = 'Could not load games.';
-          gamesGrid.innerHTML = `<div class="empty-state">Could not load games right now.</div>`;
-          updatePager();
-        }
-      }
-
-      async function loadAllGamesOnce() {
-        if (allGamesCache) return allGamesCache;
-        if (!window.Lumin) return [];
-
-        gamesMeta.textContent = 'Searching all games…';
-
-        const gathered = [];
-        const pagesToFetch = Math.max(1, totalPages);
-
-        for (let p = 1; p <= pagesToFetch; p++) {
-          try {
-            const result = await Lumin.getGames({ page: p, limit: pageSize });
-            gathered.push(...(result.games || []));
-          } catch (err) {
-            console.error(`Failed to load search page ${p}:`, err);
+          empty.textContent = 'No movies found.';
+          moviesGrid.appendChild(empty);
+        } else {
+          for (const item of pageItems) {
+            moviesGrid.appendChild(item.element);
           }
         }
 
-        allGamesCache = gathered;
-        return gathered;
+        updatePager();
       }
 
-      async function searchGames() {
-        const q = searchInput.value.trim();
-        if (!q) {
-          closeSearchPopup();
-          gamesMeta.textContent = `${totalGames || currentGames.length} games available`;
-          return;
-        }
-
-        const query = q.toLowerCase();
-        openSearchPopup();
-        searchModalTitle.textContent = `Search results for “${q}”`;
-        searchModalSubtitle.textContent = 'Click a game to close search and start playing.';
-        searchResultsGrid.innerHTML = `<div class="empty-state">Searching…</div>`;
-
-        const source = await loadAllGamesOnce();
-        const results = source.filter((game) => {
-          const name = String(game.name || '').toLowerCase();
-          const category = String(game.category || '').toLowerCase();
-          return name.includes(query) || category.includes(query);
-        });
-
-        searchResultsGrid.innerHTML = '';
-
-        gamesMeta.textContent = `${results.length} result${results.length === 1 ? '' : 's'} for “${q}”`;
-        pageInfo.textContent = `${results.length} result${results.length === 1 ? '' : 's'}`;
-
-        if (!results.length) {
-          const empty = document.createElement('div');
-          empty.className = 'empty-state';
-          empty.textContent = 'No games matched your search.';
-          searchResultsGrid.appendChild(empty);
-          return;
-        }
-
-        for (const game of results) {
-          const card = createGameCard(game, async () => {
-            closeSearchPopup();
-            searchInput.blur();
-
-            try {
-              const { url, meta } = await Lumin.getGameUrl(game.id);
-              openPopup({
-                title: meta?.name || game.name || 'Selected Game',
-                url,
-                category: meta?.category || game.category || ''
-              });
-            } catch (err) {
-              console.error('Could not load game:', err);
-              modalTitle.textContent = 'Error';
-              modalSubtitle.textContent = 'That game could not be loaded.';
-              modal.classList.remove('hidden');
-              modal.setAttribute('aria-hidden', 'false');
-            }
-          });
-
-          searchResultsGrid.appendChild(card);
-        }
+      function applySearch() {
+        const q = searchInput.value.trim().toLowerCase();
+        filtered = q
+          ? allMovies.filter((m) => m.title.includes(q) || m.category.includes(q))
+          : allMovies.slice();
+        currentPage = 1;
+        render();
       }
 
-      function randomGame() {
-        const pool = currentGames;
+      function randomMovie() {
+        const pool = filtered.length ? filtered : allMovies;
         if (!pool.length) return;
-
         const pick = pool[Math.floor(Math.random() * pool.length)];
-        if (!pick) return;
-
-        (async () => {
-          try {
-            const { url, meta } = await Lumin.getGameUrl(pick.id);
-            openPopup({
-              title: meta?.name || pick.name || 'Selected Game',
-              url,
-              category: meta?.category || pick.category || ''
-            });
-          } catch (err) {
-            console.error('Could not load game:', err);
-          }
-        })();
+        if (pick && pick.element) pick.element.click();
       }
 
-      modalClose.addEventListener('click', closePopup);
-      modalFullscreen.addEventListener('click', goFullscreen);
-
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) closePopup();
+      searchBtn.addEventListener('click', applySearch);
+      clearBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        filtered = allMovies.slice();
+        currentPage = 1;
+        render();
+        searchInput.focus();
       });
-
-      searchModalClose.addEventListener('click', () => {
-        closeSearchPopup();
-      });
-
-      searchModal.addEventListener('click', (e) => {
-        if (e.target === searchModal) closeSearchPopup();
-      });
-
-      window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-          closePopup();
-          closeSearchPopup();
+      randomBtn.addEventListener('click', randomMovie);
+      prevPageBtn.addEventListener('click', () => {
+        const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+        if (currentPage > 1) {
+          currentPage -= 1;
+          render();
         }
       });
-
-      window.addEventListener('resize', resize);
-      document.addEventListener('fullscreenchange', updateFullscreenButton);
-
-      prevPageBtn.addEventListener('click', () => {
-        playSweep();
-        if (currentPage > 1) loadPage(currentPage - 1);
-      });
-
       nextPageBtn.addEventListener('click', () => {
-        playSweep();
-        if (currentPage < totalPages) loadPage(currentPage + 1);
+        const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+        if (currentPage < totalPages) {
+          currentPage += 1;
+          render();
+        }
       });
-
-      searchBtn.addEventListener('click', () => {
-        playSweep();
-        searchGames();
-      });
-
       searchInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
           e.preventDefault();
-          playSweep();
-          searchGames();
+          applySearch();
         }
-      });
-
-      clearBtn.addEventListener('click', () => {
-        playSweep();
-        searchInput.value = '';
-        closeSearchPopup();
-        gamesMeta.textContent = `${totalGames || currentGames.length} games available`;
-        updatePager();
-        searchInput.focus();
-      });
-
-      randomBtn.addEventListener('click', () => {
-        playSweep();
-        randomGame();
       });
 
       backBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        playSweep(() => {
-          window.location.href = backBtn.getAttribute('href');
-        });
+        window.location.href = backBtn.getAttribute('href');
       });
 
+      window.addEventListener('resize', resize);
       resize();
       animate();
-      updateFullscreenButton();
-
-      window.addEventListener('load', () => {
-        playSweep();
-      });
-      
-      function updateFullscreenButton() {
-  const isFS = !!document.fullscreenElement;
-
-  modalFullscreen.textContent = isFS ? '🗗' : '⛶';
-  modalFullscreen.title = isFS ? 'Exit fullscreen' : 'Fullscreen';
-  modalFullscreen.setAttribute('aria-label', isFS ? 'Exit fullscreen' : 'Fullscreen');
-
-  // restore UI when exiting
-  if (!isFS) {
-    modalCard.classList.remove('fs-mode');
-  }
-}
-
-      if (!window.Lumin) {
-        gamesMeta.textContent = 'LuminSDK failed to load.';
-        gamesGrid.innerHTML = '<div class="empty-state">LuminSDK failed to load.</div>';
-        return;
-      }
-
-      try {
-        await Lumin.init({
-          container: '#games',
-          headless: true
-        });
-
-        await loadPage(1);
-      } catch (err) {
-        console.error('LuminSDK error:', err);
-        gamesMeta.textContent = 'Could not load games.';
-        gamesGrid.innerHTML = '<div class="empty-state">Could not load games.</div>';
-      }
+      render();
+      window.addEventListener('load', placeV5);
     });
   </script>
 </body>
