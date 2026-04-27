@@ -1393,7 +1393,27 @@ function refreshGame() {
         gamesMeta.textContent = 'Could not load games.';
         gamesGrid.innerHTML = '<div class="empty-state">Could not load games.</div>';
       }
-    });
-  </script>
+
+const reloadId = localStorage.getItem('reloadGameId');
+if (reloadId) {
+  localStorage.removeItem('reloadGameId');
+
+  setTimeout(async () => {
+    try {
+      const { url, meta } = await Lumin.getGameUrl(reloadId);
+
+      openPopup({
+        id: reloadId,
+        name: meta?.name || 'Selected Game',
+        category: meta?.category || '',
+        image_token: ''
+      }, url);
+
+    } catch (err) {
+      console.error('Failed to restore game:', err);
+    }
+  }, 300);
+}
+</script>
 </body>
 </html>
