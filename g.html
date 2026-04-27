@@ -1066,15 +1066,9 @@
         updateFavoriteButton();
       }
 
-      function refreshGame() {
-        if (!currentGameUrl || currentGameUrl === 'about:blank') return;
-
-        const url = currentGameUrl;
-        gameFrame.src = 'about:blank';
-        requestAnimationFrame(() => {
-          gameFrame.src = url;
-        });
-      }
+function refreshGame() {
+  window.location.reload();
+}
 
       function openSearchPopup() {
         searchModal.classList.remove('hidden');
