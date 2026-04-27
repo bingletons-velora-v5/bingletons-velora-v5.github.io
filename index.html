@@ -818,14 +818,16 @@ function animate() {
       });
     });
 
-    window.addEventListener('resize', resize);
-    resize();
-    animate();
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closePatchNotes();
+      closeCatScare();
+    }
 
-    // page open sweep
-    window.addEventListener('load', () => {
-      playSweep();
-    });
+    if (e.shiftKey && e.key.toLowerCase() === 'b') {
+      window.location.href = 'ignore/SM.html';
+    }
+  });
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduceMotion) {
