@@ -370,7 +370,7 @@
       align-items: start;
       justify-content: space-between;
       gap: 14px;
-      padding-right: 132px;
+      padding-right: 176px;
     }
 
     .modal-title {
@@ -389,7 +389,8 @@
 
     .modal-close,
     .modal-fullscreen,
-    .modal-favorite {
+    .modal-favorite,
+    .modal-refresh {
       position: absolute;
       top: 14px;
       width: 38px;
@@ -408,7 +409,8 @@
 
     .modal-close:hover,
     .modal-fullscreen:hover,
-    .modal-favorite:hover {
+    .modal-favorite:hover,
+    .modal-refresh:hover {
       transform: translateY(-1px);
       background: rgba(180,255,230,0.10);
       border-color: rgba(180,255,230,0.30);
@@ -424,8 +426,14 @@
       width: 44px;
     }
 
-    .modal-favorite {
+    .modal-refresh {
       right: 112px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .modal-favorite {
+      right: 164px;
       font-size: 18px;
       font-weight: 800;
       color: rgba(255,255,255,0.92);
@@ -457,7 +465,8 @@
     .modal-card.fs-mode .modal-top,
     .modal-card.fs-mode .modal-close,
     .modal-card.fs-mode .modal-fullscreen,
-    .modal-card.fs-mode .modal-favorite {
+    .modal-card.fs-mode .modal-favorite,
+    .modal-card.fs-mode .modal-refresh {
       display: none;
     }
 
@@ -646,13 +655,9 @@
         padding-right: 0;
       }
 
-      .modal-fullscreen {
-        right: 60px;
-      }
-
-      .modal-favorite {
-        right: 112px;
-      }
+      .modal-refresh { right: 112px; }
+      .modal-fullscreen { right: 60px; }
+      .modal-favorite { right: 164px; }
     }
   </style>
 </head>
@@ -778,6 +783,7 @@
       const modalClose = document.getElementById('modalClose');
       const modalFullscreen = document.getElementById('modalFullscreen');
       const modalFavorite = document.getElementById('modalFavorite');
+      const modalRefresh = document.getElementById('modalRefresh');
       const gameFrame = document.getElementById('gameFrame');
       const modalFrameWrap = document.getElementById('modalFrameWrap');
 
@@ -801,6 +807,7 @@
       let sweepTimer = null;
       let favorites = loadFavorites();
       let currentOpenGame = null;
+      let currentGameUrl = '';
 
       function safeString(value) {
         return String(value ?? '').trim();
@@ -1036,12 +1043,13 @@
           image_token: game?.image_token || ''
         };
 
+        currentGameUrl = url || 'about:blank';
         backBtn.style.display = 'none';
         modalTitle.textContent = currentOpenGame.name || 'Selected Game';
         modalSubtitle.textContent = currentOpenGame.category
           ? `Category: ${currentOpenGame.category}`
           : 'Click Fullscreen for a larger view.';
-        gameFrame.src = url || 'about:blank';
+        gameFrame.src = currentGameUrl;
         modal.classList.remove('hidden');
         modal.setAttribute('aria-hidden', 'false');
         updateFavoriteButton();
@@ -1054,7 +1062,18 @@
         modalCard.classList.remove('fs-mode');
         backBtn.style.display = '';
         currentOpenGame = null;
+        currentGameUrl = '';
         updateFavoriteButton();
+      }
+
+      function refreshGame() {
+        if (!currentGameUrl || currentGameUrl === 'about:blank') return;
+
+        const url = currentGameUrl;
+        gameFrame.src = 'about:blank';
+        requestAnimationFrame(() => {
+          gameFrame.src = url;
+        });
       }
 
       function openSearchPopup() {
@@ -1161,6 +1180,7 @@
           modalTitle.textContent = 'Error';
           modalSubtitle.textContent = 'That game could not be loaded.';
           currentOpenGame = null;
+          currentGameUrl = '';
           updateFavoriteButton();
           modal.classList.remove('hidden');
           modal.setAttribute('aria-hidden', 'false');
@@ -1280,6 +1300,7 @@
 
       modalClose.addEventListener('click', closePopup);
       modalFullscreen.addEventListener('click', goFullscreen);
+      modalRefresh.addEventListener('click', refreshGame);
       modalFavorite.addEventListener('click', toggleFavoriteCurrentGame);
 
       modal.addEventListener('click', (e) => {
