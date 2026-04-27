@@ -793,38 +793,48 @@ function animate() {
     patchBtn.addEventListener('click', openPatchNotes);
     closePatchBtn.addEventListener('click', closePatchNotes);
 
-patchModal.addEventListener('click', (e) => {
-  if (e.target === patchModal) closePatchNotes();
-});
-
-catBtn.addEventListener('click', playCatScare);
-catScare.addEventListener('click', closeCatScare);
-
-window.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    closePatchNotes();
-    closeCatScare();
-  }
-
-  if (e.shiftKey && e.key.toLowerCase() === 'b') {
-    window.location.href = 'ignore/SM.html';
-  }
-});
-
-document.querySelectorAll('.app[href]').forEach((link) => {
-  link.addEventListener('click', (e) => {
-    e.preventDefault();
-    const href = link.getAttribute('href');
-    playSweep(() => {
-      window.location.href = href;
+    patchModal.addEventListener('click', (e) => {
+      if (e.target === patchModal) closePatchNotes();
     });
-  });
-});
 
-const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-if (reduceMotion) {
-  stars.forEach(s => { s.vx = 0; s.vy = 0; });
-}
+    catBtn.addEventListener('click', playCatScare);
+
+    catScare.addEventListener('click', closeCatScare);
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closePatchNotes();
+      closeCatScare();
+    }
+
+    if (e.shiftKey && e.key.toLowerCase() === 'b') {
+      window.location.href = 'ignore/SM.html';
+    }
+  });
+
+    document.querySelectorAll('.app[href]').forEach((link) => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const href = link.getAttribute('href');
+        playSweep(() => {
+          window.location.href = href;
+        });
+      });
+    });
+
+    window.addEventListener('resize', resize);
+    resize();
+    animate();
+
+    // page open sweep
+    window.addEventListener('load', () => {
+      playSweep();
+    });
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) {
+      stars.forEach(s => { s.vx = 0; s.vy = 0; });
+    }
   </script>
 </body>
 </html>
