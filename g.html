@@ -1186,20 +1186,24 @@
       }
 
       function getDisplayGamesForPage() {
-        return currentGames.slice();
+        if (currentPage !== 1) return currentGames.slice();
+
+        const favIds = new Set(favorites.map((g) => safeString(g.id)));
+        const rest = currentGames.filter((g) => !favIds.has(safeString(g.id)));
+
+        return [SPECIAL_GAME, ...favorites.map(normalizeFavorite).filter(Boolean), ...rest].slice(0, pageSize);
       }
 
       function renderGames() {
         gamesGrid.innerHTML = '';
 
-        const actualGames = getDisplayGamesForPage();
-        const displayGames = [SPECIAL_GAME, ...actualGames];
+        const displayGames = getDisplayGamesForPage();
         const totalOnPage = displayGames.length;
 
-        if (favorites.length > 0 && currentPage === 1) {
-          gamesMeta.textContent = `${(totalGames || totalOnPage - 1) + 1} games available · ${favorites.length} favorite${favorites.length === 1 ? '' : 's'} pinned`;
+        if (currentPage === 1 && favorites.length > 0) {
+          gamesMeta.textContent = `${(totalGames || totalOnPage) + 1} games available · ${favorites.length} favorite${favorites.length === 1 ? '' : 's'} pinned`;
         } else {
-          gamesMeta.textContent = `${(totalGames || totalOnPage - 1) + 1} games available`;
+          gamesMeta.textContent = `${(totalGames || totalOnPage) + 1} games available`;
         }
 
         if (!displayGames.length) {
@@ -1489,27 +1493,6 @@
         playSweep();
       });
 
-      if (!window.Lumin) {
-        gamesMeta.textContent = 'LuminSDK failed to load.';
-        gamesGrid.innerHTML = '<div class="empty-state">LuminSDK failed to load.</div>';
-        return;
-      }
-
-      try {
-        await Lumin.init({
-          container: '#games',
-          headless: true
-        });
-
-        await loadPage(1);
-        beginAllGamesPrefetch();
-        await restoreReloadedGame();
-      } catch (err) {
-        console.error('LuminSDK error:', err);
-        gamesMeta.textContent = 'Could not load games.';
-        gamesGrid.innerHTML = '<div class="empty-state">Could not load games.</div>';
-      }
-
       async function loadPage(page = 1) {
         if (!window.Lumin) {
           gamesMeta.textContent = 'LuminSDK failed to load.';
@@ -1539,6 +1522,27 @@
           gamesGrid.innerHTML = `<div class="empty-state">Could not load games right now.</div>`;
           updatePager();
         }
+      }
+
+      if (!window.Lumin) {
+        gamesMeta.textContent = 'LuminSDK failed to load.';
+        gamesGrid.innerHTML = '<div class="empty-state">LuminSDK failed to load.</div>';
+        return;
+      }
+
+      try {
+        await Lumin.init({
+          container: '#games',
+          headless: true
+        });
+
+        await loadPage(1);
+        beginAllGamesPrefetch();
+        await restoreReloadedGame();
+      } catch (err) {
+        console.error('LuminSDK error:', err);
+        gamesMeta.textContent = 'Could not load games.';
+        gamesGrid.innerHTML = '<div class="empty-state">Could not load games.</div>';
       }
     });
   </script>
