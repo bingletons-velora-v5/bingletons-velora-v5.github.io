@@ -21,6 +21,7 @@
       --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
       --accent: #b4ffe6;
       --favorite: #ff7aa8;
+      --special: #ffd36a;
     }
 
     * { box-sizing: border-box; }
@@ -183,7 +184,7 @@
       padding: 12px 14px;
       outline: none;
       font: inherit;
-      transition: border-color 0.16s ease, background 0.16s ease;
+      transition: border-color 0.16s ease, background 0.16s ease, transform 0.16s ease;
     }
 
     .search-input::placeholder {
@@ -193,6 +194,7 @@
     .search-input:focus {
       border-color: rgba(180,255,230,0.34);
       background: rgba(255,255,255,0.07);
+      transform: translateY(-1px);
     }
 
     .action-btn {
@@ -241,6 +243,7 @@
       padding: 0;
       text-align: left;
       color: inherit;
+      position: relative;
     }
 
     .game-card:hover {
@@ -276,6 +279,37 @@
       margin: 0;
       font-size: 0.84rem;
       color: rgba(255,255,255,0.55);
+    }
+
+    .special-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 9px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.52);
+      border: 1px solid rgba(255, 211, 106, 0.30);
+      color: #ffd36a;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      backdrop-filter: blur(8px);
+      pointer-events: none;
+    }
+
+    .game-card.special {
+      border-color: rgba(255, 211, 106, 0.28);
+      box-shadow: 0 0 0 1px rgba(255, 211, 106, 0.08) inset;
+    }
+
+    .game-card.special:hover {
+      border-color: rgba(255, 211, 106, 0.44);
+      background: rgba(255, 211, 106, 0.06);
     }
 
     .empty-state {
@@ -552,6 +586,10 @@
       min-height: 180px;
     }
 
+    .search-empty-wrap {
+      padding: 18px 0 0;
+    }
+
     /* Sweep animation */
     .sweep {
       position: fixed;
@@ -757,6 +795,15 @@
       const FAVORITES_KEY = 'veloraFavorites_v1';
       const MAX_FAVORITES = 12;
 
+      const SPECIAL_GAME = {
+        id: '__suggestions__',
+        name: 'SUGGESTIONS',
+        category: 'Form',
+        image_src: 'images/forms.png',
+        url: 'https://docs.google.com/forms/d/e/1FAIpQLSfSz_G5w1bYHI7uKfcThe6L8h8LAMIZ5scWHDAe76PvPG5MNw/viewform?pli=1',
+        isSpecial: true
+      };
+
       const sweep = document.getElementById('sweep');
       const backBtn = document.getElementById('backBtn');
 
@@ -803,11 +850,13 @@
 
       let currentGames = [];
       let allGamesCache = null;
+      let allGamesPromise = null;
 
       let sweepTimer = null;
       let favorites = loadFavorites();
       let currentOpenGame = null;
       let currentGameUrl = '';
+      let activeSearchQuery = '';
 
       function safeString(value) {
         return String(value ?? '').trim();
@@ -854,15 +903,19 @@
 
       function updateFavoriteButton() {
         const active = !!currentOpenGame?.id && isFavorite(currentOpenGame.id);
+        const isSpecial = !!currentOpenGame?.isSpecial;
+
         modalFavorite.textContent = active ? '♥' : '♡';
         modalFavorite.classList.toggle('active', active);
         modalFavorite.setAttribute('aria-label', active ? 'Remove from favorites' : 'Add to favorites');
-        modalFavorite.title = active ? 'Remove from favorites' : (favorites.length >= MAX_FAVORITES ? 'Favorites max reached' : 'Add to favorites');
-        modalFavorite.disabled = !currentOpenGame?.id;
+        modalFavorite.title = isSpecial
+          ? 'Suggestions form'
+          : (active ? 'Remove from favorites' : (favorites.length >= MAX_FAVORITES ? 'Favorites max reached' : 'Add to favorites'));
+        modalFavorite.disabled = !currentOpenGame?.id || isSpecial;
       }
 
       function toggleFavoriteCurrentGame() {
-        if (!currentOpenGame?.id) return;
+        if (!currentOpenGame?.id || currentOpenGame.isSpecial) return;
 
         const id = safeString(currentOpenGame.id);
         const existingIndex = favorites.findIndex((g) => safeString(g.id) === id);
@@ -1006,11 +1059,13 @@
       function createGameCard(game, onClick) {
         const card = document.createElement('button');
         card.type = 'button';
-        card.className = 'game-card';
+        card.className = 'game-card' + (game.isSpecial ? ' special' : '');
 
         const favBadge = isFavorite(game.id) ? ' ♥' : '';
+        const badge = game.isSpecial ? `<div class="special-badge">Featured</div>` : '';
 
         card.innerHTML = `
+          ${badge}
           <img class="game-thumb" src="" alt="${game.name || 'Game'}">
           <div class="game-info">
             <p class="game-name">${game.name || 'Untitled Game'}${favBadge}</p>
@@ -1018,11 +1073,14 @@
           </div>
         `;
 
-        if (game.image_token && window.Lumin) {
+        const img = card.querySelector('.game-thumb');
+        if (game.image_src) {
+          img.src = game.image_src;
+        } else if (game.image_token && window.Lumin) {
           Lumin.getImageUrl(game.image_token)
             .then((url) => {
-              const img = card.querySelector('.game-thumb');
-              if (img) img.src = url || '';
+              const targetImg = card.querySelector('.game-thumb');
+              if (targetImg) targetImg.src = url || '';
             })
             .catch(() => {});
         }
@@ -1041,7 +1099,8 @@
           id: game?.id ?? null,
           name: game?.name || 'Selected Game',
           category: game?.category || '',
-          image_token: game?.image_token || ''
+          image_token: game?.image_token || '',
+          isSpecial: !!game?.isSpecial
         };
 
         currentGameUrl = url || 'about:blank';
@@ -1069,6 +1128,10 @@
 
       function refreshGame() {
         if (!currentOpenGame?.id) return;
+        if (currentOpenGame.isSpecial) {
+          gameFrame.src = SPECIAL_GAME.url;
+          return;
+        }
 
         localStorage.setItem('reloadGameId', String(currentOpenGame.id));
         window.location.reload();
@@ -1123,25 +1186,20 @@
       }
 
       function getDisplayGamesForPage() {
-        if (currentPage !== 1) return currentGames;
-
-        const favIds = new Set(favorites.map((g) => safeString(g.id)));
-        const pinned = favorites.slice(0, MAX_FAVORITES);
-        const rest = currentGames.filter((g) => !favIds.has(safeString(g.id)));
-
-        return [...pinned, ...rest].slice(0, pageSize);
+        return currentGames.slice();
       }
 
       function renderGames() {
         gamesGrid.innerHTML = '';
 
-        const displayGames = getDisplayGamesForPage();
+        const actualGames = getDisplayGamesForPage();
+        const displayGames = [SPECIAL_GAME, ...actualGames];
         const totalOnPage = displayGames.length;
 
-        if (currentPage === 1 && favorites.length > 0) {
-          gamesMeta.textContent = `${totalGames || totalOnPage} games available · ${favorites.length} favorite${favorites.length === 1 ? '' : 's'} pinned`;
+        if (favorites.length > 0 && currentPage === 1) {
+          gamesMeta.textContent = `${(totalGames || totalOnPage - 1) + 1} games available · ${favorites.length} favorite${favorites.length === 1 ? '' : 's'} pinned`;
         } else {
-          gamesMeta.textContent = `${totalGames || totalOnPage} games available`;
+          gamesMeta.textContent = `${(totalGames || totalOnPage - 1) + 1} games available`;
         }
 
         if (!displayGames.length) {
@@ -1165,6 +1223,16 @@
       }
 
       async function openGame(game) {
+        if (game?.isSpecial) {
+          openPopup({
+            id: SPECIAL_GAME.id,
+            name: SPECIAL_GAME.name,
+            category: SPECIAL_GAME.category,
+            isSpecial: true
+          }, SPECIAL_GAME.url);
+          return;
+        }
+
         try {
           const { url, meta } = await Lumin.getGameUrl(game.id);
           openPopup({
@@ -1185,86 +1253,62 @@
         }
       }
 
-      async function loadPage(page = 1) {
-        if (!window.Lumin) {
-          gamesMeta.textContent = 'LuminSDK failed to load.';
-          return;
+      function buildSearchIndexFromPages(pages) {
+        const indexed = [];
+        for (const pageGames of pages) {
+          for (const game of pageGames) {
+            indexed.push(game);
+          }
         }
+        return indexed;
+      }
 
-        currentPage = page;
-        gamesMeta.textContent = 'Loading…';
-        gamesGrid.innerHTML = '';
-        updatePager();
+      async function beginAllGamesPrefetch() {
+        if (!window.Lumin) return [];
+        if (allGamesCache) return allGamesCache;
+        if (allGamesPromise) return allGamesPromise;
 
-        try {
-          const result = await Lumin.getGames({ page: currentPage, limit: pageSize });
-          currentGames = result.games || [];
-          totalGames = result.total || currentGames.length;
-          totalPages = Math.max(1, Math.ceil(totalGames / pageSize));
+        const snapshotPage1 = currentGames.slice();
+        const pages = [];
 
-          if (currentPage > totalPages) currentPage = totalPages;
+        allGamesPromise = (async () => {
+          pages.push(snapshotPage1);
 
-          renderGames();
-        } catch (err) {
-          console.error('LuminSDK error:', err);
-          gamesMeta.textContent = 'Could not load games.';
-          gamesGrid.innerHTML = `<div class="empty-state">Could not load games right now.</div>`;
-          updatePager();
-        }
+          const jobs = [];
+          for (let p = 2; p <= totalPages; p++) {
+            jobs.push(
+              Lumin.getGames({ page: p, limit: pageSize })
+                .then((result) => result.games || [])
+                .catch((err) => {
+                  console.error(`Failed to load search page ${p}:`, err);
+                  return [];
+                })
+            );
+          }
+
+          const rest = await Promise.all(jobs);
+          pages.push(...rest);
+
+          allGamesCache = buildSearchIndexFromPages(pages);
+          return allGamesCache;
+        })();
+
+        return allGamesPromise;
       }
 
       async function loadAllGamesOnce() {
         if (allGamesCache) return allGamesCache;
-        if (!window.Lumin) return [];
-
-        gamesMeta.textContent = 'Searching all games…';
-
-        const gathered = [];
-        const pagesToFetch = Math.max(1, totalPages);
-
-        for (let p = 1; p <= pagesToFetch; p++) {
-          try {
-            const result = await Lumin.getGames({ page: p, limit: pageSize });
-            gathered.push(...(result.games || []));
-          } catch (err) {
-            console.error(`Failed to load search page ${p}:`, err);
-          }
-        }
-
-        allGamesCache = gathered;
-        return gathered;
+        if (allGamesPromise) return await allGamesPromise;
+        return await beginAllGamesPrefetch();
       }
 
-      async function searchGames() {
-        const q = searchInput.value.trim();
-        if (!q) {
-          closeSearchPopup();
-          gamesMeta.textContent = `${totalGames || currentGames.length} games available`;
-          return;
-        }
-
-        const query = q.toLowerCase();
-        openSearchPopup();
-        searchModalTitle.textContent = `Search results for “${q}”`;
-        searchModalSubtitle.textContent = 'Click a game to close search and start playing.';
-        searchResultsGrid.innerHTML = `<div class="empty-state">Searching…</div>`;
-
-        const source = await loadAllGamesOnce();
-        const results = source.filter((game) => {
-          const name = String(game.name || '').toLowerCase();
-          const category = String(game.category || '').toLowerCase();
-          return name.includes(query) || category.includes(query);
-        });
-
+      function renderSearchResults(results, query) {
         searchResultsGrid.innerHTML = '';
-
-        gamesMeta.textContent = `${results.length} result${results.length === 1 ? '' : 's'} for “${q}”`;
-        pageInfo.textContent = `${results.length} result${results.length === 1 ? '' : 's'}`;
 
         if (!results.length) {
           const empty = document.createElement('div');
-          empty.className = 'empty-state';
-          empty.textContent = 'No games matched your search.';
+          empty.className = 'empty-state search-empty-wrap';
+          empty.textContent = `No games matched “${query}”.`;
           searchResultsGrid.appendChild(empty);
           return;
         }
@@ -1275,9 +1319,54 @@
             searchInput.blur();
             await openGame(game);
           });
-
           searchResultsGrid.appendChild(card);
         }
+      }
+
+      async function searchGames() {
+        const q = searchInput.value.trim();
+        if (!q) {
+          closeSearchPopup();
+          gamesMeta.textContent = `${(totalGames || currentGames.length) + 1} games available`;
+          return;
+        }
+
+        activeSearchQuery = q;
+        const query = q.toLowerCase();
+        openSearchPopup();
+        searchModalTitle.textContent = `Search results for “${q}”`;
+        searchModalSubtitle.textContent = 'Showing the fastest available matches first.';
+        searchResultsGrid.innerHTML = `<div class="empty-state">Searching…</div>`;
+
+        const localSource = currentGames.slice();
+        const localResults = localSource.filter((game) => {
+          const name = String(game.name || '').toLowerCase();
+          const category = String(game.category || '').toLowerCase();
+          return name.includes(query) || category.includes(query);
+        });
+
+        renderSearchResults(localResults, q);
+        gamesMeta.textContent = `${localResults.length} result${localResults.length === 1 ? '' : 's'} for “${q}”`;
+        pageInfo.textContent = `${localResults.length} result${localResults.length === 1 ? '' : 's'}`;
+
+        if (!allGamesCache) {
+          beginAllGamesPrefetch();
+        }
+
+        const source = await loadAllGamesOnce();
+        if (searchInput.value.trim() !== q) return;
+
+        const results = source.filter((game) => {
+          const name = String(game.name || '').toLowerCase();
+          const category = String(game.category || '').toLowerCase();
+          return name.includes(query) || category.includes(query);
+        });
+
+        if (searchInput.value.trim() !== q) return;
+
+        renderSearchResults(results, q);
+        gamesMeta.textContent = `${results.length} result${results.length === 1 ? '' : 's'} for “${q}”`;
+        pageInfo.textContent = `${results.length} result${results.length === 1 ? '' : 's'}`;
       }
 
       function randomGame() {
@@ -1372,8 +1461,9 @@
       clearBtn.addEventListener('click', () => {
         playSweep();
         searchInput.value = '';
+        activeSearchQuery = '';
         closeSearchPopup();
-        gamesMeta.textContent = `${totalGames || currentGames.length} games available`;
+        gamesMeta.textContent = `${(totalGames || currentGames.length) + 1} games available`;
         updatePager();
         searchInput.focus();
       });
@@ -1412,11 +1502,43 @@
         });
 
         await loadPage(1);
+        beginAllGamesPrefetch();
         await restoreReloadedGame();
       } catch (err) {
         console.error('LuminSDK error:', err);
         gamesMeta.textContent = 'Could not load games.';
         gamesGrid.innerHTML = '<div class="empty-state">Could not load games.</div>';
+      }
+
+      async function loadPage(page = 1) {
+        if (!window.Lumin) {
+          gamesMeta.textContent = 'LuminSDK failed to load.';
+          return;
+        }
+
+        currentPage = page;
+        gamesMeta.textContent = 'Loading…';
+        gamesGrid.innerHTML = '';
+        updatePager();
+
+        try {
+          const result = await Lumin.getGames({ page: currentPage, limit: pageSize });
+          currentGames = result.games || [];
+          totalGames = result.total || currentGames.length;
+          totalPages = Math.max(1, Math.ceil(totalGames / pageSize));
+
+          if (currentPage > totalPages) currentPage = totalPages;
+
+          allGamesCache = null;
+          allGamesPromise = null;
+
+          renderGames();
+        } catch (err) {
+          console.error('LuminSDK error:', err);
+          gamesMeta.textContent = 'Could not load games.';
+          gamesGrid.innerHTML = `<div class="empty-state">Could not load games right now.</div>`;
+          updatePager();
+        }
       }
     });
   </script>
