@@ -195,6 +195,7 @@
       eaten: false,
       hidden: false,
       respawnAt: 0,
+      eatStart: 0,
       spin: 0,
       spinV: 0,
       sink: 0,
@@ -221,6 +222,7 @@
     it.eaten = false;
     it.hidden = false;
     it.respawnAt = 0;
+    it.eatStart = 0;
     it.vx = rand(-0.15, 0.15);
     it.vy = rand(-0.15, 0.15);
     it.spin = 0;
@@ -312,28 +314,6 @@
       const x = (i * 97) % WORLD.w;
       const y = (i * 193) % WORLD.h;
       ctx.fillRect(x, y, 2, 2);
-    }
-  }
-
-  function drawRiver() {
-    ctx.fillStyle = '#183b72';
-    ctx.beginPath();
-    ctx.moveTo(0, 3800);
-    ctx.bezierCurveTo(900, 3380, 1500, 4520, 2600, 4150);
-    ctx.bezierCurveTo(3650, 3800, 4350, 2850, 6400, 3180);
-    ctx.lineTo(6400, 4400);
-    ctx.bezierCurveTo(4500, 4100, 3200, 5320, 2100, 5420);
-    ctx.bezierCurveTo(1150, 5510, 420, 5200, 0, 5400);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.fillStyle = 'rgba(255,255,255,0.10)';
-    for (let i = 0; i < 28; i++) {
-      const x = 180 + i * 230;
-      const y = 3950 + Math.sin(i * 0.55) * 76;
-      ctx.beginPath();
-      ctx.arc(x, y, 11, 0, Math.PI * 2);
-      ctx.fill();
     }
   }
 
@@ -668,7 +648,6 @@
     ctx2.arc(0, -22, 5, 0, Math.PI * 2);
     ctx2.fill();
 
-    const armKick = sink > 0 ? 1.8 : 1.0;
     const armFlail = sink > 0 ? Math.sin(fallWave * 2.8) * 10 : 0;
     const armFlail2 = sink > 0 ? Math.cos(fallWave * 2.4) * 10 : 0;
     const legFlail = sink > 0 ? Math.sin(fallWave * 2.2) * 7 : 0;
@@ -840,6 +819,8 @@
     const canSpin = it.type !== 'building' && it.type !== 'skyscraper' && it.type !== 'car' && it.type !== 'bus' && it.type !== 'bike';
 
     if (touching && canEat) {
+      if (!it.eatStart) it.eatStart = now;
+
       if (canSpin) {
         it.spinV += 0.14;
         it.spinV *= 0.88;
@@ -872,6 +853,8 @@
     }
 
     if (it.sink > 0) {
+      if (!it.eatStart) it.eatStart = now;
+
       const pull = 0.02 + it.sink * 0.06;
       const dx = player.x - it.x;
       const dy = player.y - it.y;
@@ -887,6 +870,10 @@
     }
 
     if (it.sink >= 1 && !it.eaten) {
+      it.eaten = true;
+    }
+
+    if (it.eaten && it.eatStart && now >= it.eatStart + 1700) {
       if (it.type === 'person') {
         debris.push({ x: it.x, y: it.y, vx: rand(-2.0, 2.0), vy: rand(-2.0, 2.0), life: 20, w: 8, h: 8, rot: it.personRot || 0, color: '#d8c3ad' });
         debris.push({ x: it.x, y: it.y, vx: rand(-2.0, 2.0), vy: rand(-2.0, 2.0), life: 18, w: 5, h: 8, rot: it.personRot || 0, color: '#cfd8e6' });
@@ -1019,15 +1006,6 @@
     ctx.arc(player.x, player.y, hole * 2.35, 0, Math.PI * 2);
     ctx.fill();
 
-    const rimGrad = ctx.createRadialGradient(player.x - hole * 0.25, player.y - hole * 0.25, hole * 0.3, player.x, player.y, hole * 1.25);
-    rimGrad.addColorStop(0, 'rgba(40, 44, 58, 0.85)');
-    rimGrad.addColorStop(0.55, 'rgba(15, 18, 26, 0.95)');
-    rimGrad.addColorStop(1, 'rgba(255,255,255,0.20)');
-    ctx.fillStyle = rimGrad;
-    ctx.beginPath();
-    ctx.arc(player.x, player.y, hole * 1.25, 0, Math.PI * 2);
-    ctx.fill();
-
     ctx.fillStyle = '#020305';
     ctx.beginPath();
     ctx.arc(player.x, player.y, hole * 0.92, 0, Math.PI * 2);
@@ -1043,15 +1021,9 @@
       ctx.stroke();
     }
     ctx.restore();
-
-    ctx.strokeStyle = 'rgba(255,255,255,0.12)';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(player.x, player.y, hole * 1.03, 0, Math.PI * 2);
-    ctx.stroke();
   }
 
-  function drawObjectSprite(it) {
+  function drawObjectSprite(it, now) {
     if (!it || it.hidden) return;
 
     const sink = it.sink || 0;
@@ -1062,38 +1034,53 @@
     const tx = it.x + (dx / len) * pull * 12;
     const ty = it.y + (dy / len) * pull * 10 + pull * 8;
 
+    const eatAge = it.eatStart ? (now - it.eatStart) : 0;
+    const fadeT = it.eatStart ? clamp((eatAge - 500) / 900, 0, 1) : 0;
+    const objScale = 1 - fadeT * 0.55;
+    const objAlpha = 1 - fadeT;
+
+    ctx.save();
+    ctx.globalAlpha = objAlpha;
+    ctx.translate(tx, ty);
+    ctx.scale(objScale, objScale);
+
     if (it.type === 'building') {
-      drawBuildingSprite(ctx, it.bld, tx - it.bld.w / 2, ty - it.bld.h / 2, (it.spin || 0) * 0.01 + sink * 0.15);
+      drawBuildingSprite(ctx, it.bld, -it.bld.w / 2, -it.bld.h / 2, (it.spin || 0) * 0.01 + sink * 0.15);
+      ctx.restore();
       return;
     }
 
     if (it.type === 'skyscraper') {
-      drawSkyscraperSprite(ctx, it.bld, tx - it.bld.w / 2, ty - it.bld.h / 2, sink, it.fallSpin || 0);
+      drawSkyscraperSprite(ctx, it.bld, -it.bld.w / 2, -it.bld.h / 2, sink, it.fallSpin || 0);
+      ctx.restore();
       return;
     }
 
     if (it.type === 'car') {
-      drawCarSprite(ctx, { ...it, x: tx, y: ty });
+      drawCarSprite(ctx, { ...it, x: 0, y: 0 });
+      ctx.restore();
       return;
     }
 
     if (it.type === 'bus') {
-      drawBusSprite(ctx, { ...it, x: tx, y: ty });
+      drawBusSprite(ctx, { ...it, x: 0, y: 0 });
+      ctx.restore();
       return;
     }
 
     if (it.type === 'bike') {
-      drawBikeSprite(ctx, { ...it, x: tx, y: ty });
+      drawBikeSprite(ctx, { ...it, x: 0, y: 0 });
+      ctx.restore();
       return;
     }
 
     if (it.type === 'person') {
-      drawCivilianSprite(ctx, { ...it, x: tx, y: ty, sink });
+      drawCivilianSprite(ctx, { ...it, x: 0, y: 0, sink });
+      ctx.restore();
       return;
     }
 
     ctx.save();
-    ctx.translate(tx, ty);
     ctx.rotate((it.spin || 0) + pull * 0.35);
     ctx.scale(1 - pull * 0.15, 1 - pull * 0.15);
 
@@ -1189,9 +1176,10 @@
     }
 
     ctx.restore();
+    ctx.restore();
   }
 
-  function renderWorld() {
+  function renderWorld(now) {
     const backItems = [];
     const frontItems = [];
 
@@ -1203,9 +1191,9 @@
     }
 
     drawBackground();
-    for (const it of backItems) drawObjectSprite(it);
+    for (const it of backItems) drawObjectSprite(it, now);
     drawPlayer();
-    for (const it of frontItems) drawObjectSprite(it);
+    for (const it of frontItems) drawObjectSprite(it, now);
     for (const d of debris) drawDebrisSprite(ctx, d);
   }
 
@@ -1231,8 +1219,6 @@
     ctx.fillRect(1200, 4700, 2600, 1050);
     ctx.fillStyle = '#5c4a4d';
     ctx.fillRect(4100, 1150, 1750, 1100);
-
-    drawRiver();
 
     for (let x = 1540; x <= 4340; x += 220) {
       for (let y = 1140; y <= 3040; y += 220) {
@@ -1283,6 +1269,7 @@
   }
 
   function frame() {
+    const now = performance.now();
     updateInput();
     player.x += player.vx;
     player.y += player.vy;
@@ -1295,7 +1282,7 @@
     updateCamera();
 
     beginWorld();
-    renderWorld();
+    renderWorld(now);
     endWorld();
 
     sizeEl.textContent = player.r.toFixed(1);
