@@ -945,6 +945,9 @@
     animate();
 
     // page open sweep
+    const RANDOM_TITLE = Math.random() < 0.001 ? 'PornHub - Google Search' : 'calculator - Google Search';
+    document.title = RANDOM_TITLE;
+
     window.addEventListener('load', () => {
       playSweep();
     });
@@ -956,4 +959,3 @@
   </script>
 </body>
 </html>
-
