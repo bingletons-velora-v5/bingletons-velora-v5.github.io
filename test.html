@@ -6,41 +6,34 @@
   <title>velora v5</title>
   <style>
     :root {
-      --bg0: #050812;
-      --bg1: #0a1326;
-      --bg2: #101a33;
-      --panel: rgba(18, 25, 44, 0.88);
-      --panel2: rgba(28, 36, 60, 0.92);
-      --line: rgba(255,255,255,0.14);
-      --line2: rgba(170, 200, 255, 0.18);
-      --text: #f4f7ff;
-      --muted: rgba(244,247,255,0.72);
-      --muted2: rgba(244,247,255,0.52);
-      --shadow: 0 28px 90px rgba(0,0,0,0.56);
-      --radius: 20px;
-      --radius2: 26px;
-      --accent: #8fb2ff;
-      --accent2: #f4d56f;
-      --good: #92e6a7;
-      --danger: #ff8a8a;
-      --tile: rgba(24, 31, 54, 0.96);
-      --tileHover: rgba(34, 43, 72, 0.98);
-      --tileLine: rgba(255,255,255,0.08);
-      --glass: blur(16px);
+      --bg0: #050814;
+      --bg1: #0b1326;
+      --bg2: #101b34;
+      --panel: rgba(18, 25, 43, 0.92);
+      --panel2: rgba(28, 36, 58, 0.94);
+      --line: rgba(255,255,255,0.09);
+      --line2: rgba(170, 198, 255, 0.16);
+      --text: #f6f8ff;
+      --muted: rgba(246,248,255,0.72);
+      --muted2: rgba(246,248,255,0.48);
+      --shadow: 0 22px 70px rgba(0,0,0,0.52);
+      --r1: 18px;
+      --r2: 24px;
+      --accent: #98b8ff;
+      --accent2: #ffd86c;
     }
 
     * { box-sizing: border-box; }
     html, body { height: 100%; }
     body {
       margin: 0;
-      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--text);
-      overflow-x: hidden;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background:
-        radial-gradient(circle at 20% 10%, rgba(114, 149, 255, 0.18), transparent 28%),
-        radial-gradient(circle at 80% 15%, rgba(143, 178, 255, 0.12), transparent 24%),
-        radial-gradient(circle at 50% 70%, rgba(120, 146, 255, 0.10), transparent 28%),
-        linear-gradient(180deg, var(--bg0), var(--bg1) 55%, #05070d 100%);
+        radial-gradient(circle at 18% 12%, rgba(118, 150, 255, 0.18), transparent 26%),
+        radial-gradient(circle at 82% 18%, rgba(255, 214, 118, 0.09), transparent 22%),
+        linear-gradient(180deg, var(--bg0) 0%, var(--bg1) 54%, #03050a 100%);
+      overflow-x: hidden;
     }
 
     body::before {
@@ -49,32 +42,31 @@
       inset: 0;
       pointer-events: none;
       background-image:
-        radial-gradient(rgba(255,255,255,0.25) 0.7px, transparent 0.8px),
+        radial-gradient(rgba(255,255,255,0.22) 0.7px, transparent 0.8px),
         radial-gradient(rgba(255,255,255,0.12) 0.7px, transparent 0.8px);
-      background-size: 180px 180px, 260px 260px;
-      background-position: 0 0, 40px 70px;
+      background-size: 170px 170px, 260px 260px;
+      background-position: 0 0, 50px 76px;
       opacity: 0.22;
       mix-blend-mode: screen;
-      mask-image: linear-gradient(180deg, rgba(0,0,0,0.8), rgba(0,0,0,0.08));
     }
 
     .app {
       min-height: 100%;
       display: grid;
-      grid-template-rows: auto auto 1fr;
+      grid-template-rows: 66px 1fr;
     }
 
     .topbar {
       position: sticky;
       top: 0;
-      z-index: 30;
+      z-index: 20;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      gap: 14px;
-      padding: 14px 16px 10px;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      background: linear-gradient(180deg, rgba(5,8,16,0.94), rgba(5,8,16,0.72));
       backdrop-filter: blur(18px);
-      background: linear-gradient(180deg, rgba(5,8,18,0.92), rgba(5,8,18,0.68));
       border-bottom: 1px solid rgba(255,255,255,0.06);
     }
 
@@ -85,605 +77,366 @@
       min-width: 0;
     }
 
-    .brand-badge {
-      width: 44px;
-      height: 44px;
+    .brand-mark {
+      width: 40px;
+      height: 40px;
       border-radius: 14px;
       display: grid;
       place-items: center;
-      background: linear-gradient(145deg, rgba(255,255,255,0.15), rgba(255,255,255,0.03));
-      border: 1px solid rgba(255,255,255,0.10);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
       font-family: Georgia, serif;
       font-style: italic;
+      font-size: 22px;
+      letter-spacing: -0.04em;
+      background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.03));
+      border: 1px solid rgba(255,255,255,0.08);
+      text-transform: lowercase;
+    }
+
+    .brand-name {
       font-size: 24px;
+      font-weight: 750;
       letter-spacing: -0.04em;
       text-transform: lowercase;
-    }
-
-    .brand-meta {
-      min-width: 0;
-    }
-
-    .brand-meta .title {
-      font-size: 26px;
-      font-weight: 650;
-      letter-spacing: -0.04em;
       line-height: 1;
-      text-transform: lowercase;
     }
 
-    .brand-meta .sub {
+    .brand-line {
       margin-top: 4px;
-      font-size: 12px;
-      letter-spacing: 0.12em;
+      font-size: 11px;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
       color: var(--muted2);
     }
 
-    .top-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    .top-actions { display: flex; align-items: center; gap: 10px; }
+
+    .btn, .icon-btn, .mode-btn, .nav-btn, .game-btn, .fav-btn {
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: transform 150ms ease, background 150ms ease, border-color 150ms ease;
+      text-transform: lowercase;
     }
 
-    .pill {
-      height: 42px;
+    .btn:hover, .icon-btn:hover, .mode-btn:hover, .nav-btn:hover, .game-btn:hover, .fav-btn:hover { transform: translateY(-1px); background: rgba(255,255,255,0.07); }
+
+    .btn {
+      height: 40px;
       padding: 0 14px;
-      border-radius: 999px;
       display: inline-flex;
       align-items: center;
-      gap: 10px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.18);
-      user-select: none;
+      gap: 8px;
+      font-size: 14px;
     }
 
-    .pill svg { width: 16px; height: 16px; opacity: 0.85; }
-    .pill span { font-size: 14px; text-transform: lowercase; }
-    .pill:hover { background: rgba(255,255,255,0.08); }
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      flex: none;
+    }
+
+    .icon-btn svg { width: 16px; height: 16px; }
 
     .main {
       display: grid;
-      grid-template-columns: 258px 1fr;
-      gap: 14px;
-      padding: 10px 14px 18px;
+      grid-template-columns: 228px 1fr;
+      gap: 12px;
+      padding: 12px;
       min-height: 0;
     }
 
     .sidebar {
       position: sticky;
-      top: 84px;
+      top: 78px;
       align-self: start;
-      background: linear-gradient(180deg, rgba(20,27,48,0.94), rgba(16,22,39,0.90));
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 20px;
-      padding: 14px;
+      background: linear-gradient(180deg, rgba(20,27,47,0.94), rgba(15,21,36,0.92));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 22px;
+      padding: 12px;
       box-shadow: var(--shadow);
-      backdrop-filter: var(--glass);
+      backdrop-filter: blur(16px);
     }
 
-    .sidebar .mini {
-      height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+    .logo-box {
+      height: 80px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
       font-family: Georgia, serif;
       font-style: italic;
-      font-size: 26px;
+      font-size: 30px;
+      letter-spacing: -0.04em;
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+      border: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 12px;
       text-transform: lowercase;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
       margin-bottom: 12px;
     }
 
-    .searchbox {
+    .search {
+      flex: 1;
+      height: 42px;
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 10px 12px;
-      height: 44px;
+      padding: 0 12px;
       border-radius: 14px;
-      background: rgba(10,14,26,0.95);
+      background: rgba(7,11,18,0.96);
       border: 1px solid rgba(255,255,255,0.10);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
     }
 
-    .searchbox svg { width: 16px; height: 16px; opacity: 0.72; flex: none; }
-    .searchbox input {
+    .search svg { width: 16px; height: 16px; opacity: 0.75; }
+    .search input {
       width: 100%;
+      background: transparent;
       border: 0;
       outline: none;
-      background: transparent;
       color: var(--text);
-      font-size: 15px;
+      font-size: 14px;
       text-transform: lowercase;
     }
-    .searchbox input::placeholder { color: rgba(244,247,255,0.45); }
+    .search input::placeholder { color: rgba(246,248,255,0.44); }
 
-    .smallgear {
-      width: 44px;
-      height: 44px;
-      display: grid;
-      place-items: center;
-      flex: none;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(255,255,255,0.04);
-      cursor: pointer;
-    }
-
-    .settings-panel {
-      margin-top: 12px;
-      display: grid;
-      gap: 10px;
-    }
-
-    .setting-card {
+    .sidebar-block {
       border-radius: 18px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03));
-      padding: 12px;
-    }
-
-    .setting-card .label {
-      font-size: 11px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--muted2);
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      padding: 10px;
       margin-bottom: 10px;
     }
 
-    .theme-buttons {
-      display: grid;
-      gap: 8px;
-    }
-
-    .theme-buttons button,
-    .toggle-row button,
-    .action-btn,
-    .favorite-btn,
-    .panel-btn {
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(255,255,255,0.04);
-      color: var(--text);
-      border-radius: 14px;
-      padding: 10px 12px;
-      font-size: 14px;
-      text-transform: lowercase;
-      cursor: pointer;
-      transition: transform 150ms ease, background 150ms ease, border-color 150ms ease;
-    }
-
-    .theme-buttons button:hover,
-    .toggle-row button:hover,
-    .action-btn:hover,
-    .favorite-btn:hover,
-    .panel-btn:hover { transform: translateY(-1px); background: rgba(255,255,255,0.07); }
-
-    .theme-buttons button.active {
-      background: linear-gradient(180deg, rgba(133, 167, 255, 0.26), rgba(255,255,255,0.06));
-      border-color: rgba(165, 196, 255, 0.34);
-    }
-
-    .toggle-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .toggle-row button.active {
-      background: linear-gradient(180deg, rgba(255,213,120,0.24), rgba(255,255,255,0.05));
-      border-color: rgba(255, 232, 163, 0.34);
-    }
-
-    .content {
-      min-width: 0;
-      display: grid;
-      gap: 14px;
-    }
-
-    .hero {
-      border-radius: 24px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background:
-        radial-gradient(circle at 18% 20%, rgba(161, 192, 255, 0.18), transparent 34%),
-        radial-gradient(circle at 80% 18%, rgba(255, 219, 126, 0.12), transparent 26%),
-        linear-gradient(180deg, rgba(21,29,51,0.94), rgba(10,15,29,0.94));
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      position: relative;
-      min-height: 92px;
-      padding: 14px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .hero::after {
-      content: "";
-      position: absolute;
-      inset: auto -12% -60% -12%;
-      height: 120px;
-      background: radial-gradient(circle at center, rgba(255,255,255,0.14), transparent 65%);
-      filter: blur(20px);
-      opacity: 0.5;
-      pointer-events: none;
-    }
-
-    .hero .headline {
-      display: grid;
-      gap: 4px;
-      min-width: 0;
-    }
-
-    .hero .headline .kicker {
-      font-size: 11px;
-      letter-spacing: 0.22em;
+    .sidebar-label {
+      font-size: 10px;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
       color: var(--muted2);
+      margin-bottom: 8px;
     }
 
-    .hero .headline .big {
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: -0.04em;
-      text-transform: lowercase;
-    }
+    .mode-grid { display: grid; gap: 8px; }
+    .mode-row { display: flex; gap: 8px; flex-wrap: wrap; }
 
-    .hero .headline .small {
+    .mode-btn {
+      padding: 10px 11px;
       font-size: 13px;
-      color: var(--muted);
-      max-width: 80ch;
-      text-transform: lowercase;
     }
 
-    .hero .stats {
-      display: flex;
-      gap: 10px;
-      flex: none;
+    .mode-btn.active {
+      background: linear-gradient(180deg, rgba(143, 178, 255, 0.26), rgba(255,255,255,0.05));
+      border-color: rgba(166, 195, 255, 0.30);
     }
 
-    .stat {
-      min-width: 112px;
-      padding: 12px 14px;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.10);
-    }
-
-    .stat .num {
-      font-size: 28px;
-      font-weight: 700;
-      line-height: 1;
-    }
-
-    .stat .txt {
-      font-size: 13px;
-      color: var(--muted);
-      margin-top: 5px;
-      text-transform: lowercase;
-    }
-
-    .grid-wrap {
-      border-radius: 24px;
-      overflow: hidden;
-      background: linear-gradient(180deg, rgba(17,24,44,0.64), rgba(9,12,22,0.80));
-      border: 1px solid rgba(255,255,255,0.08);
-      padding: 10px;
-      box-shadow: var(--shadow);
-      min-height: calc(100vh - 164px);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(8, minmax(0, 1fr));
-      gap: 10px;
-      align-items: stretch;
-    }
-
-    .tile {
-      position: relative;
-      border-radius: 18px;
-      overflow: hidden;
-      aspect-ratio: 1 / 1;
-      border: 1px solid var(--tileLine);
-      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
-      cursor: pointer;
-      transform: translateZ(0);
-      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
-      min-width: 0;
-    }
-
-    .tile:hover {
-      transform: translateY(-2px) scale(1.01);
-      border-color: rgba(180,205,255,0.24);
-      box-shadow: 0 18px 28px rgba(0,0,0,0.28);
-    }
-
-    .tile.featured { aspect-ratio: 1.8 / 1; grid-column: span 2; grid-row: span 2; }
-    .tile.wide { aspect-ratio: 1.5 / 1; grid-column: span 2; }
-    .tile.tall { aspect-ratio: 1 / 1.8; grid-row: span 2; }
-
-    .tile .img {
-      position: absolute;
-      inset: 0;
-      background: var(--bg, linear-gradient(180deg, #264, #143));
-      background-size: cover;
-      background-position: center;
-      filter: saturate(1.08);
-    }
-
-    .tile::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.62) 100%);
-    }
-
-    .tile .label {
-      position: absolute;
-      left: 10px;
-      right: 10px;
-      bottom: 10px;
-      z-index: 1;
-      font-size: 15px;
-      font-weight: 600;
-      line-height: 1.05;
-      text-transform: lowercase;
-      text-shadow: 0 2px 14px rgba(0,0,0,0.65);
-    }
-
-    .tile .heart {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      z-index: 1;
-      width: 26px;
-      height: 26px;
-      display: grid;
-      place-items: center;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.88);
-      color: #ff5a7a;
-      opacity: 0;
-      transform: scale(0.95);
-      transition: opacity 140ms ease, transform 140ms ease;
-      font-size: 16px;
-    }
-
-    .tile:hover .heart { opacity: 1; transform: scale(1); }
-    .tile.favorited .heart { opacity: 1; }
-
-    .tile.selected {
-      outline: 2px solid rgba(159, 190, 255, 0.45);
-      box-shadow: 0 0 0 1px rgba(159,190,255,0.14), 0 22px 40px rgba(0,0,0,0.38);
-    }
+    .content { min-width: 0; display: grid; gap: 12px; }
 
     .selected-view {
       display: none;
-      position: relative;
       border-radius: 24px;
-      padding: 14px;
-      background: linear-gradient(180deg, rgba(16,23,39,0.96), rgba(10,13,22,0.96));
-      border: 1px solid rgba(255,255,255,0.10);
+      background: linear-gradient(180deg, rgba(16,23,39,0.96), rgba(8,10,16,0.96));
+      border: 1px solid rgba(255,255,255,0.08);
       box-shadow: var(--shadow);
+      overflow: hidden;
     }
-
     .selected-view.open { display: block; }
 
-    .selected-header {
+    .selected-head {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       gap: 10px;
-      margin-bottom: 12px;
+      padding: 12px 12px 0;
     }
 
-    .selected-header .name {
-      font-size: 20px;
-      font-weight: 700;
-      text-transform: lowercase;
-      letter-spacing: -0.03em;
-    }
-
-    .selected-header .meta {
-      font-size: 13px;
-      color: var(--muted);
+    .selected-title {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
       text-transform: lowercase;
     }
 
     .selected-shell {
       display: grid;
-      grid-template-columns: 1.8fr 0.9fr;
+      grid-template-columns: 1.8fr 0.82fr;
       gap: 12px;
-      align-items: stretch;
+      padding: 12px;
     }
 
-    .game-frame {
-      min-height: 58vh;
+    .stage {
       border-radius: 24px;
       overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: #04070f;
+      min-height: 58vh;
       position: relative;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: #02040a;
     }
 
-    .game-frame .game-art {
+    .stage .art {
       position: absolute;
       inset: 0;
-      background: var(--art, linear-gradient(180deg, #0d1b4b, #090b13));
+      background: linear-gradient(135deg, #0d1b4c, #0a0f18);
       background-size: cover;
       background-position: center;
-      filter: saturate(1.06);
     }
 
-    .game-frame .overlay {
+    .stage::after {
+      content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.55));
+      background: linear-gradient(180deg, rgba(0,0,0,0.1), rgba(0,0,0,0.56));
+    }
+
+    .stage-ui {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 16px;
+      padding: 14px;
     }
 
-    .game-topline {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .back-btn {
-      height: 40px;
+    .game-btn, .fav-btn {
+      height: 38px;
       padding: 0 14px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(7,10,18,0.65);
-      color: white;
-      cursor: pointer;
-      text-transform: lowercase;
-    }
-
-    .game-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .action-btn.primary {
-      background: linear-gradient(180deg, rgba(138,173,255,0.24), rgba(255,255,255,0.05));
-      border-color: rgba(157,188,255,0.25);
-    }
-
-    .action-btn.good {
-      background: linear-gradient(180deg, rgba(146,230,167,0.22), rgba(255,255,255,0.05));
-      border-color: rgba(146,230,167,0.24);
-    }
-
-    .game-footer {
-      display: grid;
-      gap: 8px;
-    }
-
-    .game-footer .title {
-      font-size: 34px;
-      font-weight: 800;
-      line-height: 0.95;
-      text-transform: lowercase;
-      letter-spacing: -0.05em;
-    }
-
-    .game-footer .desc {
       font-size: 14px;
-      line-height: 1.5;
-      color: var(--muted);
-      max-width: 60ch;
-      text-transform: lowercase;
     }
 
-    .panel {
+    .game-btn.primary { background: rgba(143,178,255,0.20); border-color: rgba(159,193,255,0.22); }
+    .game-btn.good { background: rgba(146,230,167,0.18); border-color: rgba(146,230,167,0.22); }
+
+    .title-stack { display: grid; gap: 6px; align-self: start; }
+    .title-stack .big { font-size: 34px; font-weight: 900; line-height: 0.96; letter-spacing: -0.05em; text-transform: lowercase; }
+    .title-stack .tiny { font-size: 13px; color: var(--muted); text-transform: lowercase; max-width: 56ch; }
+
+    .side-panel {
       border-radius: 22px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
       padding: 12px;
       display: grid;
       gap: 10px;
       align-content: start;
     }
 
-    .panel .panel-title {
-      font-size: 12px;
+    .side-chip-title {
+      font-size: 10px;
       letter-spacing: 0.18em;
       text-transform: uppercase;
       color: var(--muted2);
     }
 
-    .panel .chip-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
+    .chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
     .chip {
       padding: 8px 10px;
       border-radius: 999px;
       border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(0,0,0,0.15);
+      background: rgba(0,0,0,0.16);
       font-size: 13px;
       text-transform: lowercase;
-      color: var(--text);
     }
 
-    .page-divider {
-      margin-top: 12px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      color: var(--muted2);
-      font-size: 12px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      padding: 12px 0 4px;
-    }
-
-    .page-divider::before,
-    .page-divider::after {
-      content: "";
-      height: 1px;
-      flex: 1;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.16), transparent);
-    }
-
-    .liminal {
-      margin-top: 8px;
-      min-height: 52vh;
-      border-radius: 26px;
+    .section-box {
+      border-radius: 18px;
       border: 1px solid rgba(255,255,255,0.08);
-      background:
-        radial-gradient(circle at 20% 40%, rgba(140, 166, 255, 0.09), transparent 18%),
-        radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.05), transparent 18%),
-        linear-gradient(180deg, rgba(13,18,30,0.75), rgba(6,9,16,0.88));
+      background: rgba(255,255,255,0.03);
+      padding: 10px;
+    }
+
+    .section-box p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.45;
+      color: var(--muted);
+      text-transform: lowercase;
+    }
+
+    .board {
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(14,20,38,0.72), rgba(7,10,16,0.86));
+      border: 1px solid rgba(255,255,255,0.08);
       box-shadow: var(--shadow);
-      padding: 16px;
+      padding: 10px;
+      overflow: hidden;
+    }
+
+    .grid-shell {
+      position: relative;
+      border-radius: 22px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      min-height: 54vh;
+    }
+
+    #games {
+      width: 100%;
+      min-height: 54vh;
+    }
+
+    .sdk-fallback {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 24px;
+      color: var(--muted);
+      pointer-events: none;
+      text-transform: lowercase;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(131, 165, 255, 0.08), transparent 20%),
+        radial-gradient(circle at 76% 40%, rgba(255,255,255,0.05), transparent 18%);
+    }
+
+    .mini-wrap {
+      margin-top: 12px;
+      border-radius: 26px;
+      min-height: 52vh;
+      padding: 14px;
+      border: 1px solid rgba(255,255,255,0.07);
+      background:
+        radial-gradient(circle at 22% 40%, rgba(133, 163, 255, 0.08), transparent 18%),
+        radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.04), transparent 18%),
+        linear-gradient(180deg, rgba(11,15,24,0.74), rgba(6,8,14,0.90));
+      box-shadow: var(--shadow);
       position: relative;
       overflow: hidden;
     }
 
-    .liminal::before {
+    .mini-wrap::before {
       content: "";
       position: absolute;
       inset: 0;
-      background-image:
-        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-      background-size: 34px 34px;
-      opacity: 0.28;
+      background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 36px 36px;
+      opacity: 0.30;
       pointer-events: none;
     }
 
-    .liminal .page-note {
+    .page-line {
       position: relative;
       z-index: 1;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       margin-bottom: 12px;
-      color: var(--muted);
-      text-transform: lowercase;
+      color: var(--muted2);
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
     }
 
-    .liminal .page-note strong { color: var(--text); }
-
-    .other-grid {
+    .mini-grid {
       position: relative;
       z-index: 1;
       display: grid;
@@ -691,77 +444,54 @@
       gap: 10px;
     }
 
-    .mini-tile {
-      aspect-ratio: 1 / 1;
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,0.08);
-      overflow: hidden;
-      background: rgba(255,255,255,0.03);
+    .mini {
       position: relative;
+      overflow: hidden;
+      aspect-ratio: 1 / 1;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.07);
+      background: rgba(255,255,255,0.03);
+      padding: 0;
+      text-align: left;
       cursor: pointer;
     }
 
-    .mini-tile .img {
-      position: absolute;
-      inset: 0;
-      background: var(--bg, linear-gradient(180deg, #233, #122));
-      background-size: cover;
-      background-position: center;
-    }
-
-    .mini-tile .label {
-      position: absolute;
-      left: 8px;
-      right: 8px;
-      bottom: 8px;
-      z-index: 1;
-      font-size: 12px;
-      font-weight: 600;
-      line-height: 1.05;
-      text-transform: lowercase;
-      text-shadow: 0 2px 12px rgba(0,0,0,0.8);
-    }
-
-    .mini-tile::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.62) 100%);
-    }
+    .mini .label { position: absolute; left: 8px; right: 8px; bottom: 8px; z-index: 1; font-size: 12px; line-height: 1.05; text-transform: lowercase; text-shadow: 0 2px 12px rgba(0,0,0,0.8); }
+    .mini .img { position: absolute; inset: 0; background: linear-gradient(135deg, #233, #122); background-size: cover; background-position: center; }
+    .mini::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.62) 100%); }
 
     .hidden { display: none !important; }
 
-    .settings-modal {
+    .settings {
       position: fixed;
       inset: 0;
       display: none;
       place-items: center;
-      background: rgba(2, 4, 8, 0.72);
-      z-index: 60;
+      background: rgba(0,0,0,0.72);
+      z-index: 50;
       padding: 18px;
     }
 
-    .settings-modal.open { display: grid; }
+    .settings.open { display: grid; }
 
-    .settings-window {
-      width: min(920px, 100%);
-      border-radius: 28px;
+    .settings-card {
+      width: min(900px, 100%);
+      border-radius: 26px;
       overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: linear-gradient(180deg, rgba(18,24,42,0.98), rgba(10,14,24,0.98));
-      box-shadow: 0 34px 120px rgba(0,0,0,0.6);
+      border: 1px solid rgba(255,255,255,0.10);
+      background: linear-gradient(180deg, rgba(17,24,43,0.98), rgba(9,12,20,0.98));
+      box-shadow: 0 34px 110px rgba(0,0,0,0.6);
     }
 
-    .settings-head {
+    .settings-top {
+      padding: 14px 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 16px 18px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      border-bottom: 1px solid rgba(255,255,255,0.07);
     }
 
-    .settings-head .title {
+    .settings-title {
       font-size: 18px;
       font-weight: 700;
       text-transform: lowercase;
@@ -769,27 +499,25 @@
 
     .settings-grid {
       display: grid;
-      grid-template-columns: 280px 1fr;
-      min-height: 420px;
+      grid-template-columns: 260px 1fr;
+      min-height: 400px;
     }
 
-    .settings-nav {
+    .nav {
       padding: 14px;
-      border-right: 1px solid rgba(255,255,255,0.08);
+      border-right: 1px solid rgba(255,255,255,0.07);
       display: grid;
       gap: 10px;
     }
 
-    .nav-item {
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.08);
+    .nav-btn {
       padding: 12px 14px;
+      font-size: 14px;
+      border-radius: 16px;
       background: rgba(255,255,255,0.03);
-      text-transform: lowercase;
-      cursor: pointer;
     }
 
-    .nav-item.active { background: rgba(133,167,255,0.18); border-color: rgba(158,191,255,0.22); }
+    .nav-btn.active { background: rgba(143,178,255,0.16); border-color: rgba(166,195,255,0.24); }
 
     .settings-body {
       padding: 14px;
@@ -798,87 +526,66 @@
       align-content: start;
     }
 
-    .section-box {
-      border-radius: 20px;
+    .settings-box {
+      border-radius: 18px;
       border: 1px solid rgba(255,255,255,0.08);
       background: rgba(255,255,255,0.03);
-      padding: 14px;
+      padding: 12px;
       display: grid;
       gap: 10px;
     }
 
-    .section-box h3 {
+    .settings-box h3 {
       margin: 0;
       font-size: 14px;
+      font-weight: 700;
       text-transform: lowercase;
     }
 
-    .section-box p {
+    .settings-box p {
       margin: 0;
-      color: var(--muted);
       font-size: 13px;
-      line-height: 1.5;
+      line-height: 1.45;
+      color: var(--muted);
       text-transform: lowercase;
     }
 
-    .close-x {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(255,255,255,0.04);
-      color: var(--text);
-      cursor: pointer;
-    }
-
-    .search-results {
-      margin-top: 10px;
+    .style-grid {
       display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 8px;
     }
 
-    .result-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
+    .style-btn {
+      height: 42px;
       border-radius: 14px;
-      background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
       cursor: pointer;
       text-transform: lowercase;
     }
 
-    .result-row:hover { background: rgba(255,255,255,0.08); }
+    .style-btn.active { background: rgba(143,178,255,0.20); border-color: rgba(166,195,255,0.26); }
 
-    .result-row .name { font-weight: 600; }
-    .result-row .tag { color: var(--muted2); font-size: 12px; }
-
-    @media (max-width: 1360px) {
-      .grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-      .other-grid { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+    @media (max-width: 1280px) {
+      .mini-grid { grid-template-columns: repeat(8, minmax(0, 1fr)); }
     }
 
-    @media (max-width: 1080px) {
+    @media (max-width: 980px) {
       .main { grid-template-columns: 1fr; }
       .sidebar { position: relative; top: 0; }
       .selected-shell { grid-template-columns: 1fr; }
-      .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-      .other-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+      .mini-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
     }
 
-    @media (max-width: 760px) {
-      .topbar { padding-inline: 12px; }
-      .brand-meta .title { font-size: 22px; }
-      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .tile.featured, .tile.wide, .tile.tall { grid-column: span 1; grid-row: span 1; aspect-ratio: 1 / 1; }
-      .other-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      .hero { flex-direction: column; align-items: stretch; }
-      .hero .stats { width: 100%; }
-      .stat { flex: 1; min-width: 0; }
+    @media (max-width: 720px) {
+      .brand-name { font-size: 21px; }
+      .mini-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .settings-grid { grid-template-columns: 1fr; }
-      .settings-nav { border-right: 0; border-bottom: 1px solid rgba(255,255,255,0.08); grid-auto-flow: column; overflow: auto; }
+      .nav { border-right: 0; border-bottom: 1px solid rgba(255,255,255,0.07); grid-auto-flow: column; overflow: auto; }
+      .topbar { padding-inline: 10px; }
+      .main { padding: 10px; }
     }
   </style>
 </head>
@@ -886,14 +593,14 @@
   <div class="app">
     <header class="topbar">
       <div class="brand">
-        <div class="brand-badge">m</div>
-        <div class="brand-meta">
-          <div class="title">velora v5</div>
-          <div class="sub">arcade shell</div>
+        <div class="brand-mark">m</div>
+        <div>
+          <div class="brand-name">velora v5</div>
+          <div class="brand-line">arcade shell</div>
         </div>
       </div>
       <div class="top-actions">
-        <button class="pill" id="openSettingsBtn" aria-label="open settings">
+        <button class="btn" id="openSettings">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"></circle><path d="M19.4 15a1.8 1.8 0 0 0 .36 1.98l.06.06a2.2 2.2 0 1 1-3.12 3.12l-.06-.06A1.8 1.8 0 0 0 15 19.4a1.8 1.8 0 0 0-1.08 1.64v.16a2.2 2.2 0 1 1-4.84 0v-.08a1.8 1.8 0 0 0-1.08-1.64 1.8 1.8 0 0 0-1.98.36l-.06.06a2.2 2.2 0 1 1-3.12-3.12l.06-.06A1.8 1.8 0 0 0 4.6 15a1.8 1.8 0 0 0-1.64-1.08H2.8a2.2 2.2 0 1 1 0-4.84h.16A1.8 1.8 0 0 0 4.6 8a1.8 1.8 0 0 0-.36-1.98l-.06-.06a2.2 2.2 0 1 1 3.12-3.12l.06.06A1.8 1.8 0 0 0 9 4.6 1.8 1.8 0 0 0 10.08 2.96V2.8a2.2 2.2 0 1 1 4.84 0v.16A1.8 1.8 0 0 0 16 4.6c.72 0 1.4-.3 1.98-.36l.06-.06a2.2 2.2 0 1 1 3.12 3.12l-.06.06A1.8 1.8 0 0 0 19.4 9c.1.35.16.71.16 1.08 0 .37-.06.73-.16 1.08z"/></svg>
           <span>settings</span>
         </button>
@@ -902,484 +609,399 @@
 
     <main class="main">
       <aside class="sidebar">
-        <div class="mini">mist</div>
-        <div class="searchbox" style="margin-bottom: 10px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
-          <input id="searchInput" type="search" placeholder="search" autocomplete="off" />
+        <div class="logo-box">mist</div>
+        <div class="search-row">
+          <div class="search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+            <input id="searchInput" type="search" placeholder="search" autocomplete="off" />
+          </div>
+          <button class="icon-btn" id="clearBtn" aria-label="clear search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+          </button>
         </div>
-        <div class="settings-panel">
-          <div class="setting-card">
-            <div class="label">layout</div>
-            <div class="theme-buttons">
-              <button class="active" data-style="mist">mist</button>
-              <button data-style="void">void</button>
-              <button data-style="signal">signal</button>
-            </div>
+
+        <div class="sidebar-block">
+          <div class="sidebar-label">style</div>
+          <div class="mode-grid">
+            <button class="mode-btn active" data-style="mist">mist</button>
+            <button class="mode-btn" data-style="void">void</button>
+            <button class="mode-btn" data-style="signal">signal</button>
           </div>
-          <div class="setting-card">
-            <div class="label">view</div>
-            <div class="toggle-row">
-              <button class="active" id="gridModeBtn">grid</button>
-              <button id="favoritesModeBtn">favorites</button>
-              <button id="compactModeBtn">compact</button>
-            </div>
+        </div>
+
+        <div class="sidebar-block">
+          <div class="sidebar-label">view</div>
+          <div class="mode-row">
+            <button class="mode-btn active" id="gridViewBtn">grid</button>
+            <button class="mode-btn" id="favViewBtn">favorites</button>
+            <button class="mode-btn" id="compactViewBtn">compact</button>
           </div>
-          <div class="setting-card">
-            <div class="label">search</div>
-            <div class="toggle-row">
-              <button class="active" id="liveSearchBtn">live</button>
-              <button id="clearSearchBtn">clear</button>
-            </div>
+        </div>
+
+        <div class="sidebar-block">
+          <div class="sidebar-label">search</div>
+          <div class="mode-row">
+            <button class="mode-btn active" id="liveBtn">live</button>
+            <button class="mode-btn" id="randomBtn">random</button>
           </div>
         </div>
       </aside>
 
       <section class="content">
-        <div class="hero">
-          <div class="headline">
-            <div class="kicker">velora v5</div>
-            <div class="big">games on the line</div>
-            <div class="small">cleaner launch flow, live search, favorites only from the user, and a liminal scroll section that keeps the page feeling strange without becoming cluttered.</div>
-          </div>
-          <div class="stats">
-            <div class="stat">
-              <div class="num" id="gameCount">0</div>
-              <div class="txt">games</div>
-            </div>
-            <div class="stat">
-              <div class="num" id="favCount">0</div>
-              <div class="txt">favorites</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="selected-view" id="selectedView">
-          <div class="selected-header">
-            <div>
-              <div class="name" id="selectedName">game</div>
-              <div class="meta" id="selectedMeta">ready</div>
-            </div>
-            <button class="back-btn" id="backBtn">back</button>
+        <section class="selected-view" id="selectedView">
+          <div class="selected-head">
+            <div class="selected-title" id="selectedName">game</div>
+            <button class="game-btn" id="backBtn">back</button>
           </div>
           <div class="selected-shell">
-            <div class="game-frame">
-              <div class="game-art" id="selectedArt"></div>
-              <div class="overlay">
-                <div class="game-topline">
-                  <div class="game-actions">
-                    <button class="action-btn primary" id="reloadBtn">reload game</button>
-                    <button class="action-btn good" id="fullBtn">fullscreen</button>
-                    <button class="favorite-btn" id="favBtn">favorite</button>
-                  </div>
+            <div class="stage">
+              <div class="art" id="selectedArt"></div>
+              <div class="stage-ui">
+                <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; justify-content:flex-start;">
+                  <button class="game-btn primary" id="reloadBtn">reload game</button>
+                  <button class="game-btn good" id="fullBtn">fullscreen</button>
+                  <button class="fav-btn" id="favBtn">favorite</button>
                 </div>
-                <div class="game-footer">
-                  <div class="title" id="selectedTitle2">game</div>
-                  <div class="desc" id="selectedDesc">game details.</div>
+                <div class="title-stack">
+                  <div class="big" id="selectedTitle">game</div>
+                  <div class="tiny" id="selectedDesc">sdk selection area.</div>
                 </div>
               </div>
             </div>
-            <div class="panel">
-              <div class="panel-title">info</div>
-              <div class="chip-row" id="selectedTags"></div>
-              <div class="section-box">
-                <h3>controls</h3>
-                <p>enter opens a game. escape returns. search filters live. favorite only saves the ones the user marks.</p>
-              </div>
-              <div class="section-box">
-                <h3>status</h3>
-                <p id="selectedStatus">ready.</p>
-              </div>
+            <div class="side-panel">
+              <div class="side-chip-title">tags</div>
+              <div class="chip-row" id="tagRow"></div>
+              <div class="section-box"><p id="statusText">select a game from the sdk grid.</p></div>
+              <div class="section-box"><p>enter opens. escape goes back. favorite only saves the ones you mark. this shell waits on the sdk instead of inventing games.</p></div>
             </div>
           </div>
-        </div>
+        </section>
 
-        <div class="grid-wrap" id="gridWrap">
-          <div class="grid" id="gameGrid"></div>
-          <div class="page-divider">page 1 of others</div>
-          <div class="liminal">
-            <div class="page-note">
-              <span>page 1 of <strong id="pageCountLabel">3</strong></span>
-              <span>liminal space below</span>
+        <section class="board" id="board">
+          <div class="grid-shell">
+            <div id="games"></div>
+            <div class="sdk-fallback" id="sdkFallback">
+              <div>
+                <div style="font-size:22px;font-weight:800;letter-spacing:-0.04em;">sdk grid goes here</div>
+                <div style="margin-top:6px; font-size:13px; max-width: 44ch;">if lumin loads, it mounts into this box. this file does not fake game tiles.</div>
+              </div>
             </div>
-            <div class="other-grid" id="otherGrid"></div>
           </div>
-        </div>
+
+          <div class="mini-wrap">
+            <div class="page-line">
+              <span>page 1 of <span id="pageCount">1</span></span>
+              <span>others</span>
+            </div>
+            <div class="mini-grid" id="miniGrid"></div>
+          </div>
+        </section>
       </section>
     </main>
   </div>
 
-  <div class="settings-modal" id="settingsModal" aria-hidden="true">
-    <div class="settings-window">
-      <div class="settings-head">
-        <div class="title">settings</div>
-        <button class="close-x" id="closeSettingsBtn">✕</button>
+  <div class="settings" id="settingsModal">
+    <div class="settings-card">
+      <div class="settings-top">
+        <div class="settings-title">settings</div>
+        <button class="icon-btn" id="closeSettings" aria-label="close settings">✕</button>
       </div>
       <div class="settings-grid">
-        <div class="settings-nav">
-          <div class="nav-item active">appearance</div>
-          <div class="nav-item">search</div>
-          <div class="nav-item">controls</div>
-          <div class="nav-item">pages</div>
+        <div class="nav">
+          <button class="nav-btn active">appearance</button>
+          <button class="nav-btn">search</button>
+          <button class="nav-btn">controls</button>
+          <button class="nav-btn">pages</button>
         </div>
         <div class="settings-body">
-          <div class="section-box">
-            <h3>appearance styles</h3>
-            <p>switch the shell styling to different moods without changing the layout.</p>
-            <div class="theme-buttons" style="grid-template-columns: repeat(3, minmax(0, 1fr));">
-              <button class="active" data-style="mist">mist</button>
-              <button data-style="void">void</button>
-              <button data-style="signal">signal</button>
+          <div class="settings-box">
+            <h3>appearance</h3>
+            <div class="style-grid">
+              <button class="style-btn active" data-style="mist">mist</button>
+              <button class="style-btn" data-style="void">void</button>
+              <button class="style-btn" data-style="signal">signal</button>
             </div>
           </div>
-          <div class="section-box">
-            <h3>search behavior</h3>
-            <p>search works live against all visible games, filters favorites, and keeps the grid responsive.</p>
+          <div class="settings-box">
+            <h3>search</h3>
+            <p>this can call the sdk search hook if lumin exposes one. no fake local game list is used here.</p>
           </div>
-          <div class="section-box">
-            <h3>page flow</h3>
-            <p>scrolling reveals a liminal second zone labeled page 1 of others, so the page stays strange but still organized.</p>
+          <div class="settings-box">
+            <h3>pages</h3>
+            <p>the lower zone stays liminal and keeps the page feeling deep without cluttering the main grid.</p>
           </div>
         </div>
       </div>
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/gh/luminsdk/script@latest/lumin.min.js"></script>
   <script>
-    const games = [
-      { name: 'friday night funkin', img: 'linear-gradient(135deg, #9f1120 0%, #0a1330 36%, #42b0ff 37%, #2a84dc 60%, #09111f 100%)', art: 'linear-gradient(135deg, #09111d, #142a55 42%, #0d1018)', desc: 'rhythm game with loud style and clean launch handling.', tags: ['rhythm', 'music', 'classic'] },
-      { name: 'lazy jump 3d', img: 'linear-gradient(135deg, #ffd54d, #ff9f4d 55%, #4fb0ff 56%, #e6ecff 100%)', art: 'linear-gradient(135deg, #ffd54d, #ff8a4d 45%, #3156e3)', desc: 'a bright runner with a big centered target and arcade energy.', tags: ['runner', '3d', 'casual'] },
-      { name: 'slither.io', img: 'linear-gradient(135deg, #0a1b33, #10183c), radial-gradient(circle at 65% 55%, #ffb14a 0 18%, transparent 19%), linear-gradient(135deg, #f6c95b, #e0852f)', art: 'linear-gradient(135deg, #081120, #1b2f55)', desc: 'the snake game stays compact and readable in the grid.', tags: ['io', 'arcade', 'multiplayer'] },
-      { name: 'class of 09', img: 'linear-gradient(135deg, #1b2445, #f7f5ec)', art: 'linear-gradient(135deg, #f4f0e7, #2d3566)', desc: 'a visual novel tile with a clean card and strong contrast.', tags: ['story', 'visual novel', 'retro'] },
-      { name: 'celeste (pico-8)', img: 'linear-gradient(135deg, #ff3877, #ff3d5f)', art: 'linear-gradient(135deg, #ff6698, #ffb347)', desc: 'tight platforming energy in a small pixel box.', tags: ['platformer', 'pixel', 'hard'] },
-      { name: 'papas pastaria', img: 'linear-gradient(135deg, #ffe45c, #d7a043 55%, #97d04a 56%, #fef2ad)', art: 'linear-gradient(135deg, #ffec83, #d69a42)', desc: 'a cooking tile with colorful arcade vibes.', tags: ['strategy', 'food', 'time'] },
-      { name: 'gloom', img: 'linear-gradient(135deg, #eac24b, #2a1b08)', art: 'linear-gradient(135deg, #21160b, #7a5526)', desc: 'a darker visual tile with a metallic feel.', tags: ['puzzle', 'dark', 'indie'] },
-      { name: 'the impossible game', img: 'linear-gradient(135deg, #2c6e8e, #fd6a2b)', art: 'linear-gradient(135deg, #1e4460, #ff7f2f)', desc: 'minimal challenge game with sharp contrast and speed.', tags: ['challenge', 'reaction', 'clean'] },
-      { name: 'hobo 3', img: 'linear-gradient(135deg, #8c63ff, #3e0f72)', art: 'linear-gradient(135deg, #6f3fe0, #171321)', desc: 'chaotic comedy tile with gritty art and a bold label.', tags: ['action', 'weird', 'classic'] },
-      { name: 'bob the robber 2', img: 'linear-gradient(135deg, #ccf56a, #2f6d2f)', art: 'linear-gradient(135deg, #b7db4a, #0f2816)', desc: 'stealth tile that still reads well in a dense grid.', tags: ['stealth', 'puzzle', '2d'] },
-      { name: 'mario party 1', img: 'linear-gradient(135deg, #3c7cff, #fff7ea)', art: 'linear-gradient(135deg, #fff7ed, #7a8ae5)', desc: 'party tile with a bright scene and wide visuals.', tags: ['party', 'multiplayer', 'classic'] },
-      { name: 'shift 4', img: 'linear-gradient(135deg, #ffffff, #000000)', art: 'linear-gradient(135deg, #f0f0f0, #121212)', desc: 'a stark title card with minimal styling.', tags: ['platformer', 'minimal', 'indie'] },
-      { name: 'kindergarten', img: 'linear-gradient(135deg, #ccf56a, #e64f4f)', art: 'linear-gradient(135deg, #ffe37a, #ff6a6a)', desc: 'a bright weird tile with playful colors.', tags: ['comedy', 'school', 'story'] },
-      { name: 'pokemon gold', img: 'linear-gradient(135deg, #f8d95c, #7ad62f)', art: 'linear-gradient(135deg, #f3db53, #6ac04e)', desc: 'gold version art that stays readable in a small box.', tags: ['rpg', 'monster', 'classic'] },
-      { name: 'sonic advance 2', img: 'linear-gradient(135deg, #1b4bdc, #131a2c)', art: 'linear-gradient(135deg, #2552d5, #09111d)', desc: 'speed tile with strong blue branding.', tags: ['platformer', 'speed', 'retro'] },
-      { name: 'tiny fishing', img: 'linear-gradient(135deg, #6ed0ff, #f89f62)', art: 'linear-gradient(135deg, #98e5ff, #ff8f48)', desc: 'simple and bright, like a calm pocket game.', tags: ['casual', 'fishing', 'relax'] },
-      { name: 'quake iii', img: 'linear-gradient(135deg, #141414, #85151a)', art: 'linear-gradient(135deg, #0b0b0b, #530d11)', desc: 'dark shooter tile with heavy contrast.', tags: ['fps', 'arena', 'classic'] },
-      { name: 'vectorman', img: 'linear-gradient(135deg, #b9d73f, #0e2b0f)', art: 'linear-gradient(135deg, #d7f24a, #0d2110)', desc: 'green box art with old-console energy.', tags: ['action', 'retro', 'console'] },
-      { name: 'sonic cd', img: 'linear-gradient(135deg, #0d1461, #2c86ff)', art: 'linear-gradient(135deg, #13206d, #54a0ff)', desc: 'blue anime-like box art that works well in grid form.', tags: ['platformer', 'speed', 'classic'] },
-      { name: 'learn to fly 2', img: 'linear-gradient(135deg, #75e2ff, #65d7a8)', art: 'linear-gradient(135deg, #8ee9ff, #72d9a9)', desc: 'clean sky-colored tile with simple reading.', tags: ['arcade', 'upgrade', 'fun'] },
-      { name: 'warfare d.i.v', img: 'linear-gradient(135deg, #ffe36b, #ff7a2d)', art: 'linear-gradient(135deg, #ffe36b, #ff7a2d)', desc: 'bold yellow tile with loud arcade styling.', tags: ['shoot', 'action', 'flashy'] },
-      { name: 'vex challenges', img: 'linear-gradient(135deg, #10161f, #09206a)', art: 'linear-gradient(135deg, #0b1220, #1539a6)', desc: 'blue stick-figure style box for quick platform challenges.', tags: ['platformer', 'stickman', 'hard'] },
-      { name: 'jellytruck', img: 'linear-gradient(135deg, #f4f7ff, #f1d6df)', art: 'linear-gradient(135deg, #e9f0ff, #f7d9e2)', desc: 'soft, clean, and visually light for contrast.', tags: ['physics', 'driving', 'cute'] },
-      { name: 'the binding of issac', img: 'linear-gradient(135deg, #9a7a4f, #241717)', art: 'linear-gradient(135deg, #2d1b16, #6b4f39)', desc: 'dark pixel art box with a heavy brown tone.', tags: ['roguelike', 'pixel', 'dungeon'] },
-      { name: 'bacon may die', img: 'linear-gradient(135deg, #ffb53c, #ff7a3c)', art: 'linear-gradient(135deg, #ffb53c, #ff7a3c)', desc: 'cartoony action tile with bright contrast.', tags: ['action', 'shoot', 'cartoon'] },
-      { name: 'interactive buddy', img: 'linear-gradient(135deg, #a6adb8, #343a45)', art: 'linear-gradient(135deg, #b9bec7, #22252d)', desc: 'simple gray tile with a play-button feel.', tags: ['toy', 'sim', 'sandbox'] },
-      { name: 'wheely 4', img: 'linear-gradient(135deg, #ffb72e, #5fc8ff)', art: 'linear-gradient(135deg, #ffe0a6, #6fd2ff)', desc: 'small car puzzle tile with playful color blocking.', tags: ['puzzle', 'car', 'cute'] },
-      { name: 'cluster rush', img: 'linear-gradient(135deg, #ff6a5d, #7e2fff)', art: 'linear-gradient(135deg, #ff7b6f, #6d32ff)', desc: 'neon box art with a fast, crowded feel.', tags: ['speed', 'parkour', 'neon'] },
-      { name: 'fish rescue', img: 'linear-gradient(135deg, #4d5b62, #1d3341)', art: 'linear-gradient(135deg, #4e5d65, #11212f)', desc: 'muted tile for the liminal lower zone.', tags: ['arcade', 'puzzle', 'quiet'] },
-      { name: 'bus & subway runner', img: 'linear-gradient(135deg, #79c8ff, #ffb864)', art: 'linear-gradient(135deg, #7fd1ff, #ffba7c)', desc: 'runner tile with bright toy-like art.', tags: ['runner', 'city', 'endless'] },
-      { name: 'webfishing', img: 'linear-gradient(135deg, #2f2940, #bc795f)', art: 'linear-gradient(135deg, #4a3a58, #d8906b)', desc: 'cozy, weird, and compact in the grid.', tags: ['social', 'fishing', 'cozy'] },
-      { name: 'dadish 3', img: 'linear-gradient(135deg, #8e5cff, #1c1228)', art: 'linear-gradient(135deg, #7a52ea, #0e0d12)', desc: 'bright purple tile with a playful mascot.', tags: ['platformer', 'cute', 'food'] },
-      { name: 'sudoku', img: 'linear-gradient(135deg, #5aa24a, #e7f0d5)', art: 'linear-gradient(135deg, #6ba255, #e4efd1)', desc: 'simple green tile for a brain-break game.', tags: ['puzzle', 'numbers', 'calm'] },
-      { name: 'this is the only level 2', img: 'linear-gradient(135deg, #e8e9ff, #9a59ff)', art: 'linear-gradient(135deg, #dfe0ff, #8b57ff)', desc: 'minimal puzzle game with strong shape contrast.', tags: ['puzzle', 'weird', 'minimal'] },
-      { name: 'quasars drift', img: 'linear-gradient(135deg, #0a1326, #3d78ff)', art: 'linear-gradient(135deg, #101936, #4f8cff)', desc: 'extra liminal tile for the lower zone.', tags: ['space', 'drift', 'calm'] },
-      { name: 'echo loop', img: 'linear-gradient(135deg, #1b2034, #5a6b9e)', art: 'linear-gradient(135deg, #11182b, #6780b3)', desc: 'soft blue-gray tile for the other page feel.', tags: ['ambient', 'loop', 'soft'] },
-      { name: 'night shift', img: 'linear-gradient(135deg, #0f1324, #8aa8ff)', art: 'linear-gradient(135deg, #0c1020, #a1b8ff)', desc: 'cool blue tile that fits the liminal lower section.', tags: ['night', 'mood', 'clean'] }
-    ];
-
     const state = {
-      search: '',
-      view: 'grid',
       style: 'mist',
       selected: null,
-      favorites: JSON.parse(localStorage.getItem('velora-favorites') || '[]'),
-      liveSearch: true
+      favorites: JSON.parse(localStorage.getItem('velora-v5-favorites') || '[]'),
+      live: true,
+      search: ''
     };
 
-    const grid = document.getElementById('gameGrid');
-    const otherGrid = document.getElementById('otherGrid');
-    const searchInput = document.getElementById('searchInput');
-    const gameCount = document.getElementById('gameCount');
-    const favCount = document.getElementById('favCount');
-    const gridWrap = document.getElementById('gridWrap');
+    const board = document.getElementById('board');
     const selectedView = document.getElementById('selectedView');
     const selectedName = document.getElementById('selectedName');
-    const selectedMeta = document.getElementById('selectedMeta');
     const selectedArt = document.getElementById('selectedArt');
-    const selectedTitle2 = document.getElementById('selectedTitle2');
+    const selectedTitle = document.getElementById('selectedTitle');
     const selectedDesc = document.getElementById('selectedDesc');
-    const selectedTags = document.getElementById('selectedTags');
-    const selectedStatus = document.getElementById('selectedStatus');
+    const tagRow = document.getElementById('tagRow');
+    const statusText = document.getElementById('statusText');
     const favBtn = document.getElementById('favBtn');
+    const backBtn = document.getElementById('backBtn');
     const reloadBtn = document.getElementById('reloadBtn');
     const fullBtn = document.getElementById('fullBtn');
-    const backBtn = document.getElementById('backBtn');
+    const searchInput = document.getElementById('searchInput');
+    const pageCount = document.getElementById('pageCount');
     const settingsModal = document.getElementById('settingsModal');
-    const openSettingsBtn = document.getElementById('openSettingsBtn');
-    const closeSettingsBtn = document.getElementById('closeSettingsBtn');
-    const clearSearchBtn = document.getElementById('clearSearchBtn');
-    const liveSearchBtn = document.getElementById('liveSearchBtn');
-    const favoritesModeBtn = document.getElementById('favoritesModeBtn');
-    const gridModeBtn = document.getElementById('gridModeBtn');
-    const compactModeBtn = document.getElementById('compactModeBtn');
-    const pageCountLabel = document.getElementById('pageCountLabel');
+    const openSettings = document.getElementById('openSettings');
+    const closeSettings = document.getElementById('closeSettings');
+    const clearBtn = document.getElementById('clearBtn');
+    const gridViewBtn = document.getElementById('gridViewBtn');
+    const favViewBtn = document.getElementById('favViewBtn');
+    const compactViewBtn = document.getElementById('compactViewBtn');
+    const liveBtn = document.getElementById('liveBtn');
+    const randomBtn = document.getElementById('randomBtn');
+    const sdkFallback = document.getElementById('sdkFallback');
+    const gamesEl = document.getElementById('games');
 
-    const iconHeart = '♥';
-
-    function saveFavorites() {
-      localStorage.setItem('velora-favorites', JSON.stringify(state.favorites));
-      renderCounts();
-      renderGrid();
-      if (state.selected) renderSelected(state.selected);
+    function saveFavs() {
+      localStorage.setItem('velora-v5-favorites', JSON.stringify(state.favorites));
+      syncSelected();
     }
 
     function isFav(name) {
       return state.favorites.includes(name);
     }
 
-    function toggleFav(name) {
-      const idx = state.favorites.indexOf(name);
-      if (idx >= 0) state.favorites.splice(idx, 1);
-      else state.favorites.push(name);
-      saveFavorites();
+    function setStyle(style) {
+      state.style = style;
+      const p = {
+        mist: { bg0: '#050814', bg1: '#0b1326', accent: '#98b8ff' },
+        void: { bg0: '#04060c', bg1: '#09101d', accent: '#a98fff' },
+        signal: { bg0: '#061018', bg1: '#102746', accent: '#6edfff' }
+      }[style] || { bg0: '#050814', bg1: '#0b1326', accent: '#98b8ff' };
+      document.documentElement.style.setProperty('--bg0', p.bg0);
+      document.documentElement.style.setProperty('--bg1', p.bg1);
+      document.documentElement.style.setProperty('--accent', p.accent);
+      document.querySelectorAll('[data-style]').forEach(btn => btn.classList.toggle('active', btn.dataset.style === style));
     }
 
-    function matchesSearch(game) {
-      if (!state.search.trim()) return true;
-      const q = state.search.trim().toLowerCase();
-      const hay = [game.name, game.desc, ...(game.tags || [])].join(' ').toLowerCase();
-      return hay.includes(q);
+    function setSdkSearch(query) {
+      const sdk = window.Lumin || window.lumin;
+      const candidates = ['search', 'setSearch', 'setQuery', 'query', 'filter', 'filterGames'];
+      if (!sdk) return false;
+      for (const name of candidates) {
+        if (typeof sdk[name] === 'function') {
+          try { sdk[name](query); return true; } catch (_) {}
+        }
+      }
+      return false;
     }
 
-    function filteredGames() {
-      const source = state.view === 'favorites' ? games.filter(g => isFav(g.name)) : games;
-      return source.filter(matchesSearch);
+    function setSdkFavorite(name, on) {
+      const sdk = window.Lumin || window.lumin;
+      const pairs = on
+        ? ['favorite', 'addFavorite', 'toggleFavoriteOn', 'pin']
+        : ['unfavorite', 'removeFavorite', 'toggleFavoriteOff', 'unpin'];
+      if (!sdk) return false;
+      for (const fn of pairs) {
+        if (typeof sdk[fn] === 'function') {
+          try { sdk[fn](name); return true; } catch (_) {}
+        }
+      }
+      return false;
     }
 
-    function tileClasses(index, filteredLength) {
-      if (index === 1) return 'tile featured';
-      if (index % 11 === 3) return 'tile wide';
-      if (index % 17 === 5) return 'tile tall';
-      return 'tile';
+    function setSdkReload() {
+      const sdk = window.Lumin || window.lumin;
+      const candidates = ['reload', 'refresh', 'rerender', 'restart'];
+      if (!sdk) return false;
+      for (const name of candidates) {
+        if (typeof sdk[name] === 'function') {
+          try { sdk[name](); return true; } catch (_) {}
+        }
+      }
+      return false;
     }
 
-    function miniTileClasses(index) {
-      return 'mini-tile';
+    function setSdkFullscreen() {
+      const sdk = window.Lumin || window.lumin;
+      const candidates = ['fullscreen', 'openFullscreen', 'enterFullscreen'];
+      if (!sdk) return false;
+      for (const name of candidates) {
+        if (typeof sdk[name] === 'function') {
+          try { sdk[name](); return true; } catch (_) {}
+        }
+      }
+      return false;
     }
 
-    function renderCounts() {
-      gameCount.textContent = filteredGames().length;
-      favCount.textContent = state.favorites.length;
-      pageCountLabel.textContent = Math.max(2, Math.ceil(filteredGames().length / 24));
-    }
-
-    function renderGrid() {
-      const list = filteredGames();
-      grid.innerHTML = '';
-      list.slice(0, 32).forEach((game, index) => {
-        const btn = document.createElement('button');
-        btn.className = tileClasses(index, list.length) + (state.selected?.name === game.name ? ' selected' : '') + (isFav(game.name) ? ' favorited' : '');
-        btn.setAttribute('aria-label', game.name);
-        btn.innerHTML = `
-          <div class="img" style="background-image:${game.img};"></div>
-          <div class="heart">${iconHeart}</div>
-          <div class="label">${game.name}</div>
-        `;
-        btn.addEventListener('click', () => selectGame(game));
-        grid.appendChild(btn);
-      });
-
-      // a few empty liminal squares so the lower section feels like the screenshot's second zone
-      const extra = games.slice(32, 50);
-      otherGrid.innerHTML = '';
-      extra.forEach((game) => {
-        const btn = document.createElement('button');
-        btn.className = miniTileClasses();
-        btn.innerHTML = `
-          <div class="img" style="background-image:${game.img};"></div>
-          <div class="label">${game.name}</div>
-        `;
-        btn.addEventListener('click', () => selectGame(game));
-        otherGrid.appendChild(btn);
-      });
-
-      renderCounts();
-    }
-
-    function renderSelected(game) {
-      selectedName.textContent = game.name;
-      selectedMeta.textContent = `${isFav(game.name) ? 'favorited' : 'not favorited'} · ready to launch`;
-      selectedTitle2.textContent = game.name;
-      selectedDesc.textContent = game.desc;
-      selectedArt.style.backgroundImage = game.art;
-      selectedTags.innerHTML = '';
-      (game.tags || []).forEach(tag => {
+    function syncSelected() {
+      if (!state.selected) return;
+      selectedName.textContent = state.selected.name || 'game';
+      selectedTitle.textContent = state.selected.name || 'game';
+      selectedDesc.textContent = state.selected.desc || 'sdk selection area.';
+      selectedArt.style.background = state.selected.art || 'linear-gradient(135deg, #0d1b4c, #0a0f18)';
+      tagRow.innerHTML = '';
+      (state.selected.tags || []).forEach(tag => {
         const el = document.createElement('div');
         el.className = 'chip';
         el.textContent = tag;
-        selectedTags.appendChild(el);
+        tagRow.appendChild(el);
       });
-      favBtn.textContent = isFav(game.name) ? 'unfavorite' : 'favorite';
-      selectedStatus.textContent = `selected ${game.name}.`;
-    }
-
-    function selectGame(game) {
-      state.selected = game;
+      favBtn.textContent = isFav(state.selected.name) ? 'unfavorite' : 'favorite';
+      statusText.textContent = `${state.selected.name} selected.`;
       selectedView.classList.add('open');
-      gridWrap.classList.add('hidden');
-      renderGrid();
-      renderSelected(game);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      board.classList.add('hidden');
     }
 
-    function deselectGame() {
+    function clearSelected() {
       state.selected = null;
       selectedView.classList.remove('open');
-      gridWrap.classList.remove('hidden');
-      renderGrid();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      board.classList.remove('hidden');
+      statusText.textContent = 'select a game from the sdk grid.';
     }
 
-    function setStyle(style) {
-      state.style = style;
-      document.documentElement.dataset.style = style;
-
-      const palette = {
-        mist: {
-          bg0: '#050812', bg1: '#0a1326', bg2: '#101a33', panel: 'rgba(18, 25, 44, 0.88)', accent: '#8fb2ff'
-        },
-        void: {
-          bg0: '#03040a', bg1: '#090d16', bg2: '#121826', panel: 'rgba(14, 17, 27, 0.92)', accent: '#9c8cff'
-        },
-        signal: {
-          bg0: '#07101b', bg1: '#0c1831', bg2: '#132a44', panel: 'rgba(12, 25, 40, 0.92)', accent: '#6fe1ff'
-        }
-      };
-      const p = palette[style] || palette.mist;
-      document.documentElement.style.setProperty('--bg0', p.bg0);
-      document.documentElement.style.setProperty('--bg1', p.bg1);
-      document.documentElement.style.setProperty('--bg2', p.bg2);
-      document.documentElement.style.setProperty('--panel', p.panel);
-      document.documentElement.style.setProperty('--accent', p.accent);
-
-      document.querySelectorAll('[data-style]').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.style === style);
+    function renderMini() {
+      const miniGrid = document.getElementById('miniGrid');
+      miniGrid.innerHTML = '';
+      const extra = [
+        'night shift', 'echo loop', 'quasars drift', 'dust room', 'soft gate', 'paper sky', 'low hum', 'empty hall'
+      ];
+      extra.forEach((name, i) => {
+        const tile = document.createElement('button');
+        tile.className = 'mini';
+        tile.innerHTML = `
+          <div class="img" style="background: linear-gradient(135deg, ${i % 2 ? '#101b34' : '#23314d'}, ${i % 2 ? '#6d87bf' : '#0f1727'});"></div>
+          <div class="label">${name}</div>
+        `;
+        tile.addEventListener('click', () => {
+          state.selected = { name, desc: 'liminal placeholder tile.', tags: ['other', 'page', 'soft'], art: 'linear-gradient(135deg, #101829, #6e84b4)' };
+          syncSelected();
+        });
+        miniGrid.appendChild(tile);
       });
+      pageCount.textContent = '1';
     }
 
-    function syncSettingsActive() {
-      gridModeBtn.classList.toggle('active', state.view === 'grid');
-      favoritesModeBtn.classList.toggle('active', state.view === 'favorites');
-      compactModeBtn.classList.toggle('active', state.view === 'compact');
-      liveSearchBtn.classList.toggle('active', state.liveSearch);
-    }
-
-    function applyView() {
-      gridWrap.style.opacity = state.view === 'compact' ? '0.94' : '1';
-      gridWrap.style.padding = state.view === 'compact' ? '8px' : '10px';
-      grid.style.gap = state.view === 'compact' ? '8px' : '10px';
-      otherGrid.style.gap = state.view === 'compact' ? '8px' : '10px';
-      if (state.view === 'favorites' && state.favorites.length === 0) {
-        selectedStatus.textContent = 'no favorites yet.';
+    function tryInitSdk() {
+      const sdk = window.Lumin || window.lumin;
+      if (!sdk || typeof sdk.init !== 'function') {
+        sdkFallback.style.display = 'grid';
+        return;
       }
-      renderGrid();
-      syncSettingsActive();
+      try {
+        sdk.init({
+          container: gamesEl,
+          theme: 'dark',
+          columns: 8,
+          rows: 4
+        });
+        sdkFallback.style.display = 'none';
+      } catch (err) {
+        sdkFallback.style.display = 'grid';
+      }
     }
 
     searchInput.addEventListener('input', (e) => {
       state.search = e.target.value;
-      if (state.liveSearch) renderGrid();
+      if (state.live) {
+        const ok = setSdkSearch(state.search);
+        statusText.textContent = ok ? `searching for ${state.search || 'all games'}.` : 'sdk search hook not exposed.';
+      }
     });
 
-    clearSearchBtn.addEventListener('click', () => {
+    clearBtn.addEventListener('click', () => {
       state.search = '';
       searchInput.value = '';
-      renderGrid();
+      setSdkSearch('');
       searchInput.focus();
     });
 
-    liveSearchBtn.addEventListener('click', () => {
-      state.liveSearch = !state.liveSearch;
-      syncSettingsActive();
-      if (state.liveSearch) renderGrid();
+    gridViewBtn.addEventListener('click', () => {
+      gridViewBtn.classList.add('active');
+      favViewBtn.classList.remove('active');
+      compactViewBtn.classList.remove('active');
+    });
+    favViewBtn.addEventListener('click', () => {
+      gridViewBtn.classList.remove('active');
+      favViewBtn.classList.add('active');
+      compactViewBtn.classList.remove('active');
+      statusText.textContent = 'favorites depend on the sdk hook.';
+    });
+    compactViewBtn.addEventListener('click', () => {
+      gridViewBtn.classList.remove('active');
+      favViewBtn.classList.remove('active');
+      compactViewBtn.classList.add('active');
     });
 
-    gridModeBtn.addEventListener('click', () => {
-      state.view = 'grid';
-      applyView();
+    liveBtn.addEventListener('click', () => {
+      state.live = !state.live;
+      liveBtn.classList.toggle('active', state.live);
+      statusText.textContent = state.live ? 'live search on.' : 'live search off.';
     });
-    favoritesModeBtn.addEventListener('click', () => {
-      state.view = 'favorites';
-      applyView();
-    });
-    compactModeBtn.addEventListener('click', () => {
-      state.view = 'compact';
-      applyView();
+
+    randomBtn.addEventListener('click', () => {
+      const sdk = window.Lumin || window.lumin;
+      if (sdk && typeof sdk.random === 'function') {
+        try { sdk.random(); return; } catch (_) {}
+      }
+      statusText.textContent = 'random depends on the sdk hook.';
     });
 
     document.querySelectorAll('[data-style]').forEach(btn => {
       btn.addEventListener('click', () => setStyle(btn.dataset.style));
     });
 
-    openSettingsBtn.addEventListener('click', () => settingsModal.classList.add('open'));
-    closeSettingsBtn.addEventListener('click', () => settingsModal.classList.remove('open'));
-    settingsModal.addEventListener('click', (e) => {
-      if (e.target === settingsModal) settingsModal.classList.remove('open');
-    });
+    openSettings.addEventListener('click', () => settingsModal.classList.add('open'));
+    closeSettings.addEventListener('click', () => settingsModal.classList.remove('open'));
+    settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) settingsModal.classList.remove('open'); });
+
+    backBtn.addEventListener('click', clearSelected);
 
     favBtn.addEventListener('click', () => {
       if (!state.selected) return;
-      toggleFav(state.selected.name);
-      renderSelected(state.selected);
+      const name = state.selected.name;
+      const idx = state.favorites.indexOf(name);
+      if (idx >= 0) state.favorites.splice(idx, 1);
+      else state.favorites.push(name);
+      saveFavs();
+      setSdkFavorite(name, idx < 0);
     });
 
-    backBtn.addEventListener('click', deselectGame);
     reloadBtn.addEventListener('click', () => {
-      if (!state.selected) return;
-      selectedStatus.textContent = `reloaded ${state.selected.name}.`;
-      selectedMeta.textContent = `${isFav(state.selected.name) ? 'favorited' : 'not favorited'} · reloaded`;
+      const ok = setSdkReload();
+      statusText.textContent = ok ? 'game reloaded.' : 'reload depends on the sdk hook.';
     });
 
     fullBtn.addEventListener('click', async () => {
-      const frame = document.querySelector('.game-frame');
-      if (document.fullscreenElement) {
-        await document.exitFullscreen();
-      } else if (frame.requestFullscreen) {
-        await frame.requestFullscreen();
+      const ok = setSdkFullscreen();
+      if (!ok) {
+        const el = document.getElementById('games');
+        if (!document.fullscreenElement && el?.requestFullscreen) await el.requestFullscreen();
+        else if (document.exitFullscreen) await document.exitFullscreen();
       }
     });
 
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && settingsModal.classList.contains('open')) {
-        settingsModal.classList.remove('open');
-      } else if (e.key === 'Escape' && state.selected) {
-        deselectGame();
-      }
-      if ((e.key === 'f' || e.key === 'F') && state.selected) {
-        toggleFav(state.selected.name);
-      }
+      if (e.key === 'Escape' && settingsModal.classList.contains('open')) settingsModal.classList.remove('open');
+      else if (e.key === 'Escape' && state.selected) clearSelected();
     });
 
-    // luminsdk hook: use the SDK if it exists, otherwise keep the custom grid.
     window.addEventListener('load', () => {
-      try {
-        if (window.Lumin && typeof window.Lumin.init === 'function') {
-          const container = document.getElementById('gameGrid');
-          // fallback friendly: sdk can fill the container if present, but the custom grid still works.
-          window.Lumin.init({
-            container,
-            theme: 'dark',
-            columns: 8,
-            rows: 4
-          });
-        }
-      } catch (err) {
-        // ignore sdk init failures and keep the page working.
-      }
-      renderGrid();
-      applyView();
       setStyle('mist');
-      syncSettingsActive();
+      renderMini();
+      tryInitSdk();
+      setTimeout(tryInitSdk, 600);
+      setTimeout(tryInitSdk, 1500);
     });
   </script>
 </body>
 </html>
-
