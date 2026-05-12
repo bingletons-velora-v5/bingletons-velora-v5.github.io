@@ -1,0 +1,623 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title></title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #06070b;
+      --panel: rgba(13, 16, 28, 0.92);
+      --line: rgba(255, 255, 255, 0.09);
+      --text: #eef1ff;
+      --muted: rgba(238, 241, 255, 0.68);
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.48);
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at top, rgba(81, 102, 255, 0.16), transparent 30%),
+        radial-gradient(circle at bottom left, rgba(143, 72, 255, 0.10), transparent 32%),
+        var(--bg);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(rgba(255,255,255,0.02), rgba(255,255,255,0.02)),
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.08) 0 1px, transparent 1px),
+        radial-gradient(circle at 80% 30%, rgba(255,255,255,0.06) 0 1px, transparent 1px),
+        radial-gradient(circle at 35% 75%, rgba(255,255,255,0.05) 0 1px, transparent 1px);
+      background-size: auto, 210px 210px, 280px 280px, 240px 240px;
+      opacity: 0.3;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+    }
+
+    .shell {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 14px;
+      min-height: 0;
+    }
+
+    .favorites-bar {
+      display: none;
+      gap: 10px;
+      align-items: center;
+      min-height: 64px;
+      padding: 10px;
+      border-radius: 0;
+      background: linear-gradient(180deg, rgba(18, 22, 37, 0.98), rgba(8, 10, 16, 0.96));
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      overflow: auto hidden;
+      scrollbar-width: none;
+      min-width: 0;
+    }
+
+    .favorites-bar.show { display: flex; }
+    .favorites-bar::-webkit-scrollbar,
+    .grid::-webkit-scrollbar,
+    .side-grid::-webkit-scrollbar { width: 0; height: 0; }
+
+    .fav-chip,
+    .icon-btn {
+      border-radius: 0;
+    }
+
+    .fav-chip {
+      flex: 0 0 auto;
+      width: 44px;
+      height: 44px;
+      border: 1px solid var(--line);
+      background: rgba(20, 24, 40, 0.92);
+      display: grid;
+      place-items: center;
+      padding: 0;
+      cursor: pointer;
+      color: var(--text);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+
+    .main {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: grid;
+      gap: 14px;
+      grid-template-columns: 1fr;
+    }
+
+    .grid-mode .main {
+      grid-template-columns: 1fr;
+    }
+
+    .game-mode .main {
+      grid-template-columns: minmax(0, 1.8fr) minmax(280px, 0.8fr);
+    }
+
+    .panel {
+      min-width: 0;
+      min-height: 0;
+      border-radius: 0;
+      background: linear-gradient(180deg, rgba(16, 19, 32, 0.98), rgba(8, 10, 16, 0.95));
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at top right, rgba(90, 117, 255, 0.20), transparent 35%),
+        radial-gradient(circle at bottom left, rgba(167, 74, 255, 0.13), transparent 36%);
+      opacity: 0.9;
+    }
+
+    .sdk-wrap,
+    .player-wrap,
+    .side-wrap {
+      min-width: 0;
+      min-height: 0;
+      border-radius: 0;
+      background: linear-gradient(180deg, rgba(16, 19, 32, 0.98), rgba(8, 10, 16, 0.95));
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sdk-wrap::before,
+    .player-wrap::before,
+    .side-wrap::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at top right, rgba(90, 117, 255, 0.20), transparent 35%),
+        radial-gradient(circle at bottom left, rgba(167, 74, 255, 0.13), transparent 36%);
+      opacity: 0.9;
+    }
+
+    #games {
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .grid {
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      display: grid;
+      gap: 14px;
+      padding: 14px;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      grid-auto-rows: minmax(90px, 1fr);
+      overflow: auto;
+    }
+
+    .tile {
+      border: 1px solid var(--line);
+      border-radius: 0;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)),
+        rgba(16, 20, 33, 0.92);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 10px 24px rgba(0,0,0,0.24);
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-start;
+      padding: 0;
+      text-decoration: none;
+      color: inherit;
+      user-select: none;
+      outline: none;
+      isolation: isolate;
+    }
+
+    .tile::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at top right, rgba(124, 153, 255, 0.22), transparent 42%),
+        radial-gradient(circle at bottom left, rgba(170, 82, 255, 0.16), transparent 42%);
+      opacity: 0.9;
+      z-index: 0;
+    }
+
+    .tile::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.42));
+      z-index: 0;
+    }
+
+    .tile:hover { transform: translateY(-2px); border-color: rgba(140, 164, 255, 0.28); }
+    .tile:active { transform: translateY(0); }
+
+    .tile.large { grid-column: span 2; grid-row: span 2; }
+    .tile.wide { grid-column: span 2; grid-row: span 1; }
+    .tile.tall { grid-column: span 1; grid-row: span 2; }
+    .tile.square { grid-column: span 1; grid-row: span 1; }
+
+    .thumb {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      inset: 0;
+      object-fit: cover;
+      opacity: 0.28;
+      filter: saturate(1.08) contrast(1.02);
+    }
+
+    .tile-content {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px;
+    }
+
+    .tile-meta {
+      font-size: 12px;
+      opacity: 0.74;
+      margin-top: 4px;
+    }
+
+    .fav-mark {
+      flex: 0 0 auto;
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      background: rgba(5, 7, 11, 0.46);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .player-frame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #000;
+      position: relative;
+      z-index: 1;
+    }
+
+    .placeholder {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-size: 14px;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .controls {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 3;
+      display: flex;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--line);
+      background: rgba(12, 15, 25, 0.86);
+      color: var(--text);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+      font-size: 18px;
+    }
+
+    .icon-btn:hover { background: rgba(18, 22, 36, 0.95); }
+
+    .side-grid {
+      padding: 0;
+      display: grid;
+      gap: 0;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-rows: 120px;
+      overflow: auto;
+      min-height: 0;
+    }
+
+    .side-empty {
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-size: 14px;
+      letter-spacing: 0.2px;
+      min-height: 100%;
+    }
+
+    .grid-mode .favorites-bar { display: none; }
+    .grid-mode .player-wrap,
+    .grid-mode .side-wrap { display: none; }
+    .game-mode .sdk-wrap { display: none; }
+
+    @media (max-width: 1100px) {
+      .game-mode .main { grid-template-columns: 1fr; }
+      .side-wrap { display: none; }
+      .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+    }
+
+    @media (max-width: 720px) {
+      .shell { padding: 10px; gap: 10px; }
+      .controls { top: 10px; right: 10px; }
+      .icon-btn { width: 40px; height: 40px; }
+      .grid { gap: 10px; padding: 10px; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script src="https://cdn.jsdelivr.net/gh/luminsdk/script@latest/lumin.min.js"></script>
+  <script>
+    const STORAGE_KEY = 'lumin-favorites-v1';
+    const PAGE_SIZE = 36;
+    const app = document.getElementById('app');
+
+    let favorites = loadFavorites();
+    let activeGameId = '';
+    let currentGameFrame = null;
+    let gameNonce = 0;
+    let cachedGames = [];
+
+    function loadFavorites() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return new Set(Array.isArray(parsed) ? parsed : []);
+      } catch {
+        return new Set();
+      }
+    }
+
+    function saveFavorites() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([...favorites]));
+    }
+
+    function getGameUrl(id) {
+      const sdkResolver =
+        window.Lumin?.getGameUrl ||
+        window.Lumin?.resolveGameUrl ||
+        window.Lumin?.getUrl;
+
+      if (typeof sdkResolver === 'function') {
+        try {
+          return sdkResolver.call(window.Lumin, id);
+        } catch {}
+      }
+
+      return `about:blank#${encodeURIComponent(id)}&v=${Date.now()}&n=${++gameNonce}`;
+    }
+
+    function gridModeTemplate() {
+      return `
+        <div class="shell grid-mode">
+          <div id="favoritesBar" class="favorites-bar" aria-label="favorites"></div>
+          <div class="main">
+            <div class="sdk-wrap panel">
+              <div id="games" class="grid" aria-label="game grid"></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function gameModeTemplate() {
+      return `
+        <div class="shell game-mode">
+          <div id="favoritesBar" class="favorites-bar show" aria-label="favorites"></div>
+          <div class="main">
+            <div class="player-wrap panel">
+              <iframe id="playerFrame" class="player-frame" title="game player" allow="fullscreen; autoplay; clipboard-read; clipboard-write; gamepad" referrerpolicy="no-referrer"></iframe>
+              <div class="controls">
+                <button id="favBtn" class="icon-btn" title="favorite" aria-label="favorite">☆</button>
+                <button id="reloadBtn" class="icon-btn" title="reload" aria-label="reload">⟳</button>
+                <button id="fullBtn" class="icon-btn" title="fullscreen" aria-label="fullscreen">⤢</button>
+              </div>
+              <div class="placeholder" id="playerPlaceholder">loading…</div>
+            </div>
+            <div class="side-wrap panel">
+              <div id="sideGrid" class="side-grid" aria-label="related games"></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function initSdk() {
+      try {
+        if (window.Lumin && typeof Lumin.init === 'function') {
+          await Lumin.init({
+            headless: true,
+            onReady: () => {},
+            onError: () => {},
+          });
+        }
+      } catch (err) {
+        console.warn('Lumin init failed:', err);
+      }
+    }
+
+    async function loadGameList() {
+      try {
+        const result = await Lumin.getGames({ page: 1, limit: PAGE_SIZE, q: '' });
+        cachedGames = Array.isArray(result?.games) ? result.games : [];
+      } catch (err) {
+        cachedGames = [];
+      }
+    }
+
+    function tileClassForIndex(i) {
+      if (i % 11 === 0) return 'large';
+      if (i % 7 === 0) return 'wide';
+      if (i % 5 === 0) return 'tall';
+      return 'square';
+    }
+
+    async function mountSdkGrid() {
+      const sdkHost = document.getElementById('games');
+      if (!sdkHost) return;
+      sdkHost.innerHTML = '<div class="side-empty">&nbsp;</div>';
+
+      await loadGameList();
+
+      if (!cachedGames.length) {
+        sdkHost.innerHTML = '<div class="side-empty">&nbsp;</div>';
+        return;
+      }
+
+      const imageUrls = await Promise.all(
+        cachedGames.map(g => Lumin.getImageUrl(g.image_token).catch?.(() => '') ?? Lumin.getImageUrl(g.image_token))
+      );
+
+      sdkHost.innerHTML = cachedGames.map((game, i) => {
+        const isFav = favorites.has(game.id);
+        return `
+          <div class="tile ${tileClassForIndex(i)}" data-id="${game.id}" role="button" tabindex="0" aria-label="open game">
+            <img class="thumb" src="${imageUrls[i] || ''}" alt="" />
+            <div class="tile-content">
+              <div>
+                <div class="tile-meta">${isFav ? '★' : ''}</div>
+              </div>
+              <div class="fav-mark" aria-hidden="true">${isFav ? '★' : '☆'}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      sdkHost.querySelectorAll('.tile[data-id]').forEach(tile => {
+        const open = () => {
+          const id = tile.getAttribute('data-id');
+          if (id) location.hash = `game=${encodeURIComponent(id)}`;
+        };
+        tile.addEventListener('click', open);
+        tile.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            open();
+          }
+        });
+      });
+    }
+
+    function loadGrid() {
+      activeGameId = '';
+      app.innerHTML = gridModeTemplate();
+      document.documentElement.classList.remove('game-mode');
+      document.documentElement.classList.add('grid-mode');
+      renderFavorites();
+      mountSdkGrid();
+    }
+
+    async function loadGame(id) {
+      activeGameId = id;
+      app.innerHTML = gameModeTemplate();
+      document.documentElement.classList.remove('grid-mode');
+      document.documentElement.classList.add('game-mode');
+
+      const frame = document.getElementById('playerFrame');
+      const placeholder = document.getElementById('playerPlaceholder');
+      currentGameFrame = frame;
+
+      frame.src = getGameUrl(id);
+      frame.addEventListener('load', () => {
+        if (placeholder) placeholder.style.display = 'none';
+      }, { once: true });
+
+      renderFavorites();
+      renderSideGrid();
+      syncControlButtons();
+
+      document.getElementById('reloadBtn').onclick = reloadGame;
+      document.getElementById('fullBtn').onclick = toggleFullscreen;
+      document.getElementById('favBtn').onclick = () => toggleFavorite(id);
+      syncControlButtons();
+    }
+
+    function renderFavorites() {
+      const bar = document.getElementById('favoritesBar');
+      if (!bar) return;
+
+      const ids = [...favorites];
+      bar.innerHTML = ids.map(id => `
+        <button class="fav-chip" data-id="${id}" title="${id}" aria-label="${id}">★</button>
+      `).join('');
+
+      bar.classList.toggle('show', ids.length > 0 && location.hash.startsWith('#game='));
+
+      bar.querySelectorAll('.fav-chip[data-id]').forEach(btn => {
+        btn.onclick = () => {
+          const id = btn.getAttribute('data-id');
+          if (id) location.hash = `game=${encodeURIComponent(id)}`;
+        };
+      });
+    }
+
+    function toggleFavorite(id) {
+      if (!id) return;
+      if (favorites.has(id)) favorites.delete(id);
+      else favorites.add(id);
+      saveFavorites();
+      renderFavorites();
+      syncControlButtons();
+      if (cachedGames.length && document.getElementById('games')) {
+        mountSdkGrid();
+      }
+    }
+
+    function reloadGame() {
+      if (!activeGameId || !currentGameFrame) return;
+      currentGameFrame.src = getGameUrl(activeGameId);
+    }
+
+    function toggleFullscreen() {
+      const el = document.querySelector('.player-wrap');
+      if (!el) return;
+      if (!document.fullscreenElement) {
+        el.requestFullscreen?.();
+      } else {
+        document.exitFullscreen?.();
+      }
+    }
+
+    function renderSideGrid() {
+      const side = document.getElementById('sideGrid');
+      if (!side) return;
+      side.innerHTML = '<div class="side-empty">&nbsp;</div>';
+    }
+
+    function syncControlButtons() {
+      const favBtn = document.getElementById('favBtn');
+      if (favBtn) favBtn.textContent = favorites.has(activeGameId) ? '★' : '☆';
+    }
+
+    function handleHashChange() {
+      const hash = location.hash.replace(/^#/, '');
+      const match = hash.match(/^game=([^&]+)/);
+      if (!match) {
+        loadGrid();
+        return;
+      }
+      loadGame(decodeURIComponent(match[1]));
+    }
+
+    window.loadGrid = loadGrid;
+    window.loadGame = loadGame;
+    window.renderFavorites = renderFavorites;
+    window.toggleFavorite = toggleFavorite;
+    window.reloadGame = reloadGame;
+    window.handleHashChange = handleHashChange;
+
+    window.addEventListener('hashchange', handleHashChange);
+    window.addEventListener('DOMContentLoaded', async () => {
+      await initSdk();
+      handleHashChange();
+      renderFavorites();
+    });
+  </script>
+</body>
+</html>
