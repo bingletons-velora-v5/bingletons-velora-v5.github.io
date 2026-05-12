@@ -5,69 +5,106 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>html editor</title>
   <style>
-    *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui}
-    body{height:100vh;display:flex;background:#0b0f14;color:#fff;overflow:hidden}
-
-    .topbar{
-      position:fixed;
-      top:0;left:0;right:0;
-      height:40px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:0 10px;
-      background:#111826;
-      border-bottom:1px solid #1f2a3a;
-      z-index:10;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    button{
-      background:#1f6feb;
-      border:none;
-      color:white;
-      padding:6px 10px;
-      border-radius:6px;
-      cursor:pointer;
-      font-size:12px;
+    body {
+      height: 100vh;
+      display: flex;
+      background: #0b0f14;
+      color: #fff;
+      overflow: hidden;
     }
 
-    button:active{transform:scale(0.97)}
-
-    .container{
-      display:flex;
-      width:100%;
-      height:100%;
-      padding-top:40px;
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      background: #111826;
+      border-bottom: 1px solid #1f2a3a;
+      z-index: 10;
     }
 
-    textarea{
-      width:50%;
-      height:100%;
-      background:#0d1117;
-      color:#c9d1d9;
-      border:none;
-      outline:none;
-      padding:10px;
-      font-size:14px;
-      resize:none;
+    .title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: lowercase;
     }
 
-    iframe{
-      width:50%;
-      height:100%;
-      border:none;
-      background:white;
+    .buttons {
+      display: flex;
+      gap: 8px;
     }
 
-    .fullscreen textarea{width:100%}
-    .fullscreen iframe{display:none}
+    button {
+      background: #1f6feb;
+      border: none;
+      color: white;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    .container {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      padding-top: 40px;
+    }
+
+    textarea {
+      width: 50%;
+      height: 100%;
+      background: #0d1117;
+      color: #c9d1d9;
+      border: none;
+      outline: none;
+      padding: 12px;
+      font-size: 14px;
+      resize: none;
+      border-right: 1px solid #1f2a3a;
+    }
+
+    iframe {
+      width: 50%;
+      height: 100%;
+      border: none;
+      background: white;
+    }
+
+    .fullscreen textarea {
+      display: none;
+    }
+
+    .fullscreen iframe {
+      width: 100%;
+    }
+
+    .fullscreen .container {
+      padding-top: 40px;
+    }
   </style>
 </head>
 <body>
 
   <div class="topbar">
-    <div>html editor</div>
-    <div>
+    <div class="title">html editor</div>
+    <div class="buttons">
       <button onclick="run()">run</button>
       <button onclick="toggleFullscreen()">fullscreen</button>
     </div>
@@ -83,19 +120,51 @@
     <iframe id="preview"></iframe>
   </div>
 
-<script>
-function run(){
-  const code = document.getElementById('code').value;
-  const iframe = document.getElementById('preview');
-  iframe.srcdoc = code;
-}
+  <script>
+    const app = document.getElementById('app');
+    const code = document.getElementById('code');
+    const preview = document.getElementById('preview');
 
-function toggleFullscreen(){
-  document.getElementById('app').classList.toggle('fullscreen');
-}
+    function run() {
+      preview.srcdoc = code.value;
+    }
 
-run();
-</script>
+    async function toggleFullscreen() {
+      const isFullscreen = app.classList.contains('fullscreen');
+
+      if (!isFullscreen) {
+        app.classList.add('fullscreen');
+
+        if (document.documentElement.requestFullscreen) {
+          try {
+            await document.documentElement.requestFullscreen();
+          } catch (e) {
+            // browser may block fullscreen; layout mode still works
+          }
+        }
+      } else {
+        app.classList.remove('fullscreen');
+
+        if (document.fullscreenElement && document.exitFullscreen) {
+          try {
+            await document.exitFullscreen();
+          } catch (e) {
+            // ignore
+          }
+        }
+      }
+    }
+
+    document.addEventListener('fullscreenchange', () => {
+      if (!document.fullscreenElement) {
+        app.classList.remove('fullscreen');
+      }
+    });
+
+    code.addEventListener('input', run);
+
+    run();
+  </script>
 
 </body>
 </html>
