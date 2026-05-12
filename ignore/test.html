@@ -3,16 +3,25 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title></title>
+  <title>Velora</title>
   <style>
     :root {
       color-scheme: dark;
-      --bg: #06070b;
-      --panel: rgba(13, 16, 28, 0.92);
+      --bg: #05060a;
+      --panel: rgba(14, 17, 28, 0.92);
+      --panel-2: rgba(19, 23, 38, 0.94);
       --line: rgba(255, 255, 255, 0.09);
-      --text: #eef1ff;
-      --muted: rgba(238, 241, 255, 0.68);
-      --shadow: 0 18px 50px rgba(0, 0, 0, 0.48);
+      --line-2: rgba(130, 150, 255, 0.18);
+      --text: #eef2ff;
+      --muted: rgba(238, 242, 255, 0.68);
+      --muted-2: rgba(238, 242, 255, 0.45);
+      --accent: #7b8cff;
+      --accent-2: #a26bff;
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 18px;
+      --radius-sm: 14px;
     }
 
     * { box-sizing: border-box; }
@@ -22,11 +31,11 @@
       margin: 0;
       overflow: hidden;
       background:
-        radial-gradient(circle at top, rgba(81, 102, 255, 0.16), transparent 30%),
-        radial-gradient(circle at bottom left, rgba(143, 72, 255, 0.10), transparent 32%),
-        var(--bg);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        radial-gradient(circle at top, rgba(90, 110, 255, 0.16), transparent 30%),
+        radial-gradient(circle at bottom left, rgba(160, 92, 255, 0.10), transparent 34%),
+        linear-gradient(180deg, #06070b, #04050a 68%, #030408);
       color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
     body::before {
@@ -35,12 +44,12 @@
       inset: 0;
       pointer-events: none;
       background:
-        linear-gradient(rgba(255,255,255,0.02), rgba(255,255,255,0.02)),
-        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.08) 0 1px, transparent 1px),
-        radial-gradient(circle at 80% 30%, rgba(255,255,255,0.06) 0 1px, transparent 1px),
-        radial-gradient(circle at 35% 75%, rgba(255,255,255,0.05) 0 1px, transparent 1px);
-      background-size: auto, 210px 210px, 280px 280px, 240px 240px;
-      opacity: 0.3;
+        radial-gradient(circle at 18% 18%, rgba(255,255,255,0.08) 0 1px, transparent 1px),
+        radial-gradient(circle at 82% 28%, rgba(255,255,255,0.06) 0 1px, transparent 1px),
+        radial-gradient(circle at 34% 76%, rgba(255,255,255,0.05) 0 1px, transparent 1px),
+        linear-gradient(rgba(255,255,255,0.02), rgba(255,255,255,0.02));
+      background-size: 240px 240px, 290px 290px, 220px 220px, auto;
+      opacity: 0.33;
     }
 
     #app {
@@ -48,53 +57,225 @@
       height: 100%;
     }
 
-    .shell {
+    .layout {
       width: 100%;
       height: 100%;
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: 270px minmax(0, 1fr);
       gap: 14px;
       padding: 14px;
       min-height: 0;
     }
 
-    .favorites-bar {
-      display: none;
-      gap: 10px;
-      align-items: center;
-      min-height: 64px;
-      padding: 10px;
-      border-radius: 0;
-      background: linear-gradient(180deg, rgba(18, 22, 37, 0.98), rgba(8, 10, 16, 0.96));
+    .sidebar,
+    .content,
+    .panel {
+      min-width: 0;
+      min-height: 0;
+      background: linear-gradient(180deg, rgba(18, 21, 35, 0.98), rgba(8, 10, 16, 0.96));
       border: 1px solid var(--line);
       box-shadow: var(--shadow);
-      overflow: auto hidden;
-      scrollbar-width: none;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .sidebar,
+    .content {
+      border-radius: var(--radius-xl);
+    }
+
+    .sidebar::before,
+    .content::before,
+    .panel::before,
+    .tile::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at top right, rgba(105, 126, 255, 0.18), transparent 36%),
+        radial-gradient(circle at bottom left, rgba(172, 90, 255, 0.14), transparent 38%);
+      opacity: 0.85;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      padding: 14px;
+      gap: 12px;
+    }
+
+    .brand {
+      border: 1px solid var(--line-2);
+      background:
+        linear-gradient(180deg, rgba(34, 39, 66, 0.95), rgba(14, 17, 29, 0.95)),
+        rgba(16, 18, 28, 0.95);
+      color: var(--text);
+      text-decoration: none;
+      border-radius: 24px;
+      min-height: 92px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      font-family: ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+      font-size: 2rem;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+      text-transform: lowercase;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .brand:hover {
+      border-color: rgba(150, 170, 255, 0.34);
+      transform: translateY(-1px);
+    }
+
+    .brand-sub {
+      margin-top: 4px;
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .nav-card,
+    .search-card,
+    .favs-card {
+      border: 1px solid var(--line);
+      background: rgba(12, 15, 25, 0.78);
+      border-radius: 24px;
+      padding: 12px;
+    }
+
+    .nav-stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(18, 22, 36, 0.86);
+      color: var(--text);
+      border-radius: 18px;
+      padding: 14px 16px;
+      font-size: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+
+    .nav-btn:hover {
+      background: rgba(24, 28, 44, 0.96);
+      border-color: rgba(140, 160, 255, 0.22);
+    }
+
+    .nav-btn.active {
+      background: linear-gradient(180deg, rgba(89, 108, 255, 0.22), rgba(24, 28, 44, 0.96));
+      border-color: rgba(140, 160, 255, 0.34);
+    }
+
+    .search-label {
+      display: block;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--muted-2);
+      margin: 0 0 10px 2px;
+    }
+
+    .search-box {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(10, 12, 20, 0.96);
+      color: var(--text);
+      border-radius: 18px;
+      padding: 14px 16px;
+      outline: none;
+      font-size: 15px;
+    }
+
+    .search-box::placeholder {
+      color: rgba(238, 242, 255, 0.34);
+    }
+
+    .search-box:focus {
+      border-color: rgba(136, 154, 255, 0.36);
+      box-shadow: 0 0 0 3px rgba(123, 140, 255, 0.12);
+    }
+
+    .small-label {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .content-top {
+      padding: 14px 14px 0 14px;
+    }
+
+    .content-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid var(--line);
+      background: rgba(12, 15, 25, 0.76);
+      border-radius: 24px;
+      padding: 12px 14px;
+      min-height: 62px;
+    }
+
+    .content-title {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
       min-width: 0;
     }
 
-    .favorites-bar.show { display: flex; }
-    .favorites-bar::-webkit-scrollbar,
-    .grid::-webkit-scrollbar,
-    .side-grid::-webkit-scrollbar { width: 0; height: 0; }
-
-    .fav-chip,
-    .icon-btn {
-      border-radius: 0;
+    .content-title strong {
+      font-size: 16px;
+      letter-spacing: 0.02em;
     }
 
-    .fav-chip {
-      flex: 0 0 auto;
+    .content-title span {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .content-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .icon-btn {
       width: 44px;
       height: 44px;
       border: 1px solid var(--line);
-      background: rgba(20, 24, 40, 0.92);
+      background: rgba(18, 22, 36, 0.88);
+      color: var(--text);
+      border-radius: 16px;
+      cursor: pointer;
       display: grid;
       place-items: center;
-      padding: 0;
-      cursor: pointer;
-      color: var(--text);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+      font-size: 18px;
+    }
+
+    .icon-btn:hover {
+      background: rgba(25, 30, 47, 0.97);
+      border-color: rgba(140, 160, 255, 0.22);
     }
 
     .main {
@@ -102,7 +283,7 @@
       min-height: 0;
       display: grid;
       gap: 14px;
-      grid-template-columns: 1fr;
+      padding: 14px;
     }
 
     .grid-mode .main {
@@ -110,42 +291,32 @@
     }
 
     .game-mode .main {
-      grid-template-columns: minmax(0, 1.8fr) minmax(280px, 0.8fr);
+      grid-template-columns: minmax(0, 1.8fr) minmax(280px, 0.85fr);
     }
 
     .panel {
-      min-width: 0;
-      min-height: 0;
-      border-radius: 0;
-      background: linear-gradient(180deg, rgba(16, 19, 32, 0.98), rgba(8, 10, 16, 0.95));
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
-      position: relative;
-      overflow: hidden;
+      border-radius: var(--radius-xl);
     }
 
-    .panel::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background:
-        radial-gradient(circle at top right, rgba(90, 117, 255, 0.20), transparent 35%),
-        radial-gradient(circle at bottom left, rgba(167, 74, 255, 0.13), transparent 36%);
-      opacity: 0.9;
+    .panel-inner {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
     }
 
     .sdk-wrap,
     .player-wrap,
     .side-wrap {
-      min-width: 0;
-      min-height: 0;
-      border-radius: 0;
-      background: linear-gradient(180deg, rgba(16, 19, 32, 0.98), rgba(8, 10, 16, 0.95));
+      border-radius: var(--radius-xl);
+      background: linear-gradient(180deg, rgba(18, 21, 35, 0.98), rgba(8, 10, 16, 0.96));
       border: 1px solid var(--line);
       box-shadow: var(--shadow);
       position: relative;
       overflow: hidden;
+      min-width: 0;
+      min-height: 0;
     }
 
     .sdk-wrap::before,
@@ -156,15 +327,21 @@
       inset: 0;
       pointer-events: none;
       background:
-        radial-gradient(circle at top right, rgba(90, 117, 255, 0.20), transparent 35%),
-        radial-gradient(circle at bottom left, rgba(167, 74, 255, 0.13), transparent 36%);
-      opacity: 0.9;
+        radial-gradient(circle at top right, rgba(105, 126, 255, 0.18), transparent 36%),
+        radial-gradient(circle at bottom left, rgba(172, 90, 255, 0.12), transparent 38%);
+      opacity: 0.85;
     }
 
-    #games {
-      width: 100%;
-      height: 100%;
-      min-height: 0;
+    .sdk-wrap,
+    .player-wrap,
+    .side-wrap {
+      z-index: 0;
+    }
+
+    #games,
+    #sideGrid {
+      position: relative;
+      z-index: 1;
     }
 
     .grid {
@@ -175,17 +352,25 @@
       gap: 14px;
       padding: 14px;
       grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      grid-auto-rows: minmax(90px, 1fr);
+      grid-auto-rows: minmax(96px, 1fr);
       overflow: auto;
     }
 
+    .grid::-webkit-scrollbar,
+    .side-grid::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
+
     .tile {
-      border: 1px solid var(--line);
-      border-radius: 0;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 24px;
       background:
         linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)),
         rgba(16, 20, 33, 0.92);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 10px 24px rgba(0,0,0,0.24);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 10px 24px rgba(0,0,0,0.24);
       overflow: hidden;
       cursor: pointer;
       position: relative;
@@ -200,29 +385,28 @@
       user-select: none;
       outline: none;
       isolation: isolate;
-    }
-
-    .tile::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(circle at top right, rgba(124, 153, 255, 0.22), transparent 42%),
-        radial-gradient(circle at bottom left, rgba(170, 82, 255, 0.16), transparent 42%);
-      opacity: 0.9;
-      z-index: 0;
+      transition: transform 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease;
     }
 
     .tile::after {
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.42));
+      background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.48));
       z-index: 0;
     }
 
-    .tile:hover { transform: translateY(-2px); border-color: rgba(140, 164, 255, 0.28); }
-    .tile:active { transform: translateY(0); }
+    .tile:hover {
+      transform: translateY(-2px);
+      border-color: rgba(140, 164, 255, 0.30);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.06),
+        0 14px 30px rgba(0,0,0,0.30);
+    }
+
+    .tile:active {
+      transform: translateY(0);
+    }
 
     .tile.large { grid-column: span 2; grid-row: span 2; }
     .tile.wide { grid-column: span 2; grid-row: span 1; }
@@ -235,8 +419,9 @@
       position: absolute;
       inset: 0;
       object-fit: cover;
-      opacity: 0.28;
+      opacity: 0.30;
       filter: saturate(1.08) contrast(1.02);
+      z-index: 0;
     }
 
     .tile-content {
@@ -250,30 +435,70 @@
       padding: 12px;
     }
 
+    .tile-name {
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.2;
+      text-shadow: 0 1px 0 rgba(0,0,0,0.45);
+    }
+
     .tile-meta {
       font-size: 12px;
-      opacity: 0.74;
+      color: rgba(238, 242, 255, 0.7);
       margin-top: 4px;
     }
 
     .fav-mark {
       flex: 0 0 auto;
-      width: 28px;
-      height: 28px;
+      width: 30px;
+      height: 30px;
+      border-radius: 12px;
       display: grid;
       place-items: center;
-      background: rgba(5, 7, 11, 0.46);
+      background: rgba(5, 7, 11, 0.42);
       border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .player-wrap {
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
     }
 
     .player-frame {
       width: 100%;
       height: 100%;
+      min-height: 0;
       border: 0;
       display: block;
       background: #000;
       position: relative;
       z-index: 1;
+      flex: 1 1 auto;
+    }
+
+    .player-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 12px 0 12px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .game-name {
+      font-size: 14px;
+      color: var(--muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     .placeholder {
@@ -285,36 +510,36 @@
       font-size: 14px;
       pointer-events: none;
       z-index: 2;
+      background: linear-gradient(180deg, rgba(8, 10, 16, 0.12), rgba(8, 10, 16, 0.32));
     }
 
-    .controls {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      z-index: 3;
+    .side-wrap {
+      min-height: 0;
       display: flex;
-      gap: 8px;
+      flex-direction: column;
     }
 
-    .icon-btn {
-      width: 42px;
-      height: 42px;
-      border: 1px solid var(--line);
-      background: rgba(12, 15, 25, 0.86);
-      color: var(--text);
-      cursor: pointer;
-      display: grid;
-      place-items: center;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
-      font-size: 18px;
+    .side-header {
+      padding: 14px 14px 10px 14px;
+      position: relative;
+      z-index: 1;
     }
 
-    .icon-btn:hover { background: rgba(18, 22, 36, 0.95); }
+    .side-header strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+
+    .side-header span {
+      color: var(--muted);
+      font-size: 13px;
+    }
 
     .side-grid {
-      padding: 0;
+      padding: 0 14px 14px 14px;
       display: grid;
-      gap: 0;
+      gap: 10px;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       grid-auto-rows: 120px;
       overflow: auto;
@@ -326,26 +551,115 @@
       place-items: center;
       color: var(--muted);
       font-size: 14px;
-      letter-spacing: 0.2px;
       min-height: 100%;
     }
 
-    .grid-mode .favorites-bar { display: none; }
-    .grid-mode .player-wrap,
-    .grid-mode .side-wrap { display: none; }
-    .game-mode .sdk-wrap { display: none; }
+    .favorites-list {
+      display: grid;
+      gap: 10px;
+      max-height: 100%;
+      overflow: auto;
+    }
+
+    .fav-item {
+      border: 1px solid var(--line);
+      background: rgba(16, 20, 33, 0.88);
+      color: var(--text);
+      border-radius: 18px;
+      padding: 12px 14px;
+      text-align: left;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .fav-item:hover {
+      background: rgba(23, 28, 45, 0.98);
+      border-color: rgba(140, 160, 255, 0.22);
+    }
+
+    .fav-item small {
+      display: block;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .grid-mode .sidebar .nav-btn[data-action="home"] {
+      background: linear-gradient(180deg, rgba(89, 108, 255, 0.22), rgba(18, 22, 36, 0.88));
+      border-color: rgba(140, 160, 255, 0.34);
+    }
+
+    .hidden {
+      display: none !important;
+    }
 
     @media (max-width: 1100px) {
-      .game-mode .main { grid-template-columns: 1fr; }
-      .side-wrap { display: none; }
-      .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        border-radius: 24px;
+      }
+
+      .game-mode .main {
+        grid-template-columns: 1fr;
+      }
+
+      .side-wrap {
+        display: none;
+      }
     }
 
     @media (max-width: 720px) {
-      .shell { padding: 10px; gap: 10px; }
-      .controls { top: 10px; right: 10px; }
-      .icon-btn { width: 40px; height: 40px; }
-      .grid { gap: 10px; padding: 10px; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+      html, body {
+        overflow: auto;
+      }
+
+      body {
+        overflow-x: hidden;
+      }
+
+      .layout {
+        height: auto;
+        min-height: 100%;
+        padding: 10px;
+        gap: 10px;
+      }
+
+      .sidebar,
+      .content {
+        border-radius: 22px;
+      }
+
+      .sidebar {
+        padding: 12px;
+      }
+
+      .brand {
+        min-height: 76px;
+        font-size: 1.7rem;
+      }
+
+      .grid {
+        gap: 10px;
+        padding: 10px;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      }
+
+      .content-top,
+      .main {
+        padding: 10px;
+      }
+
+      .content-bar {
+        padding: 10px 12px;
+      }
+
+      .icon-btn {
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+      }
     }
   </style>
 </head>
@@ -354,15 +668,20 @@
 
   <script src="https://cdn.jsdelivr.net/gh/luminsdk/script@latest/lumin.min.js"></script>
   <script>
-    const STORAGE_KEY = 'lumin-favorites-v1';
+    const STORAGE_KEY = 'velora-favorites-v1';
     const PAGE_SIZE = 36;
+
     const app = document.getElementById('app');
 
     let favorites = loadFavorites();
     let activeGameId = '';
+    let activeGameName = '';
     let currentGameFrame = null;
     let gameNonce = 0;
     let cachedGames = [];
+    let currentQuery = '';
+    let searchTimer = null;
+    let requestToken = 0;
 
     function loadFavorites() {
       try {
@@ -393,36 +712,89 @@
       return `about:blank#${encodeURIComponent(id)}&v=${Date.now()}&n=${++gameNonce}`;
     }
 
-    function gridModeTemplate() {
+    function baseTemplate() {
       return `
-        <div class="shell grid-mode">
-          <div id="favoritesBar" class="favorites-bar" aria-label="favorites"></div>
-          <div class="main">
-            <div class="sdk-wrap panel">
-              <div id="games" class="grid" aria-label="game grid"></div>
+        <div class="layout ${location.hash.startsWith('#game=') ? 'game-mode' : 'grid-mode'}">
+          <aside class="sidebar">
+            <a class="brand" href="#" id="brandBtn" aria-label="go home">
+              velora
+            </a>
+
+            <div class="nav-card">
+              <div class="nav-stack">
+                <button class="nav-btn" data-action="home" type="button">
+                  <span>home</span>
+                  <span>⌂</span>
+                </button>
+                <button class="nav-btn" data-action="settings" type="button">
+                  <span>settings</span>
+                  <span>⚙</span>
+                </button>
+              </div>
             </div>
-          </div>
+
+            <div class="search-card">
+              <label class="search-label" for="gameSearch">search for games</label>
+              <input id="gameSearch" class="search-box" type="search" placeholder="type a game name" autocomplete="off" />
+            </div>
+
+            <div class="favs-card">
+              <div class="small-label" style="margin-bottom:10px;">favorites</div>
+              <div id="favoritesList" class="favorites-list"></div>
+            </div>
+          </aside>
+
+          <section class="content">
+            <div class="content-top">
+              <div class="content-bar">
+                <div class="content-title">
+                  <strong id="pageTitle">home</strong>
+                  <span id="pageSub">browse games and open one to play</span>
+                </div>
+                <div class="content-actions" id="contentActions"></div>
+              </div>
+            </div>
+
+            <div class="main">
+              <div id="viewRoot" class="panel panel-inner"></div>
+            </div>
+          </section>
         </div>
       `;
     }
 
-    function gameModeTemplate() {
+    function gridViewTemplate() {
       return `
-        <div class="shell game-mode">
-          <div id="favoritesBar" class="favorites-bar show" aria-label="favorites"></div>
-          <div class="main">
-            <div class="player-wrap panel">
-              <iframe id="playerFrame" class="player-frame" title="game player" allow="fullscreen; autoplay; clipboard-read; clipboard-write; gamepad" referrerpolicy="no-referrer"></iframe>
+        <div class="sdk-wrap" style="width:100%;height:100%;min-height:0;">
+          <div id="games" class="grid" aria-label="game grid"></div>
+        </div>
+      `;
+    }
+
+    function gameViewTemplate() {
+      return `
+        <div class="game-shell" style="width:100%;height:100%;display:grid;grid-template-columns:minmax(0,1.8fr) minmax(280px,0.85fr);gap:14px;min-height:0;">
+          <div class="player-wrap">
+            <div class="player-top">
+              <div class="game-name" id="gameTitle">loading…</div>
               <div class="controls">
                 <button id="favBtn" class="icon-btn" title="favorite" aria-label="favorite">☆</button>
                 <button id="reloadBtn" class="icon-btn" title="reload" aria-label="reload">⟳</button>
                 <button id="fullBtn" class="icon-btn" title="fullscreen" aria-label="fullscreen">⤢</button>
               </div>
+            </div>
+            <div style="position:relative;flex:1 1 auto;min-height:0;">
+              <iframe id="playerFrame" class="player-frame" title="game player" allow="fullscreen; autoplay; clipboard-read; clipboard-write; gamepad" referrerpolicy="no-referrer"></iframe>
               <div class="placeholder" id="playerPlaceholder">loading…</div>
             </div>
-            <div class="side-wrap panel">
-              <div id="sideGrid" class="side-grid" aria-label="related games"></div>
+          </div>
+
+          <div class="side-wrap">
+            <div class="side-header">
+              <strong>related</strong>
+              <span>other games in the grid</span>
             </div>
+            <div id="sideGrid" class="side-grid" aria-label="related games"></div>
           </div>
         </div>
       `;
@@ -442,11 +814,21 @@
       }
     }
 
-    async function loadGameList() {
+    async function loadGameList(query = '') {
+      const token = ++requestToken;
+
       try {
-        const result = await Lumin.getGames({ page: 1, limit: PAGE_SIZE, q: '' });
+        const result = await Lumin.getGames({
+          page: 1,
+          limit: PAGE_SIZE,
+          q: query || ''
+        });
+
+        if (token !== requestToken) return;
+
         cachedGames = Array.isArray(result?.games) ? result.games : [];
       } catch (err) {
+        if (token !== requestToken) return;
         cachedGames = [];
       }
     }
@@ -458,30 +840,45 @@
       return 'square';
     }
 
+    function getGameName(game) {
+      return game?.title || game?.name || game?.id || 'game';
+    }
+
     async function mountSdkGrid() {
       const sdkHost = document.getElementById('games');
       if (!sdkHost) return;
-      sdkHost.innerHTML = '<div class="side-empty">&nbsp;</div>';
 
-      await loadGameList();
+      sdkHost.innerHTML = '<div class="side-empty">loading…</div>';
+
+      await loadGameList(currentQuery);
 
       if (!cachedGames.length) {
-        sdkHost.innerHTML = '<div class="side-empty">&nbsp;</div>';
+        sdkHost.innerHTML = '<div class="side-empty">no games found</div>';
         return;
       }
 
       const imageUrls = await Promise.all(
-        cachedGames.map(g => Lumin.getImageUrl(g.image_token).catch?.(() => '') ?? Lumin.getImageUrl(g.image_token))
+        cachedGames.map(async (g) => {
+          try {
+            if (!g?.image_token || !window.Lumin?.getImageUrl) return '';
+            return await Lumin.getImageUrl(g.image_token);
+          } catch {
+            return '';
+          }
+        })
       );
 
       sdkHost.innerHTML = cachedGames.map((game, i) => {
         const isFav = favorites.has(game.id);
+        const name = getGameName(game);
+
         return `
-          <div class="tile ${tileClassForIndex(i)}" data-id="${game.id}" role="button" tabindex="0" aria-label="open game">
-            <img class="thumb" src="${imageUrls[i] || ''}" alt="" />
+          <div class="tile ${tileClassForIndex(i)}" data-id="${game.id}" data-name="${encodeURIComponent(name)}" role="button" tabindex="0" aria-label="open game ${name}">
+            ${imageUrls[i] ? `<img class="thumb" src="${imageUrls[i]}" alt="" />` : ''}
             <div class="tile-content">
-              <div>
-                <div class="tile-meta">${isFav ? '★' : ''}</div>
+              <div style="min-width:0;">
+                <div class="tile-name">${name}</div>
+                <div class="tile-meta">${isFav ? 'favorited' : 'tap to play'}</div>
               </div>
               <div class="fav-mark" aria-hidden="true">${isFav ? '★' : '☆'}</div>
             </div>
@@ -494,6 +891,7 @@
           const id = tile.getAttribute('data-id');
           if (id) location.hash = `game=${encodeURIComponent(id)}`;
         };
+
         tile.addEventListener('click', open);
         tile.addEventListener('keydown', e => {
           if (e.key === 'Enter' || e.key === ' ') {
@@ -504,52 +902,51 @@
       });
     }
 
-    function loadGrid() {
-      activeGameId = '';
-      app.innerHTML = gridModeTemplate();
-      document.documentElement.classList.remove('game-mode');
-      document.documentElement.classList.add('grid-mode');
-      renderFavorites();
-      mountSdkGrid();
+    function updatePageHeader() {
+      const title = document.getElementById('pageTitle');
+      const sub = document.getElementById('pageSub');
+      const actions = document.getElementById('contentActions');
+
+      if (!title || !sub || !actions) return;
+
+      const inGame = !!activeGameId;
+
+      title.textContent = inGame ? (activeGameName || 'game') : 'home';
+      sub.textContent = inGame ? 'playing now' : (currentQuery ? `results for "${currentQuery}"` : 'browse games and open one to play');
+
+      actions.innerHTML = inGame
+        ? `<button class="icon-btn" id="homeTopBtn" title="home" aria-label="home">⌂</button>`
+        : `<button class="icon-btn" id="refreshBtn" title="refresh" aria-label="refresh">↻</button>`;
+
+      const homeTopBtn = document.getElementById('homeTopBtn');
+      if (homeTopBtn) homeTopBtn.onclick = goHome;
+
+      const refreshBtn = document.getElementById('refreshBtn');
+      if (refreshBtn) refreshBtn.onclick = () => mountSdkGrid();
     }
 
-    async function loadGame(id) {
-      activeGameId = id;
-      app.innerHTML = gameModeTemplate();
-      document.documentElement.classList.remove('grid-mode');
-      document.documentElement.classList.add('game-mode');
-
-      const frame = document.getElementById('playerFrame');
-      const placeholder = document.getElementById('playerPlaceholder');
-      currentGameFrame = frame;
-
-      frame.src = getGameUrl(id);
-      frame.addEventListener('load', () => {
-        if (placeholder) placeholder.style.display = 'none';
-      }, { once: true });
-
-      renderFavorites();
-      renderSideGrid();
-      syncControlButtons();
-
-      document.getElementById('reloadBtn').onclick = reloadGame;
-      document.getElementById('fullBtn').onclick = toggleFullscreen;
-      document.getElementById('favBtn').onclick = () => toggleFavorite(id);
-      syncControlButtons();
-    }
-
-    function renderFavorites() {
-      const bar = document.getElementById('favoritesBar');
-      if (!bar) return;
+    function renderFavoritesList() {
+      const list = document.getElementById('favoritesList');
+      if (!list) return;
 
       const ids = [...favorites];
-      bar.innerHTML = ids.map(id => `
-        <button class="fav-chip" data-id="${id}" title="${id}" aria-label="${id}">★</button>
-      `).join('');
+      if (!ids.length) {
+        list.innerHTML = `<div class="side-empty" style="min-height:120px;">none yet</div>`;
+        return;
+      }
 
-      bar.classList.toggle('show', ids.length > 0 && location.hash.startsWith('#game='));
+      list.innerHTML = ids.map(id => {
+        const game = cachedGames.find(g => g.id === id);
+        const name = game ? getGameName(game) : id;
+        return `
+          <button class="fav-item" data-id="${id}" type="button">
+            ${name}
+            <small>open favorite</small>
+          </button>
+        `;
+      }).join('');
 
-      bar.querySelectorAll('.fav-chip[data-id]').forEach(btn => {
+      list.querySelectorAll('.fav-item[data-id]').forEach(btn => {
         btn.onclick = () => {
           const id = btn.getAttribute('data-id');
           if (id) location.hash = `game=${encodeURIComponent(id)}`;
@@ -557,15 +954,27 @@
       });
     }
 
+    function syncControls() {
+      const favBtn = document.getElementById('favBtn');
+      if (favBtn) favBtn.textContent = favorites.has(activeGameId) ? '★' : '☆';
+    }
+
     function toggleFavorite(id) {
       if (!id) return;
+
       if (favorites.has(id)) favorites.delete(id);
       else favorites.add(id);
+
       saveFavorites();
-      renderFavorites();
-      syncControlButtons();
-      if (cachedGames.length && document.getElementById('games')) {
-        mountSdkGrid();
+      renderFavoritesList();
+      syncControls();
+
+      const gameTile = document.querySelector(`.tile[data-id="${CSS.escape(id)}"]`);
+      if (gameTile) {
+        const mark = gameTile.querySelector('.fav-mark');
+        const meta = gameTile.querySelector('.tile-meta');
+        if (mark) mark.textContent = favorites.has(id) ? '★' : '☆';
+        if (meta) meta.textContent = favorites.has(id) ? 'favorited' : 'tap to play';
       }
     }
 
@@ -577,6 +986,7 @@
     function toggleFullscreen() {
       const el = document.querySelector('.player-wrap');
       if (!el) return;
+
       if (!document.fullscreenElement) {
         el.requestFullscreen?.();
       } else {
@@ -587,36 +997,170 @@
     function renderSideGrid() {
       const side = document.getElementById('sideGrid');
       if (!side) return;
-      side.innerHTML = '<div class="side-empty">&nbsp;</div>';
+
+      if (!cachedGames.length) {
+        side.innerHTML = '<div class="side-empty">no games yet</div>';
+        return;
+      }
+
+      const related = cachedGames.slice(0, 8);
+      side.innerHTML = related.map((game) => `
+        <button class="fav-item" data-id="${game.id}" type="button">
+          ${getGameName(game)}
+          <small>${favorites.has(game.id) ? 'favorited' : 'open game'}</small>
+        </button>
+      `).join('');
+
+      side.querySelectorAll('.fav-item[data-id]').forEach(btn => {
+        btn.onclick = () => {
+          const id = btn.getAttribute('data-id');
+          if (id) location.hash = `game=${encodeURIComponent(id)}`;
+        };
+      });
     }
 
-    function syncControlButtons() {
-      const favBtn = document.getElementById('favBtn');
-      if (favBtn) favBtn.textContent = favorites.has(activeGameId) ? '★' : '☆';
+    function mountGrid() {
+      activeGameId = '';
+      activeGameName = '';
+      currentGameFrame = null;
+
+      app.innerHTML = baseTemplate();
+      app.querySelector('.layout').classList.remove('game-mode');
+      app.querySelector('.layout').classList.add('grid-mode');
+
+      const view = document.getElementById('viewRoot');
+      view.innerHTML = gridViewTemplate();
+
+      const search = document.getElementById('gameSearch');
+      const brandBtn = document.getElementById('brandBtn');
+      const homeBtn = document.querySelector('.nav-btn[data-action="home"]');
+      const settingsBtn = document.querySelector('.nav-btn[data-action="settings"]');
+
+      brandBtn.onclick = (e) => {
+        e.preventDefault();
+        goHome();
+      };
+
+      homeBtn.onclick = goHome;
+      settingsBtn.onclick = () => {};
+
+      search.value = currentQuery;
+      search.oninput = () => {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(() => {
+          currentQuery = search.value.trim();
+          mountSdkGrid();
+          renderFavoritesList();
+          updatePageHeader();
+        }, 180);
+      };
+
+      search.onkeydown = (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          currentQuery = search.value.trim();
+          mountSdkGrid();
+          renderFavoritesList();
+          updatePageHeader();
+        }
+      };
+
+      updatePageHeader();
+      renderFavoritesList();
+      mountSdkGrid();
+    }
+
+    function mountGame(id) {
+      activeGameId = id;
+      const game = cachedGames.find(g => g.id === id);
+      activeGameName = game ? getGameName(game) : id;
+
+      app.innerHTML = baseTemplate();
+      app.querySelector('.layout').classList.remove('grid-mode');
+      app.querySelector('.layout').classList.add('game-mode');
+
+      const view = document.getElementById('viewRoot');
+      view.innerHTML = gameViewTemplate();
+
+      const search = document.getElementById('gameSearch');
+      const brandBtn = document.getElementById('brandBtn');
+      const homeBtn = document.querySelector('.nav-btn[data-action="home"]');
+      const settingsBtn = document.querySelector('.nav-btn[data-action="settings"]');
+
+      brandBtn.onclick = (e) => {
+        e.preventDefault();
+        goHome();
+      };
+
+      homeBtn.onclick = goHome;
+      settingsBtn.onclick = () => {};
+
+      search.value = currentQuery;
+      search.oninput = () => {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(() => {
+          currentQuery = search.value.trim();
+          goHome();
+        }, 180);
+      };
+
+      const frame = document.getElementById('playerFrame');
+      const placeholder = document.getElementById('playerPlaceholder');
+      const title = document.getElementById('gameTitle');
+
+      currentGameFrame = frame;
+      if (title) title.textContent = activeGameName;
+
+      frame.src = getGameUrl(id);
+      frame.addEventListener('load', () => {
+        if (placeholder) placeholder.style.display = 'none';
+      }, { once: true });
+
+      document.getElementById('reloadBtn').onclick = reloadGame;
+      document.getElementById('fullBtn').onclick = toggleFullscreen;
+      document.getElementById('favBtn').onclick = () => toggleFavorite(id);
+
+      renderFavoritesList();
+      renderSideGrid();
+      syncControls();
+      updatePageHeader();
+    }
+
+    function goHome() {
+      location.hash = '';
     }
 
     function handleHashChange() {
       const hash = location.hash.replace(/^#/, '');
       const match = hash.match(/^game=([^&]+)/);
+
       if (!match) {
-        loadGrid();
+        mountGrid();
         return;
       }
-      loadGame(decodeURIComponent(match[1]));
+
+      const id = decodeURIComponent(match[1]);
+      mountGame(id);
     }
 
-    window.loadGrid = loadGrid;
-    window.loadGame = loadGame;
-    window.renderFavorites = renderFavorites;
-    window.toggleFavorite = toggleFavorite;
-    window.reloadGame = reloadGame;
-    window.handleHashChange = handleHashChange;
-
     window.addEventListener('hashchange', handleHashChange);
+
     window.addEventListener('DOMContentLoaded', async () => {
       await initSdk();
+
+      await loadGameList('');
+      renderFavoritesList();
+
       handleHashChange();
-      renderFavorites();
+
+      const settingsHint = document.createElement('div');
+      settingsHint.style.position = 'fixed';
+      settingsHint.style.left = '0';
+      settingsHint.style.bottom = '0';
+      settingsHint.style.width = '1px';
+      settingsHint.style.height = '1px';
+      settingsHint.style.opacity = '0';
+      document.body.appendChild(settingsHint);
     });
   </script>
 </body>
