@@ -1,0 +1,1186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Civil War Frontline</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg:#081018;
+      --panel:rgba(8,12,18,.82);
+      --line:rgba(255,255,255,.12);
+      --text:#e8eef7;
+      --muted:#9fb0c5;
+      --accent:#8fb6ff;
+      --good:#9be28d;
+      --warn:#ffd27a;
+      --bad:#ff8d8d;
+    }
+    html,body{margin:0;height:100%;overflow:hidden;background:linear-gradient(180deg,#07111d 0%,#0c1320 50%,#081018 100%);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--text)}
+    #wrap{position:fixed;inset:0;display:grid;place-items:stretch}
+    canvas{width:100vw;height:100vh;display:block;image-rendering:auto}
+    .hud{
+      position:fixed;left:16px;top:16px;right:16px;display:flex;gap:12px;align-items:flex-start;pointer-events:none;
+    }
+    .panel{
+      background:var(--panel);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:18px;box-shadow:0 12px 40px rgba(0,0,0,.35);
+    }
+    .status{min-width:280px;padding:12px 14px}
+    .title{font-weight:800;letter-spacing:.04em;font-size:14px;text-transform:uppercase;color:#fff}
+    .small{font-size:12px;color:var(--muted);line-height:1.35}
+    .bars{margin-top:10px;display:grid;gap:8px}
+    .barrow{display:grid;grid-template-columns:78px 1fr 48px;align-items:center;gap:8px;font-size:12px}
+    .bar{height:10px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,.08)}
+    .fill{height:100%;width:50%;border-radius:999px}
+    .fill.hp{background:linear-gradient(90deg,#7be07b,#c8ff9a)}
+    .fill.st{background:linear-gradient(90deg,#7aa8ff,#d0e0ff)}
+    .fill.am{background:linear-gradient(90deg,#ffd27a,#fff0b8)}
+    .controls{padding:12px 14px;max-width:520px}
+    .controls .keys{margin-top:6px;display:flex;flex-wrap:wrap;gap:8px}
+    .k{padding:5px 8px;border-radius:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.09);font-size:12px;color:#fff}
+    .fact{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;max-width:min(760px,calc(100vw - 24px));padding:12px 16px;pointer-events:none}
+    .fact b{color:#fff}
+    .fact .small{color:#d7e0ea}
+    .objective{position:fixed;right:16px;top:16px;max-width:330px;padding:12px 14px}
+    .objective .label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);font-weight:800}
+    .objective .text{margin-top:4px;font-size:14px;line-height:1.35}
+    .centerMsg{position:fixed;inset:auto 16px 16px auto}
+    .overlay{
+      position:fixed;inset:0;display:grid;place-items:center;background:radial-gradient(circle at center, rgba(8,16,24,.15), rgba(8,16,24,.7));
+    }
+    .card{
+      width:min(760px, calc(100vw - 24px));padding:20px 22px;border-radius:24px;background:rgba(8,12,18,.9);border:1px solid var(--line);box-shadow:0 20px 70px rgba(0,0,0,.45)
+    }
+    .card h1{margin:0 0 8px;font-size:28px}
+    .card p{margin:8px 0;color:#dbe4ef;line-height:1.5}
+    .card .muted{color:var(--muted)}
+    .card .row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+    button{
+      pointer-events:auto;border:0;border-radius:14px;padding:10px 14px;font:inherit;font-weight:700;cursor:pointer;background:linear-gradient(180deg,#a9c4ff,#7396ff);color:#08111b;box-shadow:0 12px 24px rgba(90,120,255,.2)
+    }
+    button.secondary{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.12);box-shadow:none}
+    .hidden{display:none}
+    .footerHint{position:fixed;left:50%;transform:translateX(-50%);top:50%;translate:0 260px;padding:10px 14px;border-radius:14px;background:rgba(0,0,0,.5);color:#fff;font-size:12px;border:1px solid rgba(255,255,255,.12);pointer-events:none}
+  </style>
+</head>
+<body>
+<div id="wrap"><canvas id="game"></canvas></div>
+
+<div class="hud">
+  <div class="panel status">
+    <div class="title">civil war frontline</div>
+    <div class="small" id="areaName">area</div>
+    <div class="bars">
+      <div class="barrow"><span>health</span><div class="bar"><div class="fill hp" id="hpFill"></div></div><span id="hpText">100</span></div>
+      <div class="barrow"><span>stamina</span><div class="bar"><div class="fill st" id="stFill"></div></div><span id="stText">100</span></div>
+      <div class="barrow"><span>ammo</span><div class="bar"><div class="fill am" id="amFill"></div></div><span id="amText">∞</span></div>
+    </div>
+  </div>
+  <div class="panel controls">
+    <div class="title">controls</div>
+    <div class="small">move, jump, shoot, and switch roles. clear the fighting zone to advance to the next section.</div>
+    <div class="keys">
+      <span class="k">a / d move</span>
+      <span class="k">w / space jump</span>
+      <span class="k">j shoot</span>
+      <span class="k">k grenade / shell</span>
+      <span class="k">1-4 switch role</span>
+      <span class="k">e interact / mount gun</span>
+      <span class="k">r reload</span>
+      <span class="k">p pause</span>
+    </div>
+  </div>
+  <div class="panel objective">
+    <div class="label">objective</div>
+    <div class="text" id="objectiveText">push forward to the first line.</div>
+  </div>
+</div>
+
+<div class="panel fact" id="factBox">
+  <div class="title">battle note</div>
+  <div class="small" id="factText">the game teaches history as you move through each zone.</div>
+</div>
+
+<div class="overlay" id="startOverlay">
+  <div class="card">
+    <h1>Civil War Frontline</h1>
+    <p>This is a side-scrolling history game set around Gettysburg and the wider war effort. You move through battle lines, artillery positions, a river with naval fire, and a fort assault while learning the basics of the conflict.</p>
+    <p class="muted">The art here is drawn in-game so it runs as one file. The code is set up so you can swap in realistic sprite PNGs later without changing the gameplay logic.</p>
+    <p class="muted">It includes Meade, infantry, cannon positions, ship guns, bridges, forts, flags, medics, supply crates, and a short history fact at every major area.</p>
+    <div class="row">
+      <button id="playBtn">start campaign</button>
+      <button class="secondary" id="demoBtn">jump to battlefield</button>
+    </div>
+  </div>
+</div>
+
+<div class="footerHint" id="hint"></div>
+
+<script>
+(() => {
+  const canvas = document.getElementById('game');
+  const ctx = canvas.getContext('2d');
+  const hpFill = document.getElementById('hpFill');
+  const stFill = document.getElementById('stFill');
+  const amFill = document.getElementById('amFill');
+  const hpText = document.getElementById('hpText');
+  const stText = document.getElementById('stText');
+  const amText = document.getElementById('amText');
+  const areaName = document.getElementById('areaName');
+  const objectiveText = document.getElementById('objectiveText');
+  const factText = document.getElementById('factText');
+  const factBox = document.getElementById('factBox');
+  const overlay = document.getElementById('startOverlay');
+  const playBtn = document.getElementById('playBtn');
+  const demoBtn = document.getElementById('demoBtn');
+  const hint = document.getElementById('hint');
+
+  const DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+  let W = 0, H = 0, groundY = 0;
+
+  function resize(){
+    W = Math.floor(window.innerWidth);
+    H = Math.floor(window.innerHeight);
+    canvas.width = Math.floor(W * DPR);
+    canvas.height = Math.floor(H * DPR);
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+    groundY = Math.floor(H * 0.8);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const keys = new Set();
+  const pressed = new Set();
+  const state = {
+    started:false,
+    paused:false,
+    t:0,
+    camX:0,
+    camShake:0,
+    factTimer:0,
+    areaIdx:0,
+    respawnX:80,
+    lastCheckpoint:80,
+    message:'',
+    messageTime:0,
+    victory:false,
+  };
+
+  const areas = [
+    {
+      name:'camp and march', x1:0, x2:1180,
+      objective:'advance through the camp, learn the basics of the war, and reach the ridge line.',
+      fact:'The American Civil War lasted from 1861 to 1865. Gettysburg, fought in July 1863, became one of its turning points.'
+    },
+    {
+      name:'Gettysburg ridge', x1:1180, x2:2400,
+      objective:'push through the ridge while infantry and artillery hold the line.',
+      fact:'Gettysburg was a three-day battle. Meade took command of the Army of the Potomac just days before the fighting.'
+    },
+    {
+      name:'river battery', x1:2400, x2:3500,
+      objective:'cross the river zone under cannon fire and use the ship guns to clear the shore.',
+      fact:'Union river power and coastal gunfire mattered across the war. Naval artillery often supported land assaults near rivers and ports.'
+    },
+    {
+      name:'fort assault', x1:3500, x2:4680,
+      objective:'storm the fort line and hold the flag point to finish the campaign.',
+      fact:'Fortifications, trenches, and heavy guns became more important as the war went on. The conflict changed how armies fought.'
+    },
+  ];
+
+  const WORLD_W = 4900;
+  const GRAVITY = 0.52;
+
+  const player = {
+    x:70, y:0, w:24, h:42, vx:0, vy:0,
+    dir:1, onGround:false, hp:100, stamina:100, ammo:100,
+    role:'meade',
+    reload:0, fireCd:0, invuln:0, carried:false, mountedGun:null,
+    anim:0, crouch:false, score:0
+  };
+
+  const roles = {
+    meade: {
+      label:'general meade', color:'#cfd8e8', gun:'revolver', maxAmmo:18,
+      speed:2.9, jump:9.5, hp:100,
+      description:'command role with a faster sidearm and balanced movement.'
+    },
+    infantry: {
+      label:'infantry', color:'#90a9c8', gun:'rifle', maxAmmo:8,
+      speed:3.15, jump:9.6, hp:90,
+      description:'mobile rifleman with stronger knockback.'
+    },
+    engineer: {
+      label:'engineer', color:'#c2a57d', gun:'carbine', maxAmmo:10,
+      speed:2.75, jump:9.0, hp:110,
+      description:'slower but tougher. good near artillery and forts.'
+    },
+    artillerist: {
+      label:'artillerist', color:'#d9c79f', gun:'cannon', maxAmmo:4,
+      speed:2.3, jump:8.2, hp:120,
+      description:'can use field guns and fire heavy shells.'
+    },
+  };
+
+  player.y = groundY - player.h;
+
+  const enemies = [];
+  const allies = [];
+  const bullets = [];
+  const shells = [];
+  const pickups = [];
+  const worldObjects = [];
+  const stars = Array.from({length:110}, () => ({x:Math.random()*WORLD_W, y:Math.random()*H*0.45, r:Math.random()*1.8+0.4, a:Math.random()*0.7+0.2}));
+
+  function checkpoint(x, text){
+    state.lastCheckpoint = x;
+    state.respawnX = x;
+    showMessage(text || 'checkpoint reached');
+  }
+
+  function showMessage(text, time=3){
+    state.message = text;
+    state.messageTime = time;
+  }
+
+  function spawnEnemy(x, type='infantry', side=-1){
+    const data = {
+      infantry:{w:22,h:38,hp:42,speed:0.6,range:340,color:'#6f7d66',weapon:'musket'},
+      sharpshooter:{w:21,h:37,hp:34,speed:0.75,range:430,color:'#7e6d65',weapon:'rifle'},
+      gunner:{w:25,h:36,hp:58,speed:0.2,range:520,color:'#9b8866',weapon:'cannon'},
+      cavalry:{w:28,h:35,hp:55,speed:1.15,range:220,color:'#6a5a4d',weapon:'carbine'},
+    }[type];
+    enemies.push({
+      type, x, y:groundY - data.h, w:data.w, h:data.h, vx:0, vy:0, dir:side,
+      hp:data.hp, maxHp:data.hp, speed:data.speed, range:data.range,
+      color:data.color, weapon:data.weapon, fireCd:60 + Math.random()*60, onGround:false,
+      anim:Math.random()*10, dead:false, alerted:false
+    });
+  }
+
+  function spawnAlly(x, type='infantry', side=1){
+    const data = {
+      infantry:{w:22,h:38,hp:46,speed:0.72,range:340,color:'#6f8fb0',weapon:'musket'},
+      sharpshooter:{w:21,h:37,hp:38,speed:0.82,range:430,color:'#7ea0c5',weapon:'rifle'},
+      medic:{w:22,h:38,hp:52,speed:0.68,range:0,color:'#7d9a7d',weapon:'none'},
+      engineer:{w:24,h:37,hp:62,speed:0.66,range:240,color:'#b79a72',weapon:'carbine'},
+    }[type];
+    allies.push({
+      type, x, y:groundY - data.h, w:data.w, h:data.h, vx:0, vy:0, dir:side,
+      hp:data.hp, maxHp:data.hp, speed:data.speed, range:data.range,
+      color:data.color, weapon:data.weapon, fireCd:20 + Math.random()*40, onGround:false,
+      anim:Math.random()*10, dead:false, healed:false
+    });
+  }
+
+  function spawnWorld(){
+    enemies.length = 0; allies.length = 0; bullets.length = 0; shells.length = 0; pickups.length = 0; worldObjects.length = 0;
+
+    // allied troops following the line
+    for (const x of [120, 220, 320, 430, 610, 720, 820, 960]) spawnAlly(x, Math.random() > 0.8 ? 'medic' : Math.random() > 0.65 ? 'engineer' : 'infantry', 1);
+    for (const x of [1250, 1320, 1400, 1490, 1600, 1720, 1840, 1960, 2080, 2200]) spawnAlly(x, Math.random() > 0.75 ? 'sharpshooter' : 'infantry', 1);
+    for (const x of [2480, 2580, 2680, 2790, 2900, 3020, 3150]) spawnAlly(x, Math.random() > 0.85 ? 'engineer' : 'infantry', 1);
+    for (const x of [3570, 3680, 3790, 3910, 4040, 4170, 4300, 4410, 4520]) spawnAlly(x, Math.random() > 0.78 ? 'sharpshooter' : 'infantry', 1);
+
+    // Camp and march zone
+    for(let i=140;i<1100;i+=230){
+      worldObjects.push({type:'tree', x:i, y:groundY-125, s:1+Math.random()*0.3});
+    }
+    worldObjects.push({type:'tent', x:180, y:groundY-66});
+    worldObjects.push({type:'tent', x:290, y:groundY-66});
+    worldObjects.push({type:'crate', x:420, y:groundY-24});
+    worldObjects.push({type:'flag', x:560, y:groundY-120, nation:'union'});
+    worldObjects.push({type:'medtent', x:760, y:groundY-92});
+    worldObjects.push({type:'campfire', x:850, y:groundY-16});
+
+    // Gettysburg ridge
+    worldObjects.push({type:'ridge', x:1300, y:groundY-100, w:360, h:60});
+    worldObjects.push({type:'tree', x:1500, y:groundY-145, s:1.3});
+    worldObjects.push({type:'barrier', x:1580, y:groundY-35});
+    worldObjects.push({type:'barrier', x:1700, y:groundY-35});
+    worldObjects.push({type:'barrier', x:1820, y:groundY-35});
+    worldObjects.push({type:'cannon', x:1900, y:groundY-26, angle:-0.08});
+    worldObjects.push({type:'flag', x:2140, y:groundY-120, nation:'union'});
+
+    // River battery
+    worldObjects.push({type:'water', x:2460, y:groundY-26, w:760, h:26});
+    worldObjects.push({type:'ship', x:2570, y:groundY-110, w:170, h:62});
+    worldObjects.push({type:'ship', x:2830, y:groundY-92, w:180, h:58});
+    worldObjects.push({type:'bridge', x:2460, y:groundY-86, w:230, h:20});
+    worldObjects.push({type:'fortgun', x:3200, y:groundY-42});
+    worldObjects.push({type:'tree', x:3370, y:groundY-128, s:1.1});
+
+    // Fort assault
+    worldObjects.push({type:'fortwall', x:3600, y:groundY-120, w:520, h:120});
+    worldObjects.push({type:'sandbag', x:3760, y:groundY-42});
+    worldObjects.push({type:'sandbag', x:3860, y:groundY-42});
+    worldObjects.push({type:'sandbag', x:3960, y:groundY-42});
+    worldObjects.push({type:'flag', x:4450, y:groundY-125, nation:'union'});
+
+    // pickups
+    pickups.push({type:'ammo', x:510, y:groundY-44, amount:8});
+    pickups.push({type:'med', x:1740, y:groundY-44, amount:35});
+    pickups.push({type:'ammo', x:2910, y:groundY-44, amount:6});
+    pickups.push({type:'med', x:3890, y:groundY-44, amount:40});
+
+    // enemies by zone
+    for(const x of [360, 500, 700, 920]) spawnEnemy(x, 'infantry', -1);
+    for(const x of [1380, 1540, 1660, 1880, 2010, 2240]) spawnEnemy(x, Math.random()>0.6 ? 'sharpshooter' : 'infantry', -1);
+    for(const x of [2620, 2760, 2940, 3060, 3230]) spawnEnemy(x, Math.random()>0.65 ? 'cavalry' : 'infantry', -1);
+    for(const x of [3650, 3810, 3980, 4170, 4320]) spawnEnemy(x, Math.random()>0.55 ? 'gunner' : 'infantry', -1);
+
+    // Mounted guns and interactions
+    worldObjects.push({type:'mgun', x:1910, y:groundY-52, range:720, rate:7, side:'union'});
+    worldObjects.push({type:'mgun', x:3210, y:groundY-52, range:820, rate:4, side:'naval'});
+    worldObjects.push({type:'mgun', x:4060, y:groundY-52, range:760, side:'fort'});
+
+    checkpoint(90, 'reach the camp gate and move forward.');
+  }
+
+  spawnWorld();
+
+  function setRole(role){
+    player.role = role;
+    const r = roles[role];
+    player.hp = Math.min(player.hp, r.hp);
+    player.ammo = r.maxAmmo === Infinity ? Infinity : Math.max(0, Math.min(player.ammo, r.maxAmmo));
+    showMessage(`${r.label} ready: ${r.description}`, 2.5);
+  }
+
+  function currentRole(){ return roles[player.role]; }
+
+  function shoot(originX, originY, dir, role, source='player'){
+    const speed = role.gun === 'cannon' ? 7.5 : role.gun === 'revolver' ? 10 : 11.5;
+    const dmg = role.gun === 'cannon' ? 48 : role.gun === 'rifle' ? 24 : role.gun === 'carbine' ? 18 : 14;
+    const spread = role.gun === 'revolver' ? (Math.random()*0.18-0.09) : (Math.random()*0.05-0.025);
+    const v = speed;
+    const proj = {
+      x:originX, y:originY, vx:(dir*Math.cos(spread))*v, vy:(Math.sin(spread))*v, 
+      w:role.gun === 'cannon' ? 10 : 6, h:role.gun === 'cannon' ? 10 : 4, 
+      dmg, life:role.gun === 'cannon' ? 130 : 90, source,
+      kind:role.gun === 'cannon' ? 'shell' : 'bullet'
+    };
+    (role.gun === 'cannon' ? shells : bullets).push(proj);
+    state.camShake = Math.max(state.camShake, role.gun === 'cannon' ? 11 : 4);
+  }
+
+  function interact(){
+    // mount nearby gun
+    const gun = worldObjects.find(o => o.type==='mgun' && dist(o.x,o.y, player.x+player.w/2, player.y+player.h/2) < 62);
+    if (gun){
+      player.mountedGun = gun;
+      setRole('artillerist');
+      showMessage('mounted gun: hold your position and fire heavy shots.', 3);
+      return;
+    }
+    if (player.mountedGun && dist(player.mountedGun.x, player.mountedGun.y, player.x+player.w/2, player.y+player.h/2) < 80){
+      player.mountedGun = null;
+      showMessage('dismounted from the gun.', 2);
+      return;
+    }
+  }
+
+  function dist(ax,ay,bx,by){ return Math.hypot(ax-bx, ay-by); }
+
+  function rectsIntersect(a,b){
+    return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+  }
+
+  function onGroundAt(x){
+    return groundY;
+  }
+
+  function takeDamage(amount){
+    if (player.invuln > 0) return;
+    player.hp -= amount;
+    player.invuln = 60;
+    state.camShake = Math.max(state.camShake, 7);
+    showMessage(`hit for ${amount}. find cover or use the med tent / supply boxes.`, 1.5);
+    if (player.hp <= 0){
+      player.hp = currentRole().hp;
+      player.x = state.respawnX;
+      player.y = groundY - player.h;
+      player.vx = 0; player.vy = 0;
+      player.ammo = currentRole().maxAmmo === Infinity ? Infinity : currentRole().maxAmmo;
+      showMessage('you were pushed back to the last checkpoint.', 2.5);
+    }
+  }
+
+  function updateArea(){
+    const idx = areas.findIndex(a => player.x >= a.x1 && player.x < a.x2);
+    if (idx !== -1 && idx !== state.areaIdx){
+      state.areaIdx = idx;
+      factText.textContent = areas[idx].fact;
+      objectiveText.textContent = areas[idx].objective;
+      areaName.textContent = areas[idx].name;
+      showMessage(areas[idx].name.toUpperCase(), 2.2);
+    }
+  }
+
+  function updateUI(){
+    const r = currentRole();
+    hpFill.style.width = `${Math.max(0, player.hp / r.hp * 100)}%`;
+    stFill.style.width = `${player.stamina}%`;
+    const maxA = r.maxAmmo === Infinity ? 100 : r.maxAmmo;
+    amFill.style.width = `${r.maxAmmo === Infinity ? 100 : (player.ammo / maxA * 100)}%`;
+    hpText.textContent = Math.ceil(player.hp);
+    stText.textContent = Math.ceil(player.stamina);
+    amText.textContent = r.maxAmmo === Infinity ? '∞' : Math.ceil(player.ammo);
+    if (state.messageTime > 0){
+      hint.textContent = state.message;
+      hint.style.display = 'block';
+    } else {
+      hint.style.display = 'none';
+    }
+  }
+
+  function drawSky(){
+    const grad = ctx.createLinearGradient(0,0,0,H);
+    grad.addColorStop(0, '#08111c');
+    grad.addColorStop(0.52, '#142339');
+    grad.addColorStop(1, '#0b1118');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0,0,W,H);
+
+    // distant smoke and dawn haze
+    for (let i=0;i<10;i++){
+      const x = ((i*530 - state.camX*0.12) % (W+620)) - 100;
+      const y = 78 + (i%3)*18;
+      ctx.fillStyle = `rgba(190,205,220,${0.06 + (i%4)*0.01})`;
+      ctx.beginPath();
+      ctx.ellipse(x, y, 90+i*4, 18+i*2, 0, 0, Math.PI*2);
+      ctx.fill();
+    }
+
+    // stars / haze dots
+    ctx.fillStyle = 'rgba(255,255,255,.45)';
+    for (const s of stars){
+      const x = (s.x - state.camX*0.05) % (WORLD_W+100);
+      if (x < -50 || x > W+50) continue;
+      ctx.globalAlpha = s.a;
+      ctx.beginPath();
+      ctx.arc(x, s.y, s.r, 0, Math.PI*2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function worldToScreen(x,y){
+    const shakeX = state.camShake ? (Math.random()-0.5)*state.camShake : 0;
+    const shakeY = state.camShake ? (Math.random()-0.5)*state.camShake : 0;
+    return {x: x - state.camX + shakeX, y: y + shakeY};
+  }
+
+  function drawGround(){
+    const g = ctx.createLinearGradient(0,groundY-80,0,H);
+    g.addColorStop(0, '#31462e');
+    g.addColorStop(0.35, '#24311f');
+    g.addColorStop(1, '#1a2118');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, groundY, W, H-groundY);
+
+    // dirt undulation
+    ctx.fillStyle = '#594531';
+    for (let i=-2;i<28;i++){
+      const x = i*180 - (state.camX*0.65 % 180);
+      ctx.beginPath();
+      ctx.ellipse(x+40, groundY+18, 80, 20, 0, 0, Math.PI*2);
+      ctx.fill();
+    }
+
+    // foreground grass blades
+    ctx.fillStyle = 'rgba(145,198,108,.25)';
+    for (let i=0;i<70;i++){
+      const x = (i*84 - state.camX*1.1) % (W+120);
+      const h = 10 + (i%6)*4;
+      ctx.beginPath();
+      ctx.moveTo(x, groundY+8);
+      ctx.lineTo(x+4, groundY-h);
+      ctx.lineTo(x+8, groundY+8);
+      ctx.fill();
+    }
+  }
+
+  function drawTree(x,y,s=1,color='#33412d'){
+    const p = worldToScreen(x,y);
+    const trunkW = 14*s, trunkH = 58*s;
+    ctx.fillStyle = '#4c3525';
+    ctx.fillRect(p.x, p.y, trunkW, trunkH);
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(p.x+trunkW/2, p.y-6*s, 26*s, 0, Math.PI*2);
+    ctx.arc(p.x+trunkW/2-14*s, p.y+8*s, 22*s, 0, Math.PI*2);
+    ctx.arc(p.x+trunkW/2+14*s, p.y+8*s, 22*s, 0, Math.PI*2);
+    ctx.arc(p.x+trunkW/2, p.y+20*s, 24*s, 0, Math.PI*2);
+    ctx.fill();
+  }
+
+  function drawSmoke(x,y,s=1){
+    const p = worldToScreen(x,y);
+    ctx.fillStyle='rgba(210,220,230,.22)';
+    for(let i=0;i<4;i++){
+      ctx.beginPath();
+      ctx.ellipse(p.x+i*10, p.y-i*4, 16*s+i*4, 12*s+i*3, 0, 0, Math.PI*2);
+      ctx.fill();
+    }
+  }
+
+  function drawSoldier(ent, isPlayer=false, role=null){
+    const p = worldToScreen(ent.x, ent.y);
+    const bob = Math.sin(ent.anim*0.35)*1.4;
+    const walk = Math.sin(ent.anim*0.55)*0.9;
+    const dir = ent.dir;
+    const body = role ? role.color : ent.color;
+    const skin = isPlayer ? '#d8b693' : '#cfae89';
+    const coat = isPlayer ? body : body;
+    const shadowAlpha = isPlayer ? 0.22 : 0.18;
+
+    // shadow
+    ctx.fillStyle = `rgba(0,0,0,${shadowAlpha})`;
+    ctx.beginPath();
+    ctx.ellipse(p.x+ent.w/2, groundY+3, ent.w*0.85, 5, 0, 0, Math.PI*2);
+    ctx.fill();
+
+    ctx.save();
+    ctx.translate(p.x+ent.w/2, p.y+ent.h/2 + bob);
+    ctx.scale(dir,1);
+
+    // legs
+    ctx.strokeStyle = '#4d3c2c'; ctx.lineWidth = 5; ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(-2, 8); ctx.lineTo(-8 + walk*3, 22); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(3, 8); ctx.lineTo(10 - walk*3, 22); ctx.stroke();
+
+    // torso
+    ctx.fillStyle = coat;
+    roundRect(-9, -11, 18, 23, 5);
+    ctx.fill();
+
+    // belt
+    ctx.fillStyle = '#2a2017';
+    ctx.fillRect(-9, -1, 18, 3);
+
+    // arms
+    ctx.strokeStyle = coat; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(-8, -6); ctx.lineTo(-18, 2 + walk*2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(8, -6); ctx.lineTo(18, 1 - walk*2); ctx.stroke();
+
+    // head
+    ctx.fillStyle = skin;
+    ctx.beginPath();
+    ctx.arc(0,-20,7.5,0,Math.PI*2);
+    ctx.fill();
+
+    // hat / kepi / helmet
+    ctx.fillStyle = isPlayer ? '#3d4653' : '#6b5a4d';
+    ctx.beginPath();
+    ctx.ellipse(0,-26,10,4.5,0,0,Math.PI*2);
+    ctx.fill();
+    ctx.fillRect(-8,-28,16,4);
+
+    // weapon
+    if (!isPlayer || role?.gun !== 'cannon') {
+      ctx.strokeStyle = '#2d2d2d'; ctx.lineWidth = 3;
+      ctx.beginPath();
+      if (dir > 0) {
+        ctx.moveTo(11, -1); ctx.lineTo(27, -4);
+        ctx.lineTo(33, -1);
+      } else {
+        ctx.moveTo(-11, -1); ctx.lineTo(-27, -4);
+        ctx.lineTo(-33, -1);
+      }
+      ctx.stroke();
+    }
+
+    // cannon barrel if needed
+    if (role?.gun === 'cannon'){
+      ctx.fillStyle = '#2f3034';
+      ctx.fillRect(7, -10, 26, 6);
+      ctx.fillRect(29, -12, 10, 10);
+    }
+
+    ctx.restore();
+
+    if (isPlayer && player.invuln > 0 && Math.floor(state.t*12)%2===0){
+      ctx.strokeStyle='rgba(255,255,255,.5)';
+      ctx.strokeRect(p.x-2,p.y-2,ent.w+4,ent.h+4);
+    }
+  }
+
+  function roundRect(x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y);
+    ctx.arcTo(x+w,y,x+w,y+h,r);
+    ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r);
+    ctx.arcTo(x,y,x+w,y,r);
+    ctx.closePath();
+  }
+
+  function drawObject(o){
+    const p = worldToScreen(o.x,o.y);
+    if (o.type === 'tree') return drawTree(o.x,o.y,o.s||1);
+    if (o.type === 'tent') {
+      ctx.fillStyle = '#8e8d82';
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y+30);
+      ctx.lineTo(p.x+42, p.y);
+      ctx.lineTo(p.x+84, p.y+30);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#6f6e62';
+      ctx.fillRect(p.x+12,p.y+30,60,28);
+      ctx.fillStyle='#332a22';
+      ctx.fillRect(p.x+39,p.y+30,4,30);
+      return;
+    }
+    if (o.type === 'medtent') {
+      ctx.fillStyle='#dcd8cf';
+      ctx.fillRect(p.x,p.y+14,76,42);
+      ctx.fillStyle='#b64a4a';
+      ctx.fillRect(p.x+28,p.y+20,20,8);
+      ctx.fillRect(p.x+35,p.y+13,6,22);
+      ctx.beginPath(); ctx.moveTo(p.x, p.y+14); ctx.lineTo(p.x+38, p.y-10); ctx.lineTo(p.x+76, p.y+14); ctx.closePath(); ctx.fill();
+      return;
+    }
+    if (o.type === 'crate') {
+      ctx.fillStyle='#6d5238'; ctx.fillRect(p.x,p.y,26,24); ctx.strokeStyle='#3d2c20'; ctx.strokeRect(p.x,p.y,26,24);
+      ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(p.x+26,p.y+24); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(p.x+26,p.y); ctx.lineTo(p.x,p.y+24); ctx.stroke();
+      return;
+    }
+    if (o.type === 'flag') {
+      ctx.fillStyle='#503e2c'; ctx.fillRect(p.x,p.y,3,52);
+      ctx.fillStyle=o.nation==='union' ? '#a8c7ff' : '#f2f2f2';
+      ctx.beginPath(); ctx.moveTo(p.x+3,p.y+5); ctx.lineTo(p.x+40,p.y+10); ctx.lineTo(p.x+3,p.y+22); ctx.closePath(); ctx.fill();
+      ctx.fillStyle=o.nation==='union' ? '#2f4f8a' : '#b04848';
+      ctx.fillRect(p.x+7,p.y+8,9,8);
+      return;
+    }
+    if (o.type === 'campfire') {
+      ctx.fillStyle='#4a3423'; ctx.beginPath(); ctx.ellipse(p.x+12,p.y+12,18,6,0,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#ffbc5c'; ctx.beginPath(); ctx.moveTo(p.x+12,p.y-6); ctx.lineTo(p.x+18,p.y+12); ctx.lineTo(p.x+6,p.y+10); ctx.closePath(); ctx.fill();
+      drawSmoke(o.x+8,o.y-20,0.8);
+      return;
+    }
+    if (o.type === 'ridge') {
+      ctx.fillStyle='#4a5644'; ctx.beginPath(); ctx.moveTo(p.x,p.y+60); ctx.lineTo(p.x+80,p.y+20); ctx.lineTo(p.x+180,p.y+40); ctx.lineTo(p.x+360,p.y+10); ctx.lineTo(p.x+360,p.y+60); ctx.closePath(); ctx.fill();
+      return;
+    }
+    if (o.type === 'barrier' || o.type === 'sandbag') {
+      ctx.fillStyle='#8f7c60';
+      for(let i=0;i<5;i++) ctx.fillRect(p.x+i*16,p.y+(i%2)*4,18,14);
+      return;
+    }
+    if (o.type === 'cannon' || o.type==='fortgun' || o.type==='mgun') {
+      ctx.fillStyle='#3b3d42';
+      ctx.fillRect(p.x,p.y+12,42,10);
+      ctx.fillRect(p.x+28,p.y+6,18,22);
+      ctx.fillStyle='#6b5f50';
+      ctx.fillRect(p.x+3,p.y+18,16,16);
+      ctx.fillRect(p.x+18,p.y+18,12,16);
+      ctx.fillStyle='#25262a';
+      ctx.beginPath(); ctx.arc(p.x+42,p.y+17,5,0,Math.PI*2); ctx.fill();
+      return;
+    }
+    if (o.type === 'water') {
+      const g = ctx.createLinearGradient(p.x,p.y,p.x,p.y+o.h);
+      g.addColorStop(0,'rgba(65,120,170,.8)'); g.addColorStop(1,'rgba(25,55,90,.95)');
+      ctx.fillStyle=g; ctx.fillRect(p.x,p.y,o.w,o.h);
+      for(let i=0;i<20;i++){
+        ctx.strokeStyle='rgba(255,255,255,.08)'; ctx.beginPath(); const xx=p.x+(i*42+((state.t*1.2)%42)); ctx.moveTo(xx,p.y+8+(i%3)*5); ctx.quadraticCurveTo(xx+20,p.y+5,xx+38,p.y+10+(i%3)*5); ctx.stroke();
+      }
+      return;
+    }
+    if (o.type === 'ship') {
+      ctx.fillStyle='#4a3628';
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y+o.h);
+      ctx.lineTo(p.x+18,p.y+o.h-16);
+      ctx.lineTo(p.x+o.w-18,p.y+o.h-16);
+      ctx.lineTo(p.x+o.w,p.y+o.h);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle='#9ea5ac';
+      ctx.fillRect(p.x+25,p.y+16,o.w-50,16);
+      ctx.fillRect(p.x+40,p.y+2,60,18);
+      ctx.fillStyle='#3d4b58';
+      ctx.fillRect(p.x+58,p.y-12,14,24);
+      ctx.fillRect(p.x+70,p.y-16,2,34);
+      ctx.strokeStyle='rgba(255,255,255,.12)';
+      ctx.beginPath(); ctx.moveTo(p.x+36,p.y+16); ctx.lineTo(p.x+52,p.y-10); ctx.stroke();
+      drawSmoke(o.x+o.w/2,o.y-36,0.85);
+      return;
+    }
+    if (o.type === 'bridge') {
+      ctx.fillStyle='#6d5137';
+      ctx.fillRect(p.x,p.y,o.w,12);
+      for(let i=0;i<o.w;i+=26){ ctx.fillRect(p.x+i,p.y-18,6,30); }
+      return;
+    }
+    if (o.type === 'fortwall') {
+      ctx.fillStyle='#6c6f74';
+      ctx.fillRect(p.x,p.y,o.w,o.h);
+      ctx.fillStyle='#55585d';
+      for(let i=0;i<o.w;i+=36) ctx.fillRect(p.x+i,p.y-16,24,16);
+      ctx.fillStyle='#52565b';
+      for(let i=0;i<o.w;i+=20) ctx.fillRect(p.x+i,p.y+o.h-8,10,8);
+      return;
+    }
+  }
+
+  function drawHudEnemyBars(){
+    for (const e of enemies){
+      if (e.dead) continue;
+      const p = worldToScreen(e.x, e.y);
+      if (p.x < -80 || p.x > W+80) continue;
+      const w = 24;
+      ctx.fillStyle='rgba(0,0,0,.45)';
+      ctx.fillRect(p.x-1, p.y-10, w+2, 4);
+      ctx.fillStyle='#ff8a8a';
+      ctx.fillRect(p.x, p.y-9, w*(e.hp/e.maxHp), 2);
+    }
+  }
+
+  function drawProjectiles(){
+    function drawProj(arr, glow){
+      for (const p0 of arr){
+        const p = worldToScreen(p0.x,p0.y);
+        ctx.save();
+        ctx.translate(p.x,p.y);
+        ctx.rotate(Math.atan2(p0.vy,p0.vx));
+        ctx.fillStyle = glow;
+        ctx.globalAlpha = 0.85;
+        if (p0.kind==='shell') {
+          ctx.beginPath(); ctx.arc(0,0,5,0,Math.PI*2); ctx.fill();
+          ctx.fillRect(-5,-2,10,4);
+        } else {
+          ctx.fillRect(-p0.w/2,-p0.h/2,p0.w,p0.h);
+        }
+        ctx.restore();
+      }
+    }
+    drawProj(bullets, '#f2eadb');
+    drawProj(shells, '#ffd08b');
+  }
+
+  function updateProjectiles(arr, fromEnemies=false){
+    for (let i=arr.length-1;i>=0;i--){
+      const p = arr[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += p.kind === 'shell' ? 0.02 : 0;
+      p.life--;
+      if (p.kind==='shell') p.vy += 0.02;
+      // collide with ground/walls
+      if (p.y > groundY-2 || p.x < -100 || p.x > WORLD_W+100 || p.life<=0) { arr.splice(i,1); continue; }
+      const targetRects = fromEnemies ? [{x:player.x, y:player.y, w:player.w, h:player.h, type:'player'}] : enemies.filter(e=>!e.dead).map(e=>({x:e.x,y:e.y,w:e.w,h:e.h, ref:e}));
+      for (const tr of targetRects){
+        if (p.x > tr.x && p.x < tr.x+tr.w && p.y > tr.y && p.y < tr.y+tr.h){
+          if (fromEnemies){ takeDamage(p.dmg || 10); }
+          else {
+            tr.ref.hp -= p.dmg;
+            if (p.kind==='shell') state.camShake = Math.max(state.camShake, 7);
+            if (tr.ref.hp <= 0){
+              tr.ref.dead = true;
+              player.score += 10;
+            }
+          }
+          arr.splice(i,1);
+          break;
+        }
+      }
+    }
+  }
+
+  function enemyAI(e){
+    if (e.dead) return;
+    e.anim += 1;
+    const px = player.x + player.w/2;
+    const ex = e.x + e.w/2;
+    const d = px - ex;
+    e.dir = d >= 0 ? 1 : -1;
+    const abs = Math.abs(d);
+    const near = abs < e.range;
+
+    if (!near){
+      e.vx = e.dir * e.speed * 0.55;
+    } else {
+      e.vx *= 0.85;
+    }
+
+    if (e.x > 2460 && e.x < 3220 && e.y >= groundY - e.h - 1) {
+      if (Math.random() < 0.02) e.vx *= -1;
+    }
+
+    e.fireCd--;
+    if (near && e.fireCd <= 0 && e.y + e.h < groundY + 2){
+      e.fireCd = 65 + Math.random()*55;
+      if (e.weapon === 'cannon') {
+        shells.push({x:e.x + e.w/2, y:e.y+10, vx:e.dir*5.5, vy:-1.5, w:8, h:8, dmg:26, life:140, source:'enemy', kind:'shell'});
+        state.camShake = Math.max(state.camShake, 5);
+      } else {
+        bullets.push({x:e.x + e.w/2, y:e.y+12, vx:e.dir*(e.weapon==='rifle' ? 9.2 : 7.4), vy:0, w:5, h:3, dmg:e.weapon==='rifle' ? 12 : 10, life:100, source:'enemy', kind:'bullet'});
+      }
+    }
+    e.x += e.vx;
+    e.y += e.vy;
+    e.vy += GRAVITY;
+
+    if (e.y + e.h >= groundY){ e.y = groundY - e.h; e.vy = 0; e.onGround = true; }
+    if (e.x < 20) e.x = 20;
+    if (e.x > WORLD_W - e.w - 20) e.x = WORLD_W - e.w - 20;
+  }
+
+  function allyAI(a){
+    if (a.dead) return;
+    a.anim += 1;
+    const px = player.x + player.w/2;
+    const ax = a.x + a.w/2;
+    const d = px - ax;
+    a.dir = d >= 0 ? 1 : -1;
+    const nearestEnemy = enemies.filter(e => !e.dead).sort((u,v) => Math.abs((u.x+u.w/2)-ax) - Math.abs((v.x+v.w/2)-ax))[0];
+    const enemyDist = nearestEnemy ? Math.abs((nearestEnemy.x + nearestEnemy.w/2) - ax) : 9999;
+    const followDist = Math.abs(d);
+
+    if (followDist > 110) {
+      a.vx = a.dir * a.speed;
+    } else {
+      a.vx *= 0.8;
+    }
+    if (followDist < 34) a.vx *= 0.3;
+
+    a.fireCd--;
+    const canShoot = a.weapon !== 'none' && nearestEnemy && enemyDist < (a.range || 320) && a.fireCd <= 0;
+    if (canShoot){
+      a.fireCd = a.weapon === 'rifle' ? 50 : 64;
+      bullets.push({
+        x:a.x + a.w/2, y:a.y+12,
+        vx:a.dir * (a.weapon === 'rifle' ? 9.1 : 7.2), vy:0,
+        w:5, h:3, dmg:a.weapon === 'rifle' ? 11 : 9, life:100,
+        source:'ally', kind:'bullet'
+      });
+    }
+
+    a.x += a.vx;
+    a.y += a.vy;
+    a.vy += GRAVITY;
+    if (a.y + a.h >= groundY){ a.y = groundY - a.h; a.vy = 0; a.onGround = true; }
+    if (a.x < 16) a.x = 16;
+    if (a.x > WORLD_W - a.w - 16) a.x = WORLD_W - a.w - 16;
+  }
+
+  function handlePickups(){
+    for (let i=pickups.length-1;i>=0;i--){
+      const p = pickups[i];
+      if (dist(player.x+player.w/2, player.y+player.h/2, p.x+10, p.y+10) < 34){
+        if (p.type === 'ammo') {
+          if (currentRole().maxAmmo !== Infinity) player.ammo = Math.min(currentRole().maxAmmo, player.ammo + p.amount);
+          showMessage('picked up ammo.', 1.5);
+        } else {
+          player.hp = Math.min(currentRole().hp, player.hp + p.amount);
+          showMessage('picked up medical supplies.', 1.5);
+        }
+        pickups.splice(i,1);
+      }
+    }
+  }
+
+  function drawPickups(){
+    for (const p of pickups){
+      const s = worldToScreen(p.x,p.y);
+      ctx.save();
+      ctx.translate(s.x,s.y);
+      if (p.type==='ammo') {
+        ctx.fillStyle='#d7a45f'; ctx.fillRect(0,8,20,14);
+        ctx.fillStyle='#7d5530'; ctx.fillRect(3,4,14,7);
+        ctx.fillStyle='rgba(255,255,255,.7)'; ctx.fillRect(8,0,4,4);
+      } else {
+        ctx.fillStyle='#f0f0f0'; ctx.fillRect(0,4,20,18);
+        ctx.fillStyle='#c84d4d'; ctx.fillRect(8,0,4,26); ctx.fillRect(0,10,20,4);
+      }
+      ctx.restore();
+    }
+  }
+
+  function checkProgression(){
+    // clear gates at certain points to move on
+    const activeArea = areas[state.areaIdx] || areas[0];
+    const remaining = enemies.filter(e => !e.dead && e.x > activeArea.x1 && e.x < activeArea.x2).length;
+    if (remaining === 0) {
+      if (player.x > activeArea.x2 - 140 && state.areaIdx < areas.length - 1){
+        objectiveText.textContent = 'the way is open. move to the next line.';
+      }
+    }
+    // checkpoints
+    if (player.x > 520 && state.lastCheckpoint < 520) checkpoint(520, 'camp line secured.');
+    if (player.x > 1450 && state.lastCheckpoint < 1450) checkpoint(1450, 'ridge checkpoint reached.');
+    if (player.x > 2570 && state.lastCheckpoint < 2570) checkpoint(2570, 'river bank reached.');
+    if (player.x > 3720 && state.lastCheckpoint < 3720) checkpoint(3720, 'fort perimeter reached.');
+
+    // victory trigger
+    if (player.x > 4620 && !state.victory){
+      state.victory = true;
+      showMessage('campaign complete. the union line holds at the end of the assault.', 5);
+      objectiveText.textContent = 'victory. you finished the campaign and learned the major battlefield phases.';
+    }
+  }
+
+  function updatePlayer(){
+    const r = currentRole();
+    player.anim += 1;
+    player.crouch = keys.has('s');
+
+    // movement
+    let mx = 0;
+    if (keys.has('a')) mx -= 1;
+    if (keys.has('d')) mx += 1;
+    if (mx !== 0) player.dir = mx > 0 ? 1 : -1;
+    const speed = r.speed * (player.crouch ? 0.72 : 1);
+    if (!player.mountedGun) {
+      player.vx = mx * speed;
+      if ((keys.has('w') || keys.has(' ')) && player.onGround){
+        player.vy = -r.jump;
+        player.onGround = false;
+      }
+    } else {
+      player.vx = 0;
+    }
+
+    player.x += player.vx;
+    player.y += player.vy;
+    player.vy += GRAVITY;
+
+    if (player.y + player.h >= groundY){
+      player.y = groundY - player.h;
+      player.vy = 0;
+      player.onGround = true;
+    }
+
+    // boundaries
+    player.x = Math.max(0, Math.min(WORLD_W - player.w, player.x));
+
+    // water slowdown if not on bridge/ship
+    if (player.x > 2460 && player.x < 3220 && player.y + player.h >= groundY - 4 && player.x > 2525 && player.x < 3180) {
+      if (Math.random() < 0.08) state.camShake = Math.max(state.camShake, 1.5);
+    }
+
+    // reload and fire timers
+    if (player.reload > 0) player.reload--;
+    if (player.fireCd > 0) player.fireCd--;
+    if (player.invuln > 0) player.invuln--;
+    if (player.stamina < 100 && mx !== 0 && player.onGround) player.stamina = Math.min(100, player.stamina + 0.15);
+    else player.stamina = Math.min(100, player.stamina + 0.05);
+
+    // shooting
+    const fire = keys.has('j');
+    const reload = keys.has('r');
+    if (reload && player.reload <= 0 && currentRole().maxAmmo !== Infinity){
+      player.reload = 50;
+      player.ammo = currentRole().maxAmmo;
+      showMessage('reloaded.', 1);
+    }
+    if (fire && player.fireCd <= 0){
+      if (currentRole().maxAmmo === Infinity || player.ammo > 0){
+        const gunX = player.x + player.w/2 + player.dir*18;
+        const gunY = player.y + 14;
+        shoot(gunX, gunY, player.dir, r, 'player');
+        player.fireCd = r.gun === 'cannon' ? 30 : r.gun === 'revolver' ? 12 : r.gun === 'carbine' ? 16 : 15;
+        if (currentRole().maxAmmo !== Infinity) player.ammo--;
+      }
+    }
+    if (keys.has('k') && player.fireCd <= 0){
+      // shell / grenade style big shot
+      if (currentRole().maxAmmo === Infinity || player.ammo > 0){
+        const gunX = player.x + player.w/2 + player.dir*18;
+        const gunY = player.y + 14;
+        shoot(gunX, gunY, player.dir, {gun:'cannon'}, 'player');
+        player.fireCd = 42;
+        if (currentRole().maxAmmo !== Infinity) player.ammo = Math.max(0, player.ammo - 2);
+      }
+    }
+
+    // switching roles
+    if (justPressed('1')) setRole('meade');
+    if (justPressed('2')) setRole('infantry');
+    if (justPressed('3')) setRole('engineer');
+    if (justPressed('4')) setRole('artillerist');
+
+    if (justPressed('e')) interact();
+
+    // checkpoint to unlock gunner role near artillery if interacting; otherwise default roles.
+    if (player.mountedGun){
+      // lock player position to mounted gun
+      player.x = player.mountedGun.x - 10;
+      player.y = player.mountedGun.y - 26;
+      player.dir = 1;
+      if (fire && player.fireCd <= 0){
+        shoot(player.mountedGun.x+24, player.mountedGun.y+6, 1, {gun:'cannon'}, 'player');
+        player.fireCd = 24;
+      }
+    }
+  }
+
+  function justPressed(k){ return pressed.has(k); }
+
+  function drawWaterReflection(){
+    const waterZones = worldObjects.filter(o => o.type==='water');
+    for (const o of waterZones){
+      const p = worldToScreen(o.x,o.y);
+      ctx.fillStyle='rgba(200,225,255,.04)';
+      ctx.fillRect(p.x,p.y,o.w,o.h);
+    }
+  }
+
+  function drawTextOverWorld(){
+    const active = areas[state.areaIdx] || areas[0];
+    ctx.fillStyle='rgba(0,0,0,.35)';
+    ctx.fillRect(16, H-74, 320, 42);
+    ctx.fillStyle='#ffffff';
+    ctx.font='700 14px system-ui';
+    ctx.fillText(active.name.toUpperCase(), 28, H-49);
+    ctx.font='12px system-ui';
+    ctx.fillStyle='#d8e2ed';
+    ctx.fillText(`score ${player.score}  •  checkpoint ${Math.floor(state.lastCheckpoint)}  •  ${state.victory ? 'campaign complete' : 'push forward'}`, 28, H-30);
+  }
+
+  function drawScene(){
+    drawSky();
+    drawWaterReflection();
+    drawGround();
+
+    // back line trees / smoke / ridge silhouette
+    for (const o of worldObjects){
+      if (['tree','ridge','water','ship','fortwall'].includes(o.type)) drawObject(o);
+    }
+
+    // non-player objects in middle layer
+    for (const o of worldObjects){
+      if (!['tree','ridge','water','ship','fortwall'].includes(o.type)) drawObject(o);
+    }
+
+    drawPickups();
+    drawProjectiles();
+    drawHudEnemyBars();
+
+    // allies
+    for (const a of allies){
+      if (a.dead) continue;
+      drawSoldier(a, false);
+      const ap = worldToScreen(a.x, a.y);
+      const hpW = 18;
+      ctx.fillStyle='rgba(0,0,0,.35)';
+      ctx.fillRect(ap.x-1, ap.y-10, hpW+2, 4);
+      ctx.fillStyle='#9cc7ff';
+      ctx.fillRect(ap.x, ap.y-9, hpW*(a.hp/a.maxHp), 2);
+    }
+
+    // enemies
+    for (const e of enemies){
+      if (e.dead) continue;
+      drawSoldier(e, false);
+    }
+    // player
+    drawSoldier(player, true, currentRole());
+
+    drawTextOverWorld();
+
+    // labels for major zones
+    const labels = [
+      {x:160, y:groundY-180, t:'camp'},
+      {x:1460, y:groundY-175, t:'ridge'},
+      {x:2670, y:groundY-178, t:'river'},
+      {x:3860, y:groundY-178, t:'fort'},
+    ];
+    ctx.font='700 12px system-ui';
+    for (const l of labels){
+      const p = worldToScreen(l.x,l.y);
+      if (p.x > -120 && p.x < W+120){
+        ctx.fillStyle='rgba(0,0,0,.35)';
+        ctx.fillRect(p.x-8,p.y-16,66,20);
+        ctx.fillStyle='#fff';
+        ctx.fillText(l.t.toUpperCase(), p.x, p.y);
+      }
+    }
+  }
+
+  function update(){
+    if (!state.started || state.paused) return;
+    state.t++;
+    if (state.factTimer > 0) state.factTimer--;
+    if (state.messageTime > 0) state.messageTime -= 1/60;
+    if (state.camShake > 0) state.camShake *= 0.9;
+
+    updatePlayer();
+    for (const a of allies) allyAI(a);
+    for (const e of enemies) enemyAI(e);
+    updateProjectiles(bullets, true);
+    updateProjectiles(shells, true);
+    handlePickups();
+    updateArea();
+    checkProgression();
+
+    // camera
+    const targetCam = Math.max(0, Math.min(WORLD_W - W, player.x - W*0.36));
+    state.camX += (targetCam - state.camX) * 0.1;
+    updateUI();
+  }
+
+  function frame(){
+    ctx.clearRect(0,0,W,H);
+    update();
+    drawScene();
+    requestAnimationFrame(frame);
+  }
+
+  // input
+  window.addEventListener('keydown', (e) => {
+    const key = e.key.toLowerCase();
+    if (['a','d','w','s','j','k','r','e','p',' '].includes(key)) e.preventDefault();
+    keys.add(key);
+    pressed.add(key);
+    if (key === 'p' && state.started) state.paused = !state.paused;
+    if (key === 'escape' && state.started) state.paused = !state.paused;
+  });
+  window.addEventListener('keyup', (e) => {
+    keys.delete(e.key.toLowerCase());
+  });
+
+  function consumePressed(){ pressed.clear(); }
+  setInterval(consumePressed, 35);
+
+  playBtn.onclick = () => {
+    overlay.classList.add('hidden');
+    state.started = true;
+    state.paused = false;
+    showMessage('you are with the union line. move right and clear each zone.', 3);
+  };
+  demoBtn.onclick = () => {
+    overlay.classList.add('hidden');
+    state.started = true;
+    state.paused = false;
+    player.x = 1250;
+    player.y = groundY - player.h;
+    state.camX = 980;
+    state.lastCheckpoint = 1450;
+    state.areaIdx = 1;
+    objectiveText.textContent = areas[1].objective;
+    factText.textContent = areas[1].fact;
+    areaName.textContent = areas[1].name;
+    showMessage('jumped to the battlefield. defend the ridge.', 2.5);
+  };
+
+  // initial ui
+  objectiveText.textContent = areas[0].objective + ' allied troops are already moving with you.';
+  factText.textContent = areas[0].fact;
+  areaName.textContent = areas[0].name;
+  updateUI();
+  frame();
+})();
+</script>
+</body>
+</html>
