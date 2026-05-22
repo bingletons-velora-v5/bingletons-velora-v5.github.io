@@ -12,19 +12,22 @@
       --card: #171717;
       --card-hover: #202020;
       --text: #f2f2f2;
-      --muted: #9a9a9a;
+      --muted: #b5b5b5;
       --accent: #f0c040;
-      --danger: #ff6b81;
       --shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
-      --radius: 16px;
+      --radius: 18px;
       --radius-sm: 12px;
       --ui-width: 220px;
       --gap: 12px;
+      --tile-size: 140px;
+      --font-ui: "Segoe Print", "Bradley Hand", "Chalkboard SE", "Comic Sans MS", cursive;
+
+      --body-glow-1: rgba(240, 192, 64, 0.08);
+      --body-glow-2: rgba(255, 255, 255, 0.03);
+      --body-glow-3: rgba(240, 192, 64, 0.04);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     html, body {
       margin: 0;
@@ -33,15 +36,21 @@
       min-height: 100%;
       background: var(--bg);
       color: var(--text);
-      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: var(--font-ui);
       overflow-x: hidden;
     }
 
     body {
       background:
-        radial-gradient(circle at top left, rgba(240, 192, 64, 0.08), transparent 30%),
-        radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.03), transparent 25%),
+        radial-gradient(circle at top left, var(--body-glow-1), transparent 30%),
+        radial-gradient(circle at bottom right, var(--body-glow-2), transparent 25%),
+        radial-gradient(circle at center, var(--body-glow-3), transparent 38%),
         var(--bg);
+      transition: background 0.25s ease;
+    }
+
+    button, input, select {
+      font-family: var(--font-ui);
     }
 
     .app {
@@ -55,7 +64,6 @@
       top: 14px;
       left: 14px;
       width: min(var(--ui-width), calc(100vw - 28px));
-      min-height: 170px;
       z-index: 30;
       background: var(--panel);
       border: 1px solid var(--panel-border);
@@ -68,12 +76,12 @@
     }
 
     .ui-top {
-      padding: 14px 14px 10px;
+      padding: 14px;
     }
 
     .brand {
       margin: 0;
-      font-size: 18px;
+      font-size: 20px;
       line-height: 1;
       font-weight: 800;
       letter-spacing: 0.02em;
@@ -81,41 +89,13 @@
       color: var(--text);
     }
 
-    .ui-sub {
-      margin-top: 6px;
-      font-size: 11px;
-      color: var(--muted);
-      line-height: 1.4;
-    }
-
     .ui-bottom {
-      margin-top: auto;
       padding: 12px;
       border-top: 1px solid rgba(255,255,255,0.06);
       display: flex;
       flex-direction: column;
       gap: 10px;
       background: rgba(255,255,255,0.02);
-    }
-
-    .search {
-      width: 100%;
-      height: 40px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: #121212;
-      color: var(--text);
-      padding: 0 12px;
-      outline: none;
-      font-size: 14px;
-    }
-
-    .search::placeholder {
-      color: #7d7d7d;
-    }
-
-    .search:focus {
-      border-color: rgba(240, 192, 64, 0.6);
     }
 
     .ui-actions {
@@ -152,22 +132,17 @@
       color: #ffd77a;
     }
 
-    .btn-favorite.active {
-      color: #ff90a3;
-      border-color: rgba(255, 107, 129, 0.35);
-      background: rgba(255, 107, 129, 0.1);
-    }
-
     .grid-wrap {
       width: 100%;
       min-height: 100vh;
       padding: 12px;
+      padding-top: 14px;
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      grid-auto-rows: 1fr;
+      grid-template-columns: repeat(auto-fill, minmax(var(--tile-size), 1fr));
+      grid-auto-flow: dense;
       gap: var(--gap);
       width: 100%;
     }
@@ -181,7 +156,7 @@
       cursor: pointer;
       border: 1px solid rgba(255,255,255,0.04);
       transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
-      min-height: 140px;
+      min-height: var(--tile-size);
     }
 
     .card:hover {
@@ -196,8 +171,9 @@
     }
 
     .card.active {
-      grid-column: span 3;
-      grid-row: span 3;
+      grid-column: span 2;
+      grid-row: span 2;
+      aspect-ratio: 16 / 9;
       z-index: 2;
       border-color: rgba(240, 192, 64, 0.45);
       box-shadow: 0 12px 40px rgba(0,0,0,0.35);
@@ -241,12 +217,6 @@
       color: #fff;
     }
 
-    .card-tag {
-      font-size: 10px;
-      color: rgba(255,255,255,0.6);
-      margin-top: 4px;
-    }
-
     .player-ui {
       position: absolute;
       left: 10px;
@@ -279,12 +249,6 @@
       font-weight: 800;
       line-height: 1.2;
       margin: 0;
-    }
-
-    .player-subtitle {
-      margin: 4px 0 0;
-      font-size: 11px;
-      color: rgba(255,255,255,0.62);
     }
 
     .player-controls {
@@ -333,31 +297,155 @@
       padding: 20px;
     }
 
-    .pagination {
-      position: fixed;
-      right: 14px;
-      bottom: 14px;
-      z-index: 20;
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      background: rgba(18, 18, 18, 0.9);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 14px;
-      padding: 8px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(14px);
+    .hidden {
+      display: none !important;
     }
 
-    .page-info {
-      padding: 0 6px;
+    .sentinel {
+      width: 100%;
+      height: 1px;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      display: grid;
+      place-items: center;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(10px);
+      padding: 18px;
+    }
+
+    .modal-panel {
+      width: min(440px, 100%);
+      background: rgba(18, 18, 18, 0.96);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .modal-top {
+      padding: 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .modal-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .modal-body {
+      padding: 14px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field input[type="text"],
+    .field select,
+    .field input[type="range"] {
+      width: 100%;
+    }
+
+    .field input[type="text"],
+    .field select {
+      height: 42px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: #121212;
+      color: var(--text);
+      padding: 0 12px;
+      outline: none;
+      font-size: 14px;
+    }
+
+    .field input[type="text"]::placeholder {
+      color: #7d7d7d;
+    }
+
+    .field input[type="text"]:focus,
+    .field select:focus {
+      border-color: rgba(240, 192, 64, 0.6);
+    }
+
+    .range-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .range-value {
+      min-width: 44px;
+      text-align: right;
       color: var(--muted);
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 700;
     }
 
-    .hidden {
-      display: none !important;
+    .modal-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .search-results {
+      display: grid;
+      gap: 8px;
+      max-height: 240px;
+      overflow: auto;
+      padding-right: 2px;
+    }
+
+    .search-item {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+      text-align: left;
+      cursor: pointer;
+      display: grid;
+      gap: 2px;
+      transition: 0.16s ease;
+    }
+
+    .search-item:hover {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(240, 192, 64, 0.25);
+    }
+
+    .search-item-name {
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .search-item-cat {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.2;
+    }
+
+    .search-empty {
+      padding: 14px;
+      color: var(--muted);
+      text-align: center;
+      border: 1px dashed rgba(255,255,255,0.08);
+      border-radius: 12px;
     }
 
     @media (max-width: 900px) {
@@ -368,6 +456,10 @@
     }
 
     @media (max-width: 640px) {
+      :root {
+        --ui-width: 210px;
+      }
+
       .grid {
         grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
       }
@@ -390,10 +482,6 @@
         font-size: 13px;
       }
 
-      .player-subtitle {
-        font-size: 10px;
-      }
-
       .icon-btn {
         min-width: 34px;
         height: 34px;
@@ -405,10 +493,8 @@
         width: min(210px, calc(100vw - 28px));
       }
 
-      .pagination {
-        left: 14px;
-        right: 14px;
-        justify-content: center;
+      .modal-actions {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -418,11 +504,9 @@
     <aside class="ui-box">
       <div class="ui-top">
         <h1 class="brand">velora</h1>
-        <div class="ui-sub">game wall</div>
       </div>
 
       <div class="ui-bottom">
-        <input id="searchInput" class="search" type="text" placeholder="search games...">
         <div class="ui-actions">
           <button id="searchBtn" class="btn btn-accent">search</button>
           <button id="settingsBtn" class="btn">settings</button>
@@ -432,12 +516,65 @@
 
     <main class="grid-wrap">
       <section id="grid" class="grid"></section>
+      <div id="sentinel" class="sentinel"></div>
     </main>
 
-    <div id="pagination" class="pagination">
-      <button id="prevBtn" class="btn">prev</button>
-      <div id="pageInfo" class="page-info">page 1</div>
-      <button id="nextBtn" class="btn">next</button>
+    <div id="searchModal" class="modal hidden" aria-hidden="true">
+      <div class="modal-panel">
+        <div class="modal-top">
+          <h2 class="modal-title">search</h2>
+          <button id="closeSearchModal" class="btn" style="width: 38px; padding: 0;">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="field">
+            <input id="searchInput" type="text" placeholder="type here">
+          </div>
+          <div class="modal-actions">
+            <button id="runSearchBtn" class="btn btn-accent">go</button>
+            <button id="clearSearchBtn" class="btn">clear</button>
+          </div>
+          <div id="searchResults" class="search-results"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="settingsModal" class="modal hidden" aria-hidden="true">
+      <div class="modal-panel">
+        <div class="modal-top">
+          <h2 class="modal-title">settings</h2>
+          <button id="closeSettingsModal" class="btn" style="width: 38px; padding: 0;">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="field">
+            <select id="themeSelect">
+              <option value="amber">amber</option>
+              <option value="violet">violet</option>
+              <option value="ocean">ocean</option>
+              <option value="rose">rose</option>
+              <option value="mono">mono</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <div class="range-row">
+              <input id="tileSize" type="range" min="110" max="220" step="2" value="140">
+              <div id="tileSizeValue" class="range-value">140</div>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="range-row">
+              <input id="gapSize" type="range" min="6" max="24" step="1" value="12">
+              <div id="gapSizeValue" class="range-value">12</div>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button id="resetSettingsBtn" class="btn">reset</button>
+            <button id="saveSettingsBtn" class="btn btn-accent">save</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -445,25 +582,109 @@
   <script>
     const PAGE_SIZE = 24;
     const FAVORITES_KEY = 'veloraFavorites_v1';
+    const SETTINGS_KEY = 'veloraSettings_v1';
 
     const grid = document.getElementById('grid');
-    const searchInput = document.getElementById('searchInput');
+    const sentinel = document.getElementById('sentinel');
+
     const searchBtn = document.getElementById('searchBtn');
     const settingsBtn = document.getElementById('settingsBtn');
-    const pagination = document.getElementById('pagination');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const pageInfo = document.getElementById('pageInfo');
+
+    const searchModal = document.getElementById('searchModal');
+    const closeSearchModal = document.getElementById('closeSearchModal');
+    const searchInput = document.getElementById('searchInput');
+    const runSearchBtn = document.getElementById('runSearchBtn');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    const searchResults = document.getElementById('searchResults');
+
+    const settingsModal = document.getElementById('settingsModal');
+    const closeSettingsModal = document.getElementById('closeSettingsModal');
+    const themeSelect = document.getElementById('themeSelect');
+    const tileSize = document.getElementById('tileSize');
+    const gapSize = document.getElementById('gapSize');
+    const tileSizeValue = document.getElementById('tileSizeValue');
+    const gapSizeValue = document.getElementById('gapSizeValue');
+    const resetSettingsBtn = document.getElementById('resetSettingsBtn');
+    const saveSettingsBtn = document.getElementById('saveSettingsBtn');
 
     const state = {
-      currentPage: 1,
+      currentPage: 0,
       totalPages: 1,
       query: '',
       games: [],
       imageMap: new Map(),
       activeGameId: null,
       activeGameUrl: '',
-      loading: false
+      loading: false,
+      loadedPages: new Set()
+    };
+
+    const themes = {
+      amber: {
+        bg: '#0a0a0a',
+        panel: 'rgba(18, 18, 18, 0.92)',
+        panelBorder: 'rgba(255, 255, 255, 0.08)',
+        card: '#171717',
+        cardHover: '#202020',
+        text: '#f2f2f2',
+        muted: '#b5b5b5',
+        accent: '#f0c040',
+        bodyGlow1: 'rgba(240, 192, 64, 0.08)',
+        bodyGlow2: 'rgba(255, 255, 255, 0.03)',
+        bodyGlow3: 'rgba(240, 192, 64, 0.04)'
+      },
+      violet: {
+        bg: '#090812',
+        panel: 'rgba(17, 16, 28, 0.92)',
+        panelBorder: 'rgba(190, 150, 255, 0.14)',
+        card: '#151320',
+        cardHover: '#1d1a2b',
+        text: '#f5f3ff',
+        muted: '#b8b2cf',
+        accent: '#b78cff',
+        bodyGlow1: 'rgba(183, 140, 255, 0.10)',
+        bodyGlow2: 'rgba(255, 255, 255, 0.03)',
+        bodyGlow3: 'rgba(183, 140, 255, 0.04)'
+      },
+      ocean: {
+        bg: '#071014',
+        panel: 'rgba(12, 22, 26, 0.92)',
+        panelBorder: 'rgba(112, 232, 255, 0.12)',
+        card: '#102026',
+        cardHover: '#153038',
+        text: '#edf9ff',
+        muted: '#aad0da',
+        accent: '#69dcff',
+        bodyGlow1: 'rgba(105, 220, 255, 0.10)',
+        bodyGlow2: 'rgba(255, 255, 255, 0.03)',
+        bodyGlow3: 'rgba(105, 220, 255, 0.04)'
+      },
+      rose: {
+        bg: '#140b10',
+        panel: 'rgba(28, 14, 20, 0.92)',
+        panelBorder: 'rgba(255, 158, 191, 0.14)',
+        card: '#241219',
+        cardHover: '#311722',
+        text: '#fff1f6',
+        muted: '#e1b5c5',
+        accent: '#ff8fb1',
+        bodyGlow1: 'rgba(255, 143, 177, 0.10)',
+        bodyGlow2: 'rgba(255, 255, 255, 0.03)',
+        bodyGlow3: 'rgba(255, 143, 177, 0.04)'
+      },
+      mono: {
+        bg: '#0b0b0b',
+        panel: 'rgba(20, 20, 20, 0.94)',
+        panelBorder: 'rgba(255,255,255,0.08)',
+        card: '#171717',
+        cardHover: '#222222',
+        text: '#f2f2f2',
+        muted: '#aaaaaa',
+        accent: '#ffffff',
+        bodyGlow1: 'rgba(255,255,255,0.05)',
+        bodyGlow2: 'rgba(255,255,255,0.03)',
+        bodyGlow3: 'rgba(255,255,255,0.02)'
+      }
     };
 
     function getFavorites() {
@@ -471,7 +692,7 @@
         const raw = localStorage.getItem(FAVORITES_KEY);
         const parsed = raw ? JSON.parse(raw) : [];
         return Array.isArray(parsed) ? parsed : [];
-      } catch (err) {
+      } catch {
         return [];
       }
     }
@@ -482,18 +703,12 @@
 
     function toggleFavorite(id) {
       const favorites = getFavorites();
-      const exists = favorites.includes(id);
-      const next = exists ? favorites.filter(x => x !== id) : [...favorites, id];
+      const next = favorites.includes(id)
+        ? favorites.filter(x => x !== id)
+        : [...favorites, id];
       localStorage.setItem(FAVORITES_KEY, JSON.stringify(next));
-      renderGrid();
-    }
-
-    function debounce(fn, delay = 300) {
-      let timer;
-      return (...args) => {
-        clearTimeout(timer);
-        timer = setTimeout(() => fn(...args), delay);
-      };
+      renderGrid(false);
+      renderSearchResults();
     }
 
     function escapeHtml(str) {
@@ -532,107 +747,112 @@
       grid.innerHTML = '<div class="status">' + escapeHtml(message) + '</div>';
     }
 
-    function renderGrid() {
-      if (!state.games.length) {
-        grid.innerHTML = '<div class="empty">no games found</div>';
-        return;
+    function createGameCard(game, index) {
+      const card = document.createElement('article');
+      const active = state.activeGameId === game.id;
+      const large = randomizeSize(index, game) && !active;
+      card.className = 'card' + (large ? ' large' : '') + (active ? ' active' : '');
+      card.dataset.gameId = game.id;
+
+      const imageUrl = state.imageMap.get(game.id) || '';
+      const favoriteClass = isFavorite(game.id) ? ' active' : '';
+      const safeName = escapeHtml(game.name || 'Untitled');
+      const safeCategory = escapeHtml(game.category || 'Game');
+
+      if (active && state.activeGameUrl) {
+        card.innerHTML = `
+          <div class="card-player">
+            <iframe
+              src="${escapeHtml(state.activeGameUrl)}"
+              allowfullscreen
+              loading="eager"
+              referrerpolicy="origin"
+            ></iframe>
+          </div>
+
+          <div class="player-ui">
+            <div class="player-meta">
+              <h2 class="player-title">${safeName}</h2>
+            </div>
+
+            <div class="player-controls">
+              <button class="icon-btn favorite${favoriteClass}" data-action="favorite" title="Favorite">♥</button>
+              <button class="icon-btn" data-action="reload" title="Reload">↻</button>
+              <button class="icon-btn" data-action="fullscreen" title="Fullscreen">⛶</button>
+              <button class="icon-btn" data-action="close" title="Close">×</button>
+            </div>
+          </div>
+        `;
+      } else {
+        card.innerHTML = `
+          <div class="card-media">
+            <img src="${escapeHtml(imageUrl)}" alt="${safeName}" loading="lazy">
+          </div>
+          <div class="card-overlay">
+            <div>
+              <div class="card-name">${safeName}</div>
+            </div>
+          </div>
+        `;
       }
 
-      grid.innerHTML = '';
+      card.addEventListener('click', async (event) => {
+        const action = event.target && event.target.dataset ? event.target.dataset.action : null;
 
-      state.games.forEach((game, index) => {
-        const card = document.createElement('article');
-        const active = state.activeGameId === game.id;
-        const large = randomizeSize(index, game) && !active;
-        card.className = 'card' + (large ? ' large' : '') + (active ? ' active' : '');
-        card.dataset.gameId = game.id;
+        if (action) {
+          event.stopPropagation();
 
-        const imageUrl = state.imageMap.get(game.id) || '';
-        const favoriteClass = isFavorite(game.id) ? ' active' : '';
-        const safeName = escapeHtml(game.name || 'Untitled');
-        const safeCategory = escapeHtml(game.category || 'Game');
-
-        if (active && state.activeGameUrl) {
-          card.innerHTML = `
-            <div class="card-player">
-              <iframe
-                src="${escapeHtml(state.activeGameUrl)}"
-                allowfullscreen
-                loading="eager"
-                referrerpolicy="origin"
-              ></iframe>
-            </div>
-
-            <div class="player-ui">
-              <div class="player-meta">
-                <h2 class="player-title">${safeName}</h2>
-                <p class="player-subtitle">${safeCategory}</p>
-              </div>
-
-              <div class="player-controls">
-                <button class="icon-btn favorite${favoriteClass}" data-action="favorite" title="Favorite">♥</button>
-                <button class="icon-btn" data-action="reload" title="Reload">↻</button>
-                <button class="icon-btn" data-action="fullscreen" title="Fullscreen">⛶</button>
-                <button class="icon-btn" data-action="close" title="Close">×</button>
-              </div>
-            </div>
-          `;
-        } else {
-          card.innerHTML = `
-            <div class="card-media">
-              <img src="${escapeHtml(imageUrl)}" alt="${safeName}" loading="lazy">
-            </div>
-            <div class="card-overlay">
-              <div>
-                <div class="card-name">${safeName}</div>
-                <div class="card-tag">${safeCategory}</div>
-              </div>
-            </div>
-          `;
-        }
-
-        card.addEventListener('click', async (event) => {
-          const action = event.target && event.target.dataset ? event.target.dataset.action : null;
-
-          if (action) {
-            event.stopPropagation();
-
-            if (action === 'favorite') {
-              toggleFavorite(game.id);
-              return;
-            }
-
-            if (action === 'reload') {
-              const iframe = card.querySelector('iframe');
-              if (iframe) {
-                iframe.src = iframe.src;
-              }
-              return;
-            }
-
-            if (action === 'fullscreen') {
-              const iframe = card.querySelector('iframe');
-              const target = iframe || card;
-              if (target.requestFullscreen) {
-                target.requestFullscreen();
-              }
-              return;
-            }
-
-            if (action === 'close') {
-              state.activeGameId = null;
-              state.activeGameUrl = '';
-              clearHash();
-              renderGrid();
-              return;
-            }
+          if (action === 'favorite') {
+            toggleFavorite(game.id);
+            return;
           }
 
-          await openGameInGrid(game.id);
-        });
+          if (action === 'reload') {
+            const iframe = card.querySelector('iframe');
+            if (iframe) iframe.src = iframe.src;
+            return;
+          }
 
-        grid.appendChild(card);
+          if (action === 'fullscreen') {
+            const iframe = card.querySelector('iframe');
+            const target = iframe || card;
+            if (target.requestFullscreen) target.requestFullscreen();
+            return;
+          }
+
+          if (action === 'close') {
+            state.activeGameId = null;
+            state.activeGameUrl = '';
+            clearHash();
+            renderGrid(false);
+            return;
+          }
+        }
+
+        await openGameInGrid(game.id);
       });
+
+      return card;
+    }
+
+    function renderGrid(append = false) {
+      if (!append) {
+        if (!state.games.length) {
+          grid.innerHTML = '<div class="empty">no games found</div>';
+          return;
+        }
+        grid.innerHTML = '';
+      }
+
+      const startIndex = append ? grid.querySelectorAll('.card').length : 0;
+      const fragment = document.createDocumentFragment();
+      const gamesToRender = append ? state.games.slice(startIndex) : state.games;
+
+      gamesToRender.forEach((game, i) => {
+        fragment.appendChild(createGameCard(game, startIndex + i));
+      });
+
+      grid.appendChild(fragment);
     }
 
     async function resolveImages(games) {
@@ -641,7 +861,7 @@
         try {
           const url = await Lumin.getImageUrl(game.image_token);
           state.imageMap.set(game.id, url);
-        } catch (err) {
+        } catch {
           state.imageMap.set(game.id, '');
         }
       });
@@ -649,9 +869,53 @@
       await Promise.all(tasks);
     }
 
-    async function loadPage(page = 1) {
+    function updateEndState() {
+      sentinel.style.display = state.currentPage >= state.totalPages ? 'none' : 'block';
+    }
+
+    function renderSearchResults() {
+      const q = state.query.trim().toLowerCase();
+      const results = q
+        ? state.games.filter(g => {
+            const name = String(g.name || '').toLowerCase();
+            const category = String(g.category || '').toLowerCase();
+            return name.includes(q) || category.includes(q);
+          })
+        : state.games.slice(0, 8);
+
+      if (!q && !state.games.length) {
+        searchResults.innerHTML = '<div class="search-empty">type a search, then press go</div>';
+        return;
+      }
+
+      if (!results.length) {
+        searchResults.innerHTML = '<div class="search-empty">no results</div>';
+        return;
+      }
+
+      searchResults.innerHTML = results.slice(0, 12).map(game => `
+        <button class="search-item" data-game-id="${escapeHtml(game.id)}">
+          <div class="search-item-name">${escapeHtml(game.name || 'Untitled')}</div>
+          <div class="search-item-cat">${escapeHtml(game.category || 'Game')}</div>
+        </button>
+      `).join('');
+
+      searchResults.querySelectorAll('.search-item').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.gameId;
+          closeModal(searchModal);
+          await openGameInGrid(id);
+        });
+      });
+    }
+
+    async function loadPage(page = 1, append = false) {
+      if (state.loading) return;
+      const cacheKey = `${state.query}::${page}`;
+      if (state.loadedPages.has(cacheKey)) return;
+
       state.loading = true;
-      showLoading();
+      if (!append) showLoading();
 
       try {
         const result = await Lumin.getGames({
@@ -660,13 +924,23 @@
           q: state.query
         });
 
+        const nextGames = Array.isArray(result.games) ? result.games : [];
         state.currentPage = page;
         state.totalPages = result.pages || 1;
-        state.games = Array.isArray(result.games) ? result.games : [];
+        state.loadedPages.add(cacheKey);
 
-        await resolveImages(state.games);
-        updatePagination();
-        renderGrid();
+        await resolveImages(nextGames);
+
+        if (append) {
+          state.games = [...state.games, ...nextGames];
+          renderGrid(true);
+        } else {
+          state.games = nextGames;
+          renderGrid(false);
+        }
+
+        updateEndState();
+        renderSearchResults();
       } catch (err) {
         console.error(err);
         showError('could not load games');
@@ -689,7 +963,7 @@
         state.activeGameId = gameId;
         state.activeGameUrl = result.url;
         setHashForGame(game);
-        renderGrid();
+        renderGrid(false);
 
         const activeCard = document.querySelector('.card.active');
         if (activeCard) {
@@ -701,63 +975,206 @@
       }
     }
 
-    function updatePagination() {
-      pageInfo.textContent = 'page ' + state.currentPage + ' / ' + state.totalPages;
-      prevBtn.disabled = state.currentPage <= 1;
-      nextBtn.disabled = state.currentPage >= state.totalPages;
-      pagination.classList.toggle('hidden', state.totalPages <= 1);
+    function resetForNewQuery() {
+      state.currentPage = 0;
+      state.totalPages = 1;
+      state.games = [];
+      state.imageMap = new Map();
+      state.loadedPages = new Set();
+      state.activeGameId = null;
+      state.activeGameUrl = '';
+      clearHash();
+      sentinel.style.display = 'block';
     }
 
-    const onSearch = debounce(() => {
-      state.query = searchInput.value.trim();
-      state.currentPage = 1;
-      state.activeGameId = null;
-      state.activeGameUrl = '';
-      clearHash();
-      loadPage(1);
-    }, 300);
+    function openModal(modal) {
+      modal.classList.remove('hidden');
+      modal.setAttribute('aria-hidden', 'false');
+      if (modal === searchModal) {
+        renderSearchResults();
+      }
+    }
 
-    searchInput.addEventListener('input', onSearch);
-    searchBtn.addEventListener('click', () => {
+    function closeModal(modal) {
+      modal.classList.add('hidden');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+
+    function applyTheme(name) {
+      const theme = themes[name] || themes.amber;
+      const root = document.documentElement.style;
+
+      root.setProperty('--bg', theme.bg);
+      root.setProperty('--panel', theme.panel);
+      root.setProperty('--panel-border', theme.panelBorder);
+      root.setProperty('--card', theme.card);
+      root.setProperty('--card-hover', theme.cardHover);
+      root.setProperty('--text', theme.text);
+      root.setProperty('--muted', theme.muted);
+      root.setProperty('--accent', theme.accent);
+      root.setProperty('--body-glow-1', theme.bodyGlow1);
+      root.setProperty('--body-glow-2', theme.bodyGlow2);
+      root.setProperty('--body-glow-3', theme.bodyGlow3);
+    }
+
+    function readSettings() {
+      try {
+        const raw = localStorage.getItem(SETTINGS_KEY);
+        const parsed = raw ? JSON.parse(raw) : null;
+        return parsed && typeof parsed === 'object' ? parsed : {};
+      } catch {
+        return {};
+      }
+    }
+
+    function saveSettings() {
+      const settings = {
+        theme: themeSelect.value,
+        tileSize: Number(tileSize.value),
+        gap: Number(gapSize.value)
+      };
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+      applySettingsToUI(settings);
+    }
+
+    function applySettingsToUI(settings) {
+      const theme = settings.theme || 'amber';
+      const size = Number(settings.tileSize || 140);
+      const gap = Number(settings.gap || 12);
+
+      themeSelect.value = theme;
+      tileSize.value = size;
+      gapSize.value = gap;
+      tileSizeValue.textContent = String(size);
+      gapSizeValue.textContent = String(gap);
+
+      document.documentElement.style.setProperty('--tile-size', size + 'px');
+      document.documentElement.style.setProperty('--gap', gap + 'px');
+      applyTheme(theme);
+    }
+
+    function loadSettings() {
+      const settings = readSettings();
+      applySettingsToUI({
+        theme: settings.theme || 'amber',
+        tileSize: settings.tileSize || 140,
+        gap: settings.gap || 12
+      });
+    }
+
+    async function submitSearch() {
       state.query = searchInput.value.trim();
-      state.currentPage = 1;
-      state.activeGameId = null;
-      state.activeGameUrl = '';
-      clearHash();
-      loadPage(1);
+      resetForNewQuery();
+      searchResults.innerHTML = '<div class="search-empty">searching...</div>';
+      await loadPage(1, false);
+      renderSearchResults();
+    }
+
+    searchBtn.addEventListener('click', () => {
+      openModal(searchModal);
+      setTimeout(() => {
+        searchInput.value = state.query;
+        searchInput.focus();
+        searchInput.select();
+        renderSearchResults();
+      }, 50);
     });
 
     settingsBtn.addEventListener('click', () => {
-      alert('settings panel coming next');
+      openModal(settingsModal);
     });
 
-    prevBtn.addEventListener('click', () => {
-      if (state.currentPage > 1) {
-        state.activeGameId = null;
-        state.activeGameUrl = '';
-        clearHash();
-        loadPage(state.currentPage - 1);
+    closeSearchModal.addEventListener('click', () => closeModal(searchModal));
+    closeSettingsModal.addEventListener('click', () => closeModal(settingsModal));
+
+    runSearchBtn.addEventListener('click', submitSearch);
+
+    clearSearchBtn.addEventListener('click', async () => {
+      searchInput.value = '';
+      state.query = '';
+      resetForNewQuery();
+      searchResults.innerHTML = '<div class="search-empty">type a search, then press go</div>';
+      await loadPage(1, false);
+      renderSearchResults();
+    });
+
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        submitSearch();
+      }
+      if (e.key === 'Escape') closeModal(searchModal);
+    });
+
+    themeSelect.addEventListener('change', () => {
+      applySettingsToUI({
+        theme: themeSelect.value,
+        tileSize: Number(tileSize.value),
+        gap: Number(gapSize.value)
+      });
+    });
+
+    tileSize.addEventListener('input', () => {
+      tileSizeValue.textContent = tileSize.value;
+      document.documentElement.style.setProperty('--tile-size', tileSize.value + 'px');
+    });
+
+    gapSize.addEventListener('input', () => {
+      gapSizeValue.textContent = gapSize.value;
+      document.documentElement.style.setProperty('--gap', gapSize.value + 'px');
+    });
+
+    saveSettingsBtn.addEventListener('click', () => {
+      saveSettings();
+      closeModal(settingsModal);
+    });
+
+    resetSettingsBtn.addEventListener('click', () => {
+      const defaults = {
+        theme: 'amber',
+        tileSize: 140,
+        gap: 12
+      };
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(defaults));
+      applySettingsToUI(defaults);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeModal(searchModal);
+        closeModal(settingsModal);
       }
     });
 
-    nextBtn.addEventListener('click', () => {
-      if (state.currentPage < state.totalPages) {
-        state.activeGameId = null;
-        state.activeGameUrl = '';
-        clearHash();
-        loadPage(state.currentPage + 1);
-      }
+    searchModal.addEventListener('click', (e) => {
+      if (e.target === searchModal) closeModal(searchModal);
     });
+
+    settingsModal.addEventListener('click', (e) => {
+      if (e.target === settingsModal) closeModal(settingsModal);
+    });
+
+    const observer = new IntersectionObserver(async (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting && !state.loading && state.currentPage < state.totalPages) {
+          await loadPage(state.currentPage + 1, true);
+        }
+      }
+    }, { root: null, rootMargin: '600px 0px', threshold: 0 });
+
+    observer.observe(sentinel);
 
     async function init() {
       try {
+        loadSettings();
+
         await Lumin.init({
           headless: true,
           onReady: () => console.log('Lumin connected'),
           onError: (err) => console.error('Lumin error:', err)
         });
 
-        await loadPage(1);
+        await loadPage(1, false);
+        renderSearchResults();
       } catch (err) {
         console.error(err);
         showError('failed to initialize sdk');
