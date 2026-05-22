@@ -27,7 +27,9 @@
       --body-glow-3: rgba(240, 192, 64, 0.04);
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     html, body {
       margin: 0;
@@ -318,7 +320,7 @@
     }
 
     .modal-panel {
-      width: min(440px, 100%);
+      width: min(420px, 100%);
       background: rgba(18, 18, 18, 0.96);
       border: 1px solid rgba(255,255,255,0.08);
       border-radius: 20px;
@@ -350,6 +352,12 @@
     .field {
       display: grid;
       gap: 8px;
+    }
+
+    .field label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
     }
 
     .field input[type="text"],
@@ -399,53 +407,6 @@
       grid-template-columns: 1fr 1fr;
       gap: 8px;
       margin-top: 2px;
-    }
-
-    .search-results {
-      display: grid;
-      gap: 8px;
-      max-height: 240px;
-      overflow: auto;
-      padding-right: 2px;
-    }
-
-    .search-item {
-      width: 100%;
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.03);
-      color: var(--text);
-      text-align: left;
-      cursor: pointer;
-      display: grid;
-      gap: 2px;
-      transition: 0.16s ease;
-    }
-
-    .search-item:hover {
-      background: rgba(255,255,255,0.06);
-      border-color: rgba(240, 192, 64, 0.25);
-    }
-
-    .search-item-name {
-      font-size: 13px;
-      font-weight: 800;
-      line-height: 1.2;
-    }
-
-    .search-item-cat {
-      font-size: 11px;
-      color: var(--muted);
-      line-height: 1.2;
-    }
-
-    .search-empty {
-      padding: 14px;
-      color: var(--muted);
-      text-align: center;
-      border: 1px dashed rgba(255,255,255,0.08);
-      border-radius: 12px;
     }
 
     @media (max-width: 900px) {
@@ -527,13 +488,13 @@
         </div>
         <div class="modal-body">
           <div class="field">
+            <label for="searchInput">search games</label>
             <input id="searchInput" type="text" placeholder="type here">
           </div>
           <div class="modal-actions">
             <button id="runSearchBtn" class="btn btn-accent">go</button>
             <button id="clearSearchBtn" class="btn">clear</button>
           </div>
-          <div id="searchResults" class="search-results"></div>
         </div>
       </div>
     </div>
@@ -546,6 +507,7 @@
         </div>
         <div class="modal-body">
           <div class="field">
+            <label for="themeSelect">style</label>
             <select id="themeSelect">
               <option value="amber">amber</option>
               <option value="violet">violet</option>
@@ -556,6 +518,7 @@
           </div>
 
           <div class="field">
+            <label for="tileSize">tile size</label>
             <div class="range-row">
               <input id="tileSize" type="range" min="110" max="220" step="2" value="140">
               <div id="tileSizeValue" class="range-value">140</div>
@@ -563,6 +526,7 @@
           </div>
 
           <div class="field">
+            <label for="gapSize">gaps</label>
             <div class="range-row">
               <input id="gapSize" type="range" min="6" max="24" step="1" value="12">
               <div id="gapSizeValue" class="range-value">12</div>
@@ -595,7 +559,6 @@
     const searchInput = document.getElementById('searchInput');
     const runSearchBtn = document.getElementById('runSearchBtn');
     const clearSearchBtn = document.getElementById('clearSearchBtn');
-    const searchResults = document.getElementById('searchResults');
 
     const settingsModal = document.getElementById('settingsModal');
     const closeSettingsModal = document.getElementById('closeSettingsModal');
@@ -708,7 +671,6 @@
         : [...favorites, id];
       localStorage.setItem(FAVORITES_KEY, JSON.stringify(next));
       renderGrid(false);
-      renderSearchResults();
     }
 
     function escapeHtml(str) {
@@ -844,8 +806,9 @@
         grid.innerHTML = '';
       }
 
-      const startIndex = append ? grid.querySelectorAll('.card').length : 0;
+      const startIndex = append ? Math.max(0, grid.querySelectorAll('.card').length) : 0;
       const fragment = document.createDocumentFragment();
+
       const gamesToRender = append ? state.games.slice(startIndex) : state.games;
 
       gamesToRender.forEach((game, i) => {
@@ -869,53 +832,15 @@
       await Promise.all(tasks);
     }
 
-    function updateEndState() {
-      sentinel.style.display = state.currentPage >= state.totalPages ? 'none' : 'block';
-    }
-
-    function renderSearchResults() {
-      const q = state.query.trim().toLowerCase();
-      const results = q
-        ? state.games.filter(g => {
-            const name = String(g.name || '').toLowerCase();
-            const category = String(g.category || '').toLowerCase();
-            return name.includes(q) || category.includes(q);
-          })
-        : state.games.slice(0, 8);
-
-      if (!q && !state.games.length) {
-        searchResults.innerHTML = '<div class="search-empty">type a search, then press go</div>';
-        return;
-      }
-
-      if (!results.length) {
-        searchResults.innerHTML = '<div class="search-empty">no results</div>';
-        return;
-      }
-
-      searchResults.innerHTML = results.slice(0, 12).map(game => `
-        <button class="search-item" data-game-id="${escapeHtml(game.id)}">
-          <div class="search-item-name">${escapeHtml(game.name || 'Untitled')}</div>
-          <div class="search-item-cat">${escapeHtml(game.category || 'Game')}</div>
-        </button>
-      `).join('');
-
-      searchResults.querySelectorAll('.search-item').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const id = btn.dataset.gameId;
-          closeModal(searchModal);
-          await openGameInGrid(id);
-        });
-      });
-    }
-
     async function loadPage(page = 1, append = false) {
       if (state.loading) return;
-      const cacheKey = `${state.query}::${page}`;
-      if (state.loadedPages.has(cacheKey)) return;
+      if (state.loadedPages.has(page)) return;
 
       state.loading = true;
-      if (!append) showLoading();
+
+      if (!append) {
+        showLoading();
+      }
 
       try {
         const result = await Lumin.getGames({
@@ -927,7 +852,7 @@
         const nextGames = Array.isArray(result.games) ? result.games : [];
         state.currentPage = page;
         state.totalPages = result.pages || 1;
-        state.loadedPages.add(cacheKey);
+        state.loadedPages.add(page);
 
         await resolveImages(nextGames);
 
@@ -940,7 +865,6 @@
         }
 
         updateEndState();
-        renderSearchResults();
       } catch (err) {
         console.error(err);
         showError('could not load games');
@@ -975,6 +899,14 @@
       }
     }
 
+    function updateEndState() {
+      if (state.currentPage >= state.totalPages) {
+        sentinel.style.display = 'none';
+      } else {
+        sentinel.style.display = 'block';
+      }
+    }
+
     function resetForNewQuery() {
       state.currentPage = 0;
       state.totalPages = 1;
@@ -990,9 +922,6 @@
     function openModal(modal) {
       modal.classList.remove('hidden');
       modal.setAttribute('aria-hidden', 'false');
-      if (modal === searchModal) {
-        renderSearchResults();
-      }
     }
 
     function closeModal(modal) {
@@ -1062,12 +991,11 @@
       });
     }
 
-    async function submitSearch() {
+    function submitSearch() {
       state.query = searchInput.value.trim();
       resetForNewQuery();
-      searchResults.innerHTML = '<div class="search-empty">searching...</div>';
-      await loadPage(1, false);
-      renderSearchResults();
+      loadPage(1, false);
+      closeModal(searchModal);
     }
 
     searchBtn.addEventListener('click', () => {
@@ -1076,7 +1004,6 @@
         searchInput.value = state.query;
         searchInput.focus();
         searchInput.select();
-        renderSearchResults();
       }, 50);
     });
 
@@ -1089,13 +1016,12 @@
 
     runSearchBtn.addEventListener('click', submitSearch);
 
-    clearSearchBtn.addEventListener('click', async () => {
+    clearSearchBtn.addEventListener('click', () => {
       searchInput.value = '';
       state.query = '';
       resetForNewQuery();
-      searchResults.innerHTML = '<div class="search-empty">type a search, then press go</div>';
-      await loadPage(1, false);
-      renderSearchResults();
+      loadPage(1, false);
+      closeModal(searchModal);
     });
 
     searchInput.addEventListener('keydown', (e) => {
@@ -1174,7 +1100,6 @@
         });
 
         await loadPage(1, false);
-        renderSearchResults();
       } catch (err) {
         console.error(err);
         showError('failed to initialize sdk');
