@@ -4,1109 +4,927 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>velora</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
     :root {
-      --bg: #0a0a0a;
-      --panel: rgba(18, 18, 18, 0.92);
-      --panel-border: rgba(255, 255, 255, 0.08);
-      --card: #171717;
-      --card-hover: #202020;
-      --text: #f2f2f2;
-      --muted: #b5b5b5;
-      --accent: #f0c040;
-      --shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
-      --radius: 18px;
-      --radius-sm: 12px;
-      --ui-width: 220px;
-      --gap: 12px;
-      --tile-size: 140px;
-      --font-ui: "Segoe Print", "Bradley Hand", "Chalkboard SE", "Comic Sans MS", cursive;
-
-      --body-glow-1: rgba(240, 192, 64, 0.08);
-      --body-glow-2: rgba(255, 255, 255, 0.03);
-      --body-glow-3: rgba(240, 192, 64, 0.04);
+      --bg: #0e0e14;
+      --bg2: #16161f;
+      --bg3: #1e1e2a;
+      --bg4: #252535;
+      --surface: #1c1c28;
+      --accent: #a78bfa;
+      --accent2: #7c3aed;
+      --accent-soft: rgba(167,139,250,0.12);
+      --accent-glow: rgba(167,139,250,0.25);
+      --text: #f0eeff;
+      --text2: #9b97b8;
+      --text3: #5e5a7a;
+      --border: rgba(167,139,250,0.1);
+      --border2: rgba(167,139,250,0.2);
+      --red: #f87171;
+      --red-soft: rgba(248,113,113,0.12);
+      --radius: 12px;
+      --radius-sm: 8px;
     }
 
-    * {
-      box-sizing: border-box;
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; overflow-x: hidden; }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent2); }
+
+    /* ─── HEADER ─── */
+    .header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(14,14,20,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 16px;
+      padding: 0 24px; height: 64px;
     }
 
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      min-height: 100%;
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-ui);
-      overflow-x: hidden;
+    .logo {
+      font-family: 'Dancing Script', cursive;
+      font-size: 32px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #a78bfa, #c4b5fd, #e9d5ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 0.5px;
+      text-decoration: none;
+      flex-shrink: 0;
     }
 
-    body {
-      background:
-        radial-gradient(circle at top left, var(--body-glow-1), transparent 30%),
-        radial-gradient(circle at bottom right, var(--body-glow-2), transparent 25%),
-        radial-gradient(circle at center, var(--body-glow-3), transparent 38%),
-        var(--bg);
-      transition: background 0.25s ease;
-    }
-
-    button, input, select {
-      font-family: var(--font-ui);
-    }
-
-    .app {
-      width: 100%;
-      min-height: 100vh;
+    .search-wrap {
+      flex: 1;
+      max-width: 480px;
       position: relative;
     }
-
-    .ui-box {
-      position: fixed;
-      top: 14px;
-      left: 14px;
-      width: min(var(--ui-width), calc(100vw - 28px));
-      z-index: 30;
-      background: var(--panel);
-      border: 1px solid var(--panel-border);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(14px);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
+    .search-wrap svg {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      color: var(--text3); pointer-events: none;
     }
-
-    .ui-top {
-      padding: 14px;
-    }
-
-    .brand {
-      margin: 0;
-      font-size: 20px;
-      line-height: 1;
-      font-weight: 800;
-      letter-spacing: 0.02em;
-      text-transform: lowercase;
+    .search {
+      width: 100%; height: 40px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 0 16px 0 42px;
       color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
     }
+    .search:focus { border-color: var(--accent); background: var(--bg2); }
+    .search::placeholder { color: var(--text3); }
 
-    .ui-bottom {
-      padding: 12px;
-      border-top: 1px solid rgba(255,255,255,0.06);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      background: rgba(255,255,255,0.02);
-    }
-
-    .ui-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .btn {
-      height: 38px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: #161616;
-      color: var(--text);
-      border-radius: 12px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 700;
-      transition: 0.18s ease;
-    }
-
-    .btn:hover {
-      background: #1f1f1f;
-      border-color: rgba(255,255,255,0.16);
-      transform: translateY(-1px);
-    }
-
-    .btn:active {
-      transform: translateY(0);
-    }
-
-    .btn-accent {
-      background: rgba(240, 192, 64, 0.12);
-      border-color: rgba(240, 192, 64, 0.28);
-      color: #ffd77a;
-    }
-
-    .grid-wrap {
-      width: 100%;
-      min-height: 100vh;
-      padding: 12px;
-      padding-top: 14px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(var(--tile-size), 1fr));
-      grid-auto-flow: dense;
-      gap: var(--gap);
-      width: 100%;
-    }
-
-    .card {
-      position: relative;
-      aspect-ratio: 1 / 1;
-      border-radius: 18px;
-      overflow: hidden;
-      background: var(--card);
-      cursor: pointer;
-      border: 1px solid rgba(255,255,255,0.04);
-      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
-      min-height: var(--tile-size);
-    }
-
-    .card:hover {
-      transform: translateY(-2px);
-      background: var(--card-hover);
-      border-color: rgba(255,255,255,0.12);
-    }
-
-    .card.large {
-      grid-column: span 2;
-      grid-row: span 2;
-    }
-
-    .card.active {
-      grid-column: span 2;
-      grid-row: span 2;
-      aspect-ratio: 16 / 9;
-      z-index: 2;
-      border-color: rgba(240, 192, 64, 0.45);
-      box-shadow: 0 12px 40px rgba(0,0,0,0.35);
-      background: #111;
-    }
-
-    .card-media,
-    .card-player {
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      inset: 0;
-    }
-
-    .card-media img,
-    .card-player iframe {
-      width: 100%;
-      height: 100%;
-      display: block;
-      border: 0;
-      object-fit: cover;
-      background: #0f0f0f;
-    }
-
-    .card-overlay {
-      position: absolute;
-      inset: auto 0 0 0;
-      padding: 10px;
-      background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0));
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 8px;
-      pointer-events: none;
-    }
-
-    .card-name {
-      font-size: 12px;
-      font-weight: 700;
-      line-height: 1.2;
-      color: #fff;
-    }
-
-    .player-ui {
-      position: absolute;
-      left: 10px;
-      right: 10px;
-      top: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 12px;
-      z-index: 3;
-      pointer-events: none;
-    }
-
-    .player-meta,
-    .player-controls {
-      pointer-events: auto;
-    }
-
-    .player-meta {
-      max-width: calc(100% - 180px);
-      padding: 10px 12px;
-      border-radius: 14px;
-      background: rgba(10, 10, 10, 0.72);
-      border: 1px solid rgba(255,255,255,0.08);
-      backdrop-filter: blur(8px);
-    }
-
-    .player-title {
-      font-size: 15px;
-      font-weight: 800;
-      line-height: 1.2;
-      margin: 0;
-    }
-
-    .player-controls {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      gap: 8px;
-    }
+    .header-right { display: flex; gap: 8px; align-items: center; margin-left: auto; }
 
     .icon-btn {
-      min-width: 38px;
-      height: 38px;
-      padding: 0 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(10, 10, 10, 0.74);
-      color: #fff;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text2);
       cursor: pointer;
-      font-size: 13px;
-      font-weight: 700;
-      backdrop-filter: blur(8px);
-      transition: 0.18s ease;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .icon-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+    .icon-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+
+    .velora-box {
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius);
+      padding: 6px 16px;
+      display: flex; align-items: center; gap: 8px;
+      cursor: default;
+    }
+    .velora-box .v-logo {
+      font-family: 'Dancing Script', cursive;
+      font-size: 20px; font-weight: 700;
+      background: linear-gradient(135deg, #a78bfa, #e9d5ff);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .velora-box .v-tag {
+      font-size: 11px; color: var(--accent); font-weight: 500;
+      background: var(--accent-soft); border-radius: 4px; padding: 2px 6px;
     }
 
-    .icon-btn:hover {
-      background: rgba(25, 25, 25, 0.95);
-      border-color: rgba(255,255,255,0.18);
+    /* ─── CATEGORIES ─── */
+    .cats-bar {
+      display: flex; gap: 8px;
+      padding: 12px 24px;
+      overflow-x: auto;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
     }
-
-    .icon-btn.favorite.active {
-      color: #ff95a7;
-      border-color: rgba(255, 107, 129, 0.35);
+    .cats-bar::-webkit-scrollbar { height: 0; }
+    .cat-btn {
+      padding: 6px 16px; border-radius: 20px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text2); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 400;
+      cursor: pointer; white-space: nowrap;
+      transition: all 0.18s;
     }
+    .cat-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+    .cat-btn.active { border-color: var(--accent); color: var(--bg); background: var(--accent); font-weight: 500; }
 
-    .status,
-    .empty {
-      grid-column: 1 / -1;
-      min-height: 180px;
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,0.06);
-      background: rgba(255,255,255,0.02);
+    /* ─── MAIN LAYOUT ─── */
+    .layout { display: flex; min-height: calc(100vh - 113px); }
+
+    .sidebar {
+      width: 200px; flex-shrink: 0;
+      background: var(--bg2);
+      border-right: 1px solid var(--border);
+      padding: 16px 0;
+      display: flex; flex-direction: column; gap: 2px;
+      position: sticky; top: 113px;
+      max-height: calc(100vh - 113px);
+      overflow-y: auto;
+    }
+    .sidebar-section { padding: 8px 16px 4px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); font-weight: 500; }
+    .sidebar-btn {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 16px; margin: 0 8px; border-radius: var(--radius-sm);
+      cursor: pointer; color: var(--text2); font-size: 13px;
+      transition: all 0.18s; border: none; background: none; font-family: 'DM Sans', sans-serif;
+      text-align: left; width: calc(100% - 16px);
+    }
+    .sidebar-btn svg { flex-shrink: 0; opacity: 0.7; }
+    .sidebar-btn:hover { background: var(--bg3); color: var(--text); }
+    .sidebar-btn.active { background: var(--accent-soft); color: var(--accent); }
+    .sidebar-btn.active svg { opacity: 1; }
+    .sidebar-divider { border: none; border-top: 1px solid var(--border); margin: 8px 16px; }
+
+    /* ─── CONTENT ─── */
+    .content { flex: 1; padding: 24px; min-width: 0; }
+    .section-title {
+      font-size: 15px; font-weight: 600; color: var(--text2);
+      margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+    }
+    .section-title span { color: var(--accent); font-size: 12px; font-weight: 400; }
+
+    /* ─── GAME GRID ─── */
+    .game-grid {
       display: grid;
-      place-items: center;
-      color: var(--muted);
-      text-align: center;
-      padding: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 12px;
     }
 
-    .hidden {
-      display: none !important;
-    }
-
-    .sentinel {
-      width: 100%;
-      height: 1px;
-    }
-
-    .modal {
-      position: fixed;
-      inset: 0;
-      z-index: 60;
-      display: grid;
-      place-items: center;
-      background: rgba(0, 0, 0, 0.55);
-      backdrop-filter: blur(10px);
-      padding: 18px;
-    }
-
-    .modal-panel {
-      width: min(420px, 100%);
-      background: rgba(18, 18, 18, 0.96);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 20px;
-      box-shadow: var(--shadow);
+    .game-card {
+      position: relative;
+      border-radius: var(--radius);
       overflow: hidden;
+      cursor: pointer;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      aspect-ratio: 1;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+    .game-card:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 8px 32px rgba(124,58,237,0.25); }
+    .game-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .game-card .fav-btn {
+      position: absolute; top: 6px; right: 6px;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: rgba(14,14,20,0.75);
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.15s, color 0.15s, background 0.15s;
+      color: var(--text2);
+    }
+    .game-card:hover .fav-btn { opacity: 1; }
+    .game-card .fav-btn.saved { opacity: 1; color: var(--red); background: var(--red-soft); }
+    .game-card .fav-btn svg { width: 14px; height: 14px; }
+
+    .game-card .card-label {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 22px 8px 8px;
+      background: linear-gradient(to top, rgba(10,10,18,0.92) 0%, transparent 100%);
+      font-size: 12px; font-weight: 500; color: var(--text);
+      opacity: 0; transition: opacity 0.15s;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .game-card:hover .card-label { opacity: 1; }
+
+    .game-card.skeleton { cursor: default; }
+    .game-card.skeleton::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.04) 50%, transparent 100%);
+      animation: shimmer 1.5s infinite;
+    }
+    @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+
+    /* ─── PAGINATION ─── */
+    .pagination { display: flex; gap: 6px; margin-top: 28px; justify-content: center; flex-wrap: wrap; }
+    .page-btn {
+      min-width: 36px; height: 36px; padding: 0 10px;
+      border-radius: var(--radius-sm); border: 1px solid var(--border);
+      background: var(--bg3); color: var(--text2);
+      font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+      cursor: pointer; transition: all 0.18s;
+    }
+    .page-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+    .page-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    /* ─── SETTINGS PANEL ─── */
+    .settings-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(10,10,18,0.7);
+      backdrop-filter: blur(4px);
+      display: none; align-items: flex-start; justify-content: flex-end;
+    }
+    .settings-overlay.open { display: flex; }
+    .settings-panel {
+      width: 320px; height: 100vh;
+      background: var(--bg2);
+      border-left: 1px solid var(--border2);
+      padding: 24px;
+      overflow-y: auto;
+      animation: slideIn 0.25s ease;
+    }
+    @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+    .settings-panel h2 { font-size: 16px; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+    .settings-panel h2 svg { color: var(--accent); }
+    .setting-group { margin-bottom: 20px; }
+    .setting-label { font-size: 12px; color: var(--text3); font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+    .setting-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .setting-row span { font-size: 13px; color: var(--text2); }
+
+    .toggle {
+      width: 40px; height: 22px; border-radius: 11px;
+      background: var(--bg4); border: 1px solid var(--border);
+      cursor: pointer; position: relative; transition: background 0.2s;
+    }
+    .toggle::after {
+      content: ''; position: absolute; width: 16px; height: 16px;
+      border-radius: 50%; background: var(--text3);
+      top: 2px; left: 2px; transition: transform 0.2s, background 0.2s;
+    }
+    .toggle.on { background: var(--accent2); border-color: var(--accent); }
+    .toggle.on::after { transform: translateX(18px); background: #fff; }
+
+    .swatch-row { display: flex; gap: 8px; }
+    .swatch {
+      width: 28px; height: 28px; border-radius: 50%;
+      cursor: pointer; border: 2px solid transparent;
+      transition: border-color 0.2s, transform 0.15s;
+    }
+    .swatch:hover { transform: scale(1.15); }
+    .swatch.active { border-color: #fff; }
+
+    .select-input {
+      width: 100%; padding: 8px 12px;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px;
+      outline: none; cursor: pointer;
+    }
+    .select-input:focus { border-color: var(--accent); }
+
+    .settings-close {
+      position: absolute; top: 20px; right: 20px;
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--bg3); border: 1px solid var(--border);
+      color: var(--text2); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .settings-close:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ─── GAME PLAYER MODAL ─── */
+    .player-overlay {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(10,10,18,0.95);
+      display: none; flex-direction: column;
+      align-items: center; justify-content: center;
+    }
+    .player-overlay.open { display: flex; }
+
+    .player-bar {
+      width: 100%; max-width: 1100px;
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 16px;
+      background: var(--bg2); border-radius: var(--radius) var(--radius) 0 0;
+      border: 1px solid var(--border2); border-bottom: none;
+    }
+    .player-title { font-size: 15px; font-weight: 600; flex: 1; }
+    .player-btn {
+      width: 34px; height: 34px; border-radius: var(--radius-sm);
+      background: var(--bg3); border: 1px solid var(--border);
+      color: var(--text2); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.18s;
+    }
+    .player-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+    .player-btn.fav-active { border-color: var(--red); color: var(--red); background: var(--red-soft); }
+    .player-btn.close-btn:hover { border-color: #f87171; color: #f87171; }
+
+    .player-frame-wrap {
+      width: 100%; max-width: 1100px;
+      background: #000;
+      border: 1px solid var(--border2); border-top: none; border-radius: 0 0 var(--radius) var(--radius);
+      overflow: hidden;
+      position: relative;
+    }
+    .player-frame-wrap iframe {
+      width: 100%; height: 66vh;
+      border: none; display: block;
+    }
+    .player-frame-wrap.fullscreen-mode { max-width: 100vw; border-radius: 0; }
+    .player-overlay.fullscreen-mode { padding: 0; }
+
+    .player-game-info {
+      width: 100%; max-width: 1100px;
+      padding: 10px 16px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .player-game-info span { font-size: 12px; color: var(--text3); }
+
+    /* ─── FAVORITES TAB ─── */
+    .empty-state {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 80px 24px; gap: 12px; color: var(--text3);
+    }
+    .empty-state svg { opacity: 0.4; }
+    .empty-state p { font-size: 14px; }
+
+    /* ─── THEME CLASSES ─── */
+    .theme-violet { --accent: #a78bfa; --accent2: #7c3aed; --accent-soft: rgba(167,139,250,0.12); --accent-glow: rgba(167,139,250,0.25); }
+    .theme-cyan { --accent: #22d3ee; --accent2: #0891b2; --accent-soft: rgba(34,211,238,0.12); --accent-glow: rgba(34,211,238,0.25); }
+    .theme-rose { --accent: #fb7185; --accent2: #e11d48; --accent-soft: rgba(251,113,133,0.12); --accent-glow: rgba(251,113,133,0.25); }
+    .theme-amber { --accent: #fbbf24; --accent2: #d97706; --accent-soft: rgba(251,191,36,0.12); --accent-glow: rgba(251,191,36,0.25); }
+    .theme-emerald { --accent: #34d399; --accent2: #059669; --accent-soft: rgba(52,211,153,0.12); --accent-glow: rgba(52,211,153,0.25); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 700px) {
+      .sidebar { display: none; }
+      .game-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+      .header { padding: 0 12px; }
+      .velora-box .v-tag { display: none; }
     }
 
-    .modal-top {
-      padding: 14px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+    /* ─── NO-RESULTS ─── */
+    .no-results { display: none; flex-direction: column; align-items: center; padding: 60px 24px; color: var(--text3); gap: 10px; }
+    .no-results.show { display: flex; }
+    .no-results svg { opacity: 0.3; }
+    .no-results p { font-size: 14px; }
+
+    /* Loading spinner */
+    .spinner {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 2px solid var(--bg4);
+      border-top-color: var(--accent);
+      animation: spin 0.7s linear infinite;
     }
-
-    .modal-title {
-      margin: 0;
-      font-size: 16px;
-      font-weight: 800;
-    }
-
-    .modal-body {
-      padding: 14px;
-      display: grid;
-      gap: 12px;
-    }
-
-    .field {
-      display: grid;
-      gap: 8px;
-    }
-
-    .field label {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .field input[type="text"],
-    .field select,
-    .field input[type="range"] {
-      width: 100%;
-    }
-
-    .field input[type="text"],
-    .field select {
-      height: 42px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: #121212;
-      color: var(--text);
-      padding: 0 12px;
-      outline: none;
-      font-size: 14px;
-    }
-
-    .field input[type="text"]::placeholder {
-      color: #7d7d7d;
-    }
-
-    .field input[type="text"]:focus,
-    .field select:focus {
-      border-color: rgba(240, 192, 64, 0.6);
-    }
-
-    .range-row {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .range-value {
-      min-width: 44px;
-      text-align: right;
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .modal-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-top: 2px;
-    }
-
-    @media (max-width: 900px) {
-      .card.active {
-        grid-column: span 2;
-        grid-row: span 2;
-      }
-    }
-
-    @media (max-width: 640px) {
-      :root {
-        --ui-width: 210px;
-      }
-
-      .grid {
-        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-      }
-
-      .card.large {
-        grid-column: span 1;
-        grid-row: span 1;
-      }
-
-      .card.active {
-        grid-column: span 2;
-        grid-row: span 2;
-      }
-
-      .player-meta {
-        max-width: calc(100% - 120px);
-      }
-
-      .player-title {
-        font-size: 13px;
-      }
-
-      .icon-btn {
-        min-width: 34px;
-        height: 34px;
-        padding: 0 10px;
-        font-size: 12px;
-      }
-
-      .ui-box {
-        width: min(210px, calc(100vw - 28px));
-      }
-
-      .modal-actions {
-        grid-template-columns: 1fr;
-      }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-center { display: flex; align-items: center; justify-content: center; height: 200px; }
   </style>
 </head>
-<body>
-  <div class="app">
-    <aside class="ui-box">
-      <div class="ui-top">
-        <h1 class="brand">velora</h1>
-      </div>
+<body class="theme-violet">
 
-      <div class="ui-bottom">
-        <div class="ui-actions">
-          <button id="searchBtn" class="btn btn-accent">search</button>
-          <button id="settingsBtn" class="btn">settings</button>
-        </div>
-      </div>
-    </aside>
+<!-- ─── HEADER ─── -->
+<header class="header">
+  <a href="#" class="logo" onclick="setView('all'); return false;">velora</a>
+  <div class="search-wrap">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input class="search" id="searchInput" type="text" placeholder="search games...">
+  </div>
+  <div class="header-right">
+    <button class="icon-btn" id="favsBtn" title="favorites" onclick="setView('favs')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    </button>
+    <button class="icon-btn active" id="settingsBtn" title="settings" onclick="openSettings()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
+    <div class="velora-box">
+      <span class="v-logo">velora</span>
+      <span class="v-tag">play</span>
+    </div>
+  </div>
+</header>
 
-    <main class="grid-wrap">
-      <section id="grid" class="grid"></section>
-      <div id="sentinel" class="sentinel"></div>
-    </main>
+<!-- ─── CATEGORIES BAR ─── -->
+<div class="cats-bar" id="catsBar"></div>
 
-    <div id="searchModal" class="modal hidden" aria-hidden="true">
-      <div class="modal-panel">
-        <div class="modal-top">
-          <h2 class="modal-title">search</h2>
-          <button id="closeSearchModal" class="btn" style="width: 38px; padding: 0;">×</button>
-        </div>
-        <div class="modal-body">
-          <div class="field">
-            <label for="searchInput">search games</label>
-            <input id="searchInput" type="text" placeholder="type here">
-          </div>
-          <div class="modal-actions">
-            <button id="runSearchBtn" class="btn btn-accent">go</button>
-            <button id="clearSearchBtn" class="btn">clear</button>
-          </div>
-        </div>
+<!-- ─── MAIN LAYOUT ─── -->
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-section">discover</div>
+    <button class="sidebar-btn active" id="sb-all" onclick="setView('all')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      all games
+    </button>
+    <button class="sidebar-btn" id="sb-recent" onclick="setView('recent')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      recently played
+    </button>
+    <button class="sidebar-btn" id="sb-favs" onclick="setView('favs')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      favorites
+    </button>
+    <hr class="sidebar-divider">
+    <div class="sidebar-section">categories</div>
+    <div id="sidebarCats"></div>
+  </aside>
+
+  <main class="content" id="mainContent">
+    <div class="section-title" id="sectionTitle">all games</div>
+    <div class="game-grid" id="grid">
+      <div class="loading-center" style="grid-column:1/-1"><div class="spinner"></div></div>
+    </div>
+    <div class="no-results" id="noResults">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M8 11h6M11 8v6" stroke-dasharray="2 2"/></svg>
+      <p>no games found for "<span id="noResultsQuery"></span>"</p>
+    </div>
+    <div class="pagination" id="pagination"></div>
+  </main>
+</div>
+
+<!-- ─── GAME PLAYER MODAL ─── -->
+<div class="player-overlay" id="playerOverlay">
+  <div class="player-bar" id="playerBar">
+    <button class="player-btn" title="close" onclick="closePlayer()" id="closeBtn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <span class="player-title" id="playerTitle">game</span>
+    <button class="player-btn" id="playerFavBtn" title="favorite" onclick="togglePlayerFav()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    </button>
+    <button class="player-btn" title="reload" onclick="reloadGame()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+    </button>
+    <button class="player-btn" title="fullscreen" onclick="toggleFullscreen()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+    </button>
+  </div>
+  <div class="player-frame-wrap" id="playerFrameWrap">
+    <iframe id="gameFrame" src="" allowfullscreen allow="fullscreen; gamepad *"></iframe>
+  </div>
+</div>
+
+<!-- ─── SETTINGS PANEL ─── -->
+<div class="settings-overlay" id="settingsOverlay" onclick="closeSettingsOutside(event)">
+  <div class="settings-panel" id="settingsPanel">
+    <h2>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      settings
+    </h2>
+
+    <div class="setting-group">
+      <div class="setting-label">accent color</div>
+      <div class="swatch-row">
+        <div class="swatch active" style="background:#a78bfa" data-theme="theme-violet" onclick="setTheme(this)"></div>
+        <div class="swatch" style="background:#22d3ee" data-theme="theme-cyan" onclick="setTheme(this)"></div>
+        <div class="swatch" style="background:#fb7185" data-theme="theme-rose" onclick="setTheme(this)"></div>
+        <div class="swatch" style="background:#fbbf24" data-theme="theme-amber" onclick="setTheme(this)"></div>
+        <div class="swatch" style="background:#34d399" data-theme="theme-emerald" onclick="setTheme(this)"></div>
       </div>
     </div>
 
-    <div id="settingsModal" class="modal hidden" aria-hidden="true">
-      <div class="modal-panel">
-        <div class="modal-top">
-          <h2 class="modal-title">settings</h2>
-          <button id="closeSettingsModal" class="btn" style="width: 38px; padding: 0;">×</button>
-        </div>
-        <div class="modal-body">
-          <div class="field">
-            <label for="themeSelect">style</label>
-            <select id="themeSelect">
-              <option value="amber">amber</option>
-              <option value="violet">violet</option>
-              <option value="ocean">ocean</option>
-              <option value="rose">rose</option>
-              <option value="mono">mono</option>
-            </select>
-          </div>
+    <div class="setting-group">
+      <div class="setting-label">grid size</div>
+      <select class="select-input" id="gridSizeSelect" onchange="setGridSize(this.value)">
+        <option value="120">compact (small)</option>
+        <option value="150" selected>default (medium)</option>
+        <option value="190">large</option>
+        <option value="240">extra large</option>
+      </select>
+    </div>
 
-          <div class="field">
-            <label for="tileSize">tile size</label>
-            <div class="range-row">
-              <input id="tileSize" type="range" min="110" max="220" step="2" value="140">
-              <div id="tileSizeValue" class="range-value">140</div>
-            </div>
-          </div>
+    <div class="setting-group">
+      <div class="setting-label">display</div>
+      <div class="setting-row">
+        <span>show game titles</span>
+        <div class="toggle on" id="titleToggle" onclick="toggleTitles()"></div>
+      </div>
+      <div class="setting-row">
+        <span>hover animations</span>
+        <div class="toggle on" id="animToggle" onclick="toggleAnims()"></div>
+      </div>
+    </div>
 
-          <div class="field">
-            <label for="gapSize">gaps</label>
-            <div class="range-row">
-              <input id="gapSize" type="range" min="6" max="24" step="1" value="12">
-              <div id="gapSizeValue" class="range-value">12</div>
-            </div>
-          </div>
+    <div class="setting-group">
+      <div class="setting-label">background</div>
+      <select class="select-input" id="bgSelect" onchange="setBg(this.value)">
+        <option value="#0e0e14">dark nebula (default)</option>
+        <option value="#0a0a0a">pitch black</option>
+        <option value="#0d0f1a">midnight blue</option>
+        <option value="#0e120e">forest dark</option>
+        <option value="#14100e">deep rust</option>
+      </select>
+    </div>
 
-          <div class="modal-actions">
-            <button id="resetSettingsBtn" class="btn">reset</button>
-            <button id="saveSettingsBtn" class="btn btn-accent">save</button>
-          </div>
-        </div>
+    <div class="setting-group">
+      <div class="setting-label">about</div>
+      <div style="font-size:12px;color:var(--text3);line-height:1.7;">
+        velora uses the <strong style="color:var(--text2)">lumin sdk</strong> to power the game library and player. built with love for gaming.
       </div>
     </div>
   </div>
+</div>
 
-  <script src="https://cdn.jsdelivr.net/gh/luminsdk/script@latest/lumin.min.js"></script>
-  <script>
-    const PAGE_SIZE = 24;
-    const FAVORITES_KEY = 'veloraFavorites_v1';
-    const SETTINGS_KEY = 'veloraSettings_v1';
+<script src="https://cdn.jsdelivr.net/gh/luminsdk/script@latest/lumin.min.js"></script>
+<script>
+  const grid = document.getElementById('grid');
+  const pagination = document.getElementById('pagination');
+  const searchInput = document.getElementById('searchInput');
+  const catsBar = document.getElementById('catsBar');
+  const sidebarCats = document.getElementById('sidebarCats');
+  const sectionTitle = document.getElementById('sectionTitle');
+  const noResults = document.getElementById('noResults');
 
-    const grid = document.getElementById('grid');
-    const sentinel = document.getElementById('sentinel');
+  const PAGE_SIZE = 24;
+  let currentPage = 1;
+  let currentQuery = '';
+  let currentCategory = '';
+  let currentView = 'all';
+  let currentGameId = null;
+  let currentGameName = '';
+  let favorites = JSON.parse(localStorage.getItem('velora_favs') || '[]');
+  let recentlyPlayed = JSON.parse(localStorage.getItem('velora_recent') || '[]');
+  let showTitles = true;
+  let animsEnabled = true;
 
-    const searchBtn = document.getElementById('searchBtn');
-    const settingsBtn = document.getElementById('settingsBtn');
+  // ─── INIT ───
+  (async () => {
+    await Lumin.init({
+      headless: true,
+      onReady: () => console.log('velora: lumin ready'),
+      onError: (err) => console.error('velora: lumin error', err),
+    });
 
-    const searchModal = document.getElementById('searchModal');
-    const closeSearchModal = document.getElementById('closeSearchModal');
-    const searchInput = document.getElementById('searchInput');
-    const runSearchBtn = document.getElementById('runSearchBtn');
-    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    const { categories } = await Lumin.getCategories();
+    renderCatBar(['all', ...categories]);
+    renderSidebarCats(categories);
+    await loadPage(1);
+  })();
 
-    const settingsModal = document.getElementById('settingsModal');
-    const closeSettingsModal = document.getElementById('closeSettingsModal');
-    const themeSelect = document.getElementById('themeSelect');
-    const tileSize = document.getElementById('tileSize');
-    const gapSize = document.getElementById('gapSize');
-    const tileSizeValue = document.getElementById('tileSizeValue');
-    const gapSizeValue = document.getElementById('gapSizeValue');
-    const resetSettingsBtn = document.getElementById('resetSettingsBtn');
-    const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+  // ─── SEARCH ───
+  let debounce;
+  searchInput.addEventListener('input', (e) => {
+    clearTimeout(debounce);
+    debounce = setTimeout(() => {
+      currentQuery = e.target.value.trim();
+      currentPage = 1;
+      currentView = 'all';
+      updateSidebarActive('sb-all');
+      loadPage(1);
+    }, 300);
+  });
 
-    const state = {
-      currentPage: 0,
-      totalPages: 1,
-      query: '',
-      games: [],
-      imageMap: new Map(),
-      activeGameId: null,
-      activeGameUrl: '',
-      loading: false,
-      loadedPages: new Set()
-    };
-
-    const themes = {
-      amber: {
-        bg: '#0a0a0a',
-        panel: 'rgba(18, 18, 18, 0.92)',
-        panelBorder: 'rgba(255, 255, 255, 0.08)',
-        card: '#171717',
-        cardHover: '#202020',
-        text: '#f2f2f2',
-        muted: '#b5b5b5',
-        accent: '#f0c040',
-        bodyGlow1: 'rgba(240, 192, 64, 0.08)',
-        bodyGlow2: 'rgba(255, 255, 255, 0.03)',
-        bodyGlow3: 'rgba(240, 192, 64, 0.04)'
-      },
-      violet: {
-        bg: '#090812',
-        panel: 'rgba(17, 16, 28, 0.92)',
-        panelBorder: 'rgba(190, 150, 255, 0.14)',
-        card: '#151320',
-        cardHover: '#1d1a2b',
-        text: '#f5f3ff',
-        muted: '#b8b2cf',
-        accent: '#b78cff',
-        bodyGlow1: 'rgba(183, 140, 255, 0.10)',
-        bodyGlow2: 'rgba(255, 255, 255, 0.03)',
-        bodyGlow3: 'rgba(183, 140, 255, 0.04)'
-      },
-      ocean: {
-        bg: '#071014',
-        panel: 'rgba(12, 22, 26, 0.92)',
-        panelBorder: 'rgba(112, 232, 255, 0.12)',
-        card: '#102026',
-        cardHover: '#153038',
-        text: '#edf9ff',
-        muted: '#aad0da',
-        accent: '#69dcff',
-        bodyGlow1: 'rgba(105, 220, 255, 0.10)',
-        bodyGlow2: 'rgba(255, 255, 255, 0.03)',
-        bodyGlow3: 'rgba(105, 220, 255, 0.04)'
-      },
-      rose: {
-        bg: '#140b10',
-        panel: 'rgba(28, 14, 20, 0.92)',
-        panelBorder: 'rgba(255, 158, 191, 0.14)',
-        card: '#241219',
-        cardHover: '#311722',
-        text: '#fff1f6',
-        muted: '#e1b5c5',
-        accent: '#ff8fb1',
-        bodyGlow1: 'rgba(255, 143, 177, 0.10)',
-        bodyGlow2: 'rgba(255, 255, 255, 0.03)',
-        bodyGlow3: 'rgba(255, 143, 177, 0.04)'
-      },
-      mono: {
-        bg: '#0b0b0b',
-        panel: 'rgba(20, 20, 20, 0.94)',
-        panelBorder: 'rgba(255,255,255,0.08)',
-        card: '#171717',
-        cardHover: '#222222',
-        text: '#f2f2f2',
-        muted: '#aaaaaa',
-        accent: '#ffffff',
-        bodyGlow1: 'rgba(255,255,255,0.05)',
-        bodyGlow2: 'rgba(255,255,255,0.03)',
-        bodyGlow3: 'rgba(255,255,255,0.02)'
-      }
-    };
-
-    function getFavorites() {
-      try {
-        const raw = localStorage.getItem(FAVORITES_KEY);
-        const parsed = raw ? JSON.parse(raw) : [];
-        return Array.isArray(parsed) ? parsed : [];
-      } catch {
-        return [];
-      }
-    }
-
-    function isFavorite(id) {
-      return getFavorites().includes(id);
-    }
-
-    function toggleFavorite(id) {
-      const favorites = getFavorites();
-      const next = favorites.includes(id)
-        ? favorites.filter(x => x !== id)
-        : [...favorites, id];
-      localStorage.setItem(FAVORITES_KEY, JSON.stringify(next));
-      renderGrid(false);
-    }
-
-    function escapeHtml(str) {
-      return String(str || '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-    }
-
-    function randomizeSize(index, game) {
-      const base = (game.id || index || 0).toString();
-      let sum = 0;
-      for (let i = 0; i < base.length; i++) sum += base.charCodeAt(i);
-      return sum % 7 === 0;
-    }
-
-    function setHashForGame(game) {
-      const slug = (game.name || 'game')
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)/g, '');
-      history.replaceState(null, '', '#' + slug + '-' + game.id);
-    }
-
-    function clearHash() {
-      history.replaceState(null, '', window.location.pathname + window.location.search);
-    }
-
-    function showLoading(message = 'loading games...') {
-      grid.innerHTML = '<div class="status">' + escapeHtml(message) + '</div>';
-    }
-
-    function showError(message = 'could not load games') {
-      grid.innerHTML = '<div class="status">' + escapeHtml(message) + '</div>';
-    }
-
-    function createGameCard(game, index) {
-      const card = document.createElement('article');
-      const active = state.activeGameId === game.id;
-      const large = randomizeSize(index, game) && !active;
-      card.className = 'card' + (large ? ' large' : '') + (active ? ' active' : '');
-      card.dataset.gameId = game.id;
-
-      const imageUrl = state.imageMap.get(game.id) || '';
-      const favoriteClass = isFavorite(game.id) ? ' active' : '';
-      const safeName = escapeHtml(game.name || 'Untitled');
-      const safeCategory = escapeHtml(game.category || 'Game');
-
-      if (active && state.activeGameUrl) {
-        card.innerHTML = `
-          <div class="card-player">
-            <iframe
-              src="${escapeHtml(state.activeGameUrl)}"
-              allowfullscreen
-              loading="eager"
-              referrerpolicy="origin"
-            ></iframe>
-          </div>
-
-          <div class="player-ui">
-            <div class="player-meta">
-              <h2 class="player-title">${safeName}</h2>
-            </div>
-
-            <div class="player-controls">
-              <button class="icon-btn favorite${favoriteClass}" data-action="favorite" title="Favorite">♥</button>
-              <button class="icon-btn" data-action="reload" title="Reload">↻</button>
-              <button class="icon-btn" data-action="fullscreen" title="Fullscreen">⛶</button>
-              <button class="icon-btn" data-action="close" title="Close">×</button>
-            </div>
-          </div>
-        `;
-      } else {
-        card.innerHTML = `
-          <div class="card-media">
-            <img src="${escapeHtml(imageUrl)}" alt="${safeName}" loading="lazy">
-          </div>
-          <div class="card-overlay">
-            <div>
-              <div class="card-name">${safeName}</div>
-            </div>
-          </div>
-        `;
-      }
-
-      card.addEventListener('click', async (event) => {
-        const action = event.target && event.target.dataset ? event.target.dataset.action : null;
-
-        if (action) {
-          event.stopPropagation();
-
-          if (action === 'favorite') {
-            toggleFavorite(game.id);
-            return;
-          }
-
-          if (action === 'reload') {
-            const iframe = card.querySelector('iframe');
-            if (iframe) iframe.src = iframe.src;
-            return;
-          }
-
-          if (action === 'fullscreen') {
-            const iframe = card.querySelector('iframe');
-            const target = iframe || card;
-            if (target.requestFullscreen) target.requestFullscreen();
-            return;
-          }
-
-          if (action === 'close') {
-            state.activeGameId = null;
-            state.activeGameUrl = '';
-            clearHash();
-            renderGrid(false);
-            return;
-          }
-        }
-
-        await openGameInGrid(game.id);
-      });
-
-      return card;
-    }
-
-    function renderGrid(append = false) {
-      if (!append) {
-        if (!state.games.length) {
-          grid.innerHTML = '<div class="empty">no games found</div>';
-          return;
-        }
-        grid.innerHTML = '';
-      }
-
-      const startIndex = append ? Math.max(0, grid.querySelectorAll('.card').length) : 0;
-      const fragment = document.createDocumentFragment();
-
-      const gamesToRender = append ? state.games.slice(startIndex) : state.games;
-
-      gamesToRender.forEach((game, i) => {
-        fragment.appendChild(createGameCard(game, startIndex + i));
-      });
-
-      grid.appendChild(fragment);
-    }
-
-    async function resolveImages(games) {
-      const tasks = games.map(async (game) => {
-        if (state.imageMap.has(game.id)) return;
-        try {
-          const url = await Lumin.getImageUrl(game.image_token);
-          state.imageMap.set(game.id, url);
-        } catch {
-          state.imageMap.set(game.id, '');
-        }
-      });
-
-      await Promise.all(tasks);
-    }
-
-    async function loadPage(page = 1, append = false) {
-      if (state.loading) return;
-      if (state.loadedPages.has(page)) return;
-
-      state.loading = true;
-
-      if (!append) {
-        showLoading();
-      }
-
-      try {
-        const result = await Lumin.getGames({
-          page,
-          limit: PAGE_SIZE,
-          q: state.query
-        });
-
-        const nextGames = Array.isArray(result.games) ? result.games : [];
-        state.currentPage = page;
-        state.totalPages = result.pages || 1;
-        state.loadedPages.add(page);
-
-        await resolveImages(nextGames);
-
-        if (append) {
-          state.games = [...state.games, ...nextGames];
-          renderGrid(true);
-        } else {
-          state.games = nextGames;
-          renderGrid(false);
-        }
-
-        updateEndState();
-      } catch (err) {
-        console.error(err);
-        showError('could not load games');
-      } finally {
-        state.loading = false;
-      }
-    }
-
-    async function openGameInGrid(gameId) {
-      try {
-        const game = state.games.find(g => g.id === gameId);
-        if (!game) return;
-
-        const result = await Lumin.getGameUrl(gameId);
-        if (!result || !result.url) {
-          alert('unable to open this game');
-          return;
-        }
-
-        state.activeGameId = gameId;
-        state.activeGameUrl = result.url;
-        setHashForGame(game);
-        renderGrid(false);
-
-        const activeCard = document.querySelector('.card.active');
-        if (activeCard) {
-          activeCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      } catch (err) {
-        console.error(err);
-        alert('unable to open this game');
-      }
-    }
-
-    function updateEndState() {
-      if (state.currentPage >= state.totalPages) {
-        sentinel.style.display = 'none';
-      } else {
-        sentinel.style.display = 'block';
-      }
-    }
-
-    function resetForNewQuery() {
-      state.currentPage = 0;
-      state.totalPages = 1;
-      state.games = [];
-      state.imageMap = new Map();
-      state.loadedPages = new Set();
-      state.activeGameId = null;
-      state.activeGameUrl = '';
-      clearHash();
-      sentinel.style.display = 'block';
-    }
-
-    function openModal(modal) {
-      modal.classList.remove('hidden');
-      modal.setAttribute('aria-hidden', 'false');
-    }
-
-    function closeModal(modal) {
-      modal.classList.add('hidden');
-      modal.setAttribute('aria-hidden', 'true');
-    }
-
-    function applyTheme(name) {
-      const theme = themes[name] || themes.amber;
-      const root = document.documentElement.style;
-
-      root.setProperty('--bg', theme.bg);
-      root.setProperty('--panel', theme.panel);
-      root.setProperty('--panel-border', theme.panelBorder);
-      root.setProperty('--card', theme.card);
-      root.setProperty('--card-hover', theme.cardHover);
-      root.setProperty('--text', theme.text);
-      root.setProperty('--muted', theme.muted);
-      root.setProperty('--accent', theme.accent);
-      root.setProperty('--body-glow-1', theme.bodyGlow1);
-      root.setProperty('--body-glow-2', theme.bodyGlow2);
-      root.setProperty('--body-glow-3', theme.bodyGlow3);
-    }
-
-    function readSettings() {
-      try {
-        const raw = localStorage.getItem(SETTINGS_KEY);
-        const parsed = raw ? JSON.parse(raw) : null;
-        return parsed && typeof parsed === 'object' ? parsed : {};
-      } catch {
-        return {};
-      }
-    }
-
-    function saveSettings() {
-      const settings = {
-        theme: themeSelect.value,
-        tileSize: Number(tileSize.value),
-        gap: Number(gapSize.value)
+  // ─── CATEGORIES ───
+  function renderCatBar(cats) {
+    catsBar.innerHTML = '';
+    cats.forEach(cat => {
+      const btn = document.createElement('button');
+      btn.className = 'cat-btn' + (cat === 'all' && !currentCategory ? ' active' : '');
+      btn.textContent = cat;
+      btn.onclick = () => {
+        currentCategory = cat === 'all' ? '' : cat;
+        currentPage = 1;
+        currentView = 'all';
+        updateSidebarActive('sb-all');
+        catsBar.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        sectionTitle.textContent = cat;
+        loadPage(1);
       };
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-      applySettingsToUI(settings);
-    }
-
-    function applySettingsToUI(settings) {
-      const theme = settings.theme || 'amber';
-      const size = Number(settings.tileSize || 140);
-      const gap = Number(settings.gap || 12);
-
-      themeSelect.value = theme;
-      tileSize.value = size;
-      gapSize.value = gap;
-      tileSizeValue.textContent = String(size);
-      gapSizeValue.textContent = String(gap);
-
-      document.documentElement.style.setProperty('--tile-size', size + 'px');
-      document.documentElement.style.setProperty('--gap', gap + 'px');
-      applyTheme(theme);
-    }
-
-    function loadSettings() {
-      const settings = readSettings();
-      applySettingsToUI({
-        theme: settings.theme || 'amber',
-        tileSize: settings.tileSize || 140,
-        gap: settings.gap || 12
-      });
-    }
-
-    function submitSearch() {
-      state.query = searchInput.value.trim();
-      resetForNewQuery();
-      loadPage(1, false);
-      closeModal(searchModal);
-    }
-
-    searchBtn.addEventListener('click', () => {
-      openModal(searchModal);
-      setTimeout(() => {
-        searchInput.value = state.query;
-        searchInput.focus();
-        searchInput.select();
-      }, 50);
+      catsBar.appendChild(btn);
     });
+  }
 
-    settingsBtn.addEventListener('click', () => {
-      openModal(settingsModal);
-    });
-
-    closeSearchModal.addEventListener('click', () => closeModal(searchModal));
-    closeSettingsModal.addEventListener('click', () => closeModal(settingsModal));
-
-    runSearchBtn.addEventListener('click', submitSearch);
-
-    clearSearchBtn.addEventListener('click', () => {
-      searchInput.value = '';
-      state.query = '';
-      resetForNewQuery();
-      loadPage(1, false);
-      closeModal(searchModal);
-    });
-
-    searchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        submitSearch();
-      }
-      if (e.key === 'Escape') closeModal(searchModal);
-    });
-
-    themeSelect.addEventListener('change', () => {
-      applySettingsToUI({
-        theme: themeSelect.value,
-        tileSize: Number(tileSize.value),
-        gap: Number(gapSize.value)
-      });
-    });
-
-    tileSize.addEventListener('input', () => {
-      tileSizeValue.textContent = tileSize.value;
-      document.documentElement.style.setProperty('--tile-size', tileSize.value + 'px');
-    });
-
-    gapSize.addEventListener('input', () => {
-      gapSizeValue.textContent = gapSize.value;
-      document.documentElement.style.setProperty('--gap', gapSize.value + 'px');
-    });
-
-    saveSettingsBtn.addEventListener('click', () => {
-      saveSettings();
-      closeModal(settingsModal);
-    });
-
-    resetSettingsBtn.addEventListener('click', () => {
-      const defaults = {
-        theme: 'amber',
-        tileSize: 140,
-        gap: 12
-      };
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(defaults));
-      applySettingsToUI(defaults);
-    });
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        closeModal(searchModal);
-        closeModal(settingsModal);
-      }
-    });
-
-    searchModal.addEventListener('click', (e) => {
-      if (e.target === searchModal) closeModal(searchModal);
-    });
-
-    settingsModal.addEventListener('click', (e) => {
-      if (e.target === settingsModal) closeModal(settingsModal);
-    });
-
-    const observer = new IntersectionObserver(async (entries) => {
-      for (const entry of entries) {
-        if (entry.isIntersecting && !state.loading && state.currentPage < state.totalPages) {
-          await loadPage(state.currentPage + 1, true);
-        }
-      }
-    }, { root: null, rootMargin: '600px 0px', threshold: 0 });
-
-    observer.observe(sentinel);
-
-    async function init() {
-      try {
-        loadSettings();
-
-        await Lumin.init({
-          headless: true,
-          onReady: () => console.log('Lumin connected'),
-          onError: (err) => console.error('Lumin error:', err)
+  function renderSidebarCats(cats) {
+    sidebarCats.innerHTML = '';
+    cats.slice(0, 12).forEach(cat => {
+      const btn = document.createElement('button');
+      btn.className = 'sidebar-btn';
+      btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>${cat}`;
+      btn.onclick = () => {
+        currentCategory = cat;
+        currentPage = 1;
+        currentView = 'all';
+        updateSidebarActive(null);
+        sectionTitle.textContent = cat;
+        catsBar.querySelectorAll('.cat-btn').forEach(b => {
+          b.classList.toggle('active', b.textContent === cat);
         });
+        loadPage(1);
+      };
+      sidebarCats.appendChild(btn);
+    });
+  }
 
-        await loadPage(1, false);
-      } catch (err) {
-        console.error(err);
-        showError('failed to initialize sdk');
-      }
+  // ─── VIEWS ───
+  function setView(view) {
+    currentView = view;
+    currentQuery = '';
+    searchInput.value = '';
+    currentCategory = '';
+    currentPage = 1;
+    catsBar.querySelectorAll('.cat-btn').forEach((b,i) => b.classList.toggle('active', i===0));
+    updateSidebarActive('sb-' + view);
+
+    if (view === 'favs') {
+      document.getElementById('favsBtn').classList.add('active');
+      sectionTitle.textContent = 'favorites';
+      renderFavs();
+    } else if (view === 'recent') {
+      sectionTitle.textContent = 'recently played';
+      renderRecent();
+    } else {
+      document.getElementById('favsBtn').classList.remove('active');
+      sectionTitle.textContent = 'all games';
+      loadPage(1);
+    }
+  }
+
+  function updateSidebarActive(id) {
+    document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
+    if (id) { const el = document.getElementById(id); if (el) el.classList.add('active'); }
+  }
+
+  // ─── LOAD PAGE ───
+  async function loadPage(page) {
+    grid.innerHTML = '<div class="loading-center" style="grid-column:1/-1"><div class="spinner"></div></div>';
+    pagination.innerHTML = '';
+    noResults.classList.remove('show');
+
+    const result = await Lumin.getGames({
+      page, limit: PAGE_SIZE,
+      q: currentQuery,
+      category: currentCategory || undefined,
+    });
+
+    currentPage = page;
+    grid.innerHTML = '';
+
+    if (!result.games.length) {
+      noResults.classList.add('show');
+      document.getElementById('noResultsQuery').textContent = currentQuery || currentCategory;
+      return;
     }
 
-    init();
-  </script>
+    const imgUrls = await Promise.all(result.games.map(g => Lumin.getImageUrl(g.image_token)));
+    result.games.forEach((game, i) => renderCard(game, imgUrls[i]));
+    renderPagination(result.pages);
+  }
+
+  // ─── RENDER CARD ───
+  function renderCard(game, imgUrl) {
+    const card = document.createElement('div');
+    card.className = 'game-card';
+    const isFav = favorites.includes(game.id);
+    card.innerHTML = `
+      <img src="${imgUrl}" alt="${game.name}" loading="lazy">
+      <div class="card-label">${game.name}</div>
+      <button class="fav-btn ${isFav ? 'saved' : ''}" data-id="${game.id}" onclick="toggleFav(event,'${game.id}','${game.name.replace(/'/g,"\\'")}')">
+        <svg viewBox="0 0 24 24" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </button>
+    `;
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.fav-btn')) return;
+      openGame(game.id, game.name);
+    });
+    grid.appendChild(card);
+  }
+
+  // ─── FAVORITES ───
+  function toggleFav(e, id, name) {
+    e.stopPropagation();
+    const btn = e.currentTarget;
+    const svg = btn.querySelector('svg');
+    const idx = favorites.indexOf(id);
+    if (idx === -1) {
+      favorites.push(id);
+      btn.classList.add('saved');
+      svg.setAttribute('fill', 'currentColor');
+    } else {
+      favorites.splice(idx, 1);
+      btn.classList.remove('saved');
+      svg.setAttribute('fill', 'none');
+    }
+    localStorage.setItem('velora_favs', JSON.stringify(favorites));
+
+    // update player fav btn if open
+    if (currentGameId === id) updatePlayerFavBtn();
+  }
+
+  function togglePlayerFav() {
+    if (!currentGameId) return;
+    const idx = favorites.indexOf(currentGameId);
+    if (idx === -1) favorites.push(currentGameId);
+    else favorites.splice(idx, 1);
+    localStorage.setItem('velora_favs', JSON.stringify(favorites));
+    updatePlayerFavBtn();
+    // update grid card
+    const btn = grid.querySelector(`.fav-btn[data-id="${currentGameId}"]`);
+    if (btn) {
+      const svg = btn.querySelector('svg');
+      if (favorites.includes(currentGameId)) { btn.classList.add('saved'); svg.setAttribute('fill','currentColor'); }
+      else { btn.classList.remove('saved'); svg.setAttribute('fill','none'); }
+    }
+  }
+
+  function updatePlayerFavBtn() {
+    const btn = document.getElementById('playerFavBtn');
+    if (favorites.includes(currentGameId)) btn.classList.add('fav-active');
+    else btn.classList.remove('fav-active');
+  }
+
+  async function renderFavs() {
+    pagination.innerHTML = '';
+    noResults.classList.remove('show');
+    if (!favorites.length) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <p>no favorites yet — click the heart on any game</p>
+      </div>`;
+      return;
+    }
+    grid.innerHTML = '<div class="loading-center" style="grid-column:1/-1"><div class="spinner"></div></div>';
+    // Get fav games one by one — no bulk fav API in SDK
+    const result = await Lumin.getGames({ page: 1, limit: 100, q: '' });
+    const favGames = result.games.filter(g => favorites.includes(g.id));
+    if (!favGames.length) { grid.innerHTML = ''; noResults.classList.add('show'); document.getElementById('noResultsQuery').textContent = ''; return; }
+    grid.innerHTML = '';
+    const imgUrls = await Promise.all(favGames.map(g => Lumin.getImageUrl(g.image_token)));
+    favGames.forEach((game, i) => renderCard(game, imgUrls[i]));
+  }
+
+  async function renderRecent() {
+    pagination.innerHTML = '';
+    noResults.classList.remove('show');
+    if (!recentlyPlayed.length) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        <p>no recent games — play something first!</p>
+      </div>`;
+      return;
+    }
+    grid.innerHTML = '<div class="loading-center" style="grid-column:1/-1"><div class="spinner"></div></div>';
+    const result = await Lumin.getGames({ page: 1, limit: 100, q: '' });
+    const recentGames = recentlyPlayed.map(id => result.games.find(g => g.id === id)).filter(Boolean);
+    grid.innerHTML = '';
+    const imgUrls = await Promise.all(recentGames.map(g => Lumin.getImageUrl(g.image_token)));
+    recentGames.forEach((game, i) => renderCard(game, imgUrls[i]));
+  }
+
+  // ─── GAME PLAYER ───
+  function openGame(id, name) {
+    currentGameId = id;
+    currentGameName = name;
+
+    // track recent
+    recentlyPlayed = recentlyPlayed.filter(r => r !== id);
+    recentlyPlayed.unshift(id);
+    if (recentlyPlayed.length > 50) recentlyPlayed.pop();
+    localStorage.setItem('velora_recent', JSON.stringify(recentlyPlayed));
+
+    document.getElementById('playerTitle').textContent = name;
+    updatePlayerFavBtn();
+
+    const overlay = document.getElementById('playerOverlay');
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+
+    Lumin.loadGame(id);
+  }
+
+  function closePlayer() {
+    document.getElementById('playerOverlay').classList.remove('open');
+    document.getElementById('playerFrameWrap').classList.remove('fullscreen-mode');
+    document.getElementById('playerOverlay').classList.remove('fullscreen-mode');
+    document.body.style.overflow = '';
+    document.getElementById('gameFrame').src = '';
+    currentGameId = null;
+  }
+
+  function reloadGame() {
+    if (!currentGameId) return;
+    const frame = document.getElementById('gameFrame');
+    const src = frame.src;
+    frame.src = '';
+    setTimeout(() => { frame.src = src; }, 50);
+  }
+
+  function toggleFullscreen() {
+    const overlay = document.getElementById('playerOverlay');
+    const wrap = document.getElementById('playerFrameWrap');
+    const bar = document.getElementById('playerBar');
+    const isFs = overlay.classList.contains('fullscreen-mode');
+    overlay.classList.toggle('fullscreen-mode', !isFs);
+    wrap.classList.toggle('fullscreen-mode', !isFs);
+    bar.style.display = isFs ? '' : 'none';
+    wrap.style.borderRadius = isFs ? '' : '0';
+    wrap.querySelector('iframe').style.height = isFs ? '' : '100vh';
+  }
+
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closePlayer(); closeSettings(); } });
+
+  // ─── PAGINATION ───
+  function renderPagination(totalPages) {
+    pagination.innerHTML = '';
+    if (totalPages <= 1) return;
+
+    const prev = document.createElement('button');
+    prev.className = 'page-btn'; prev.textContent = '←';
+    prev.disabled = currentPage === 1;
+    prev.onclick = () => loadPage(currentPage - 1);
+    pagination.appendChild(prev);
+
+    const range = [];
+    for (let p = Math.max(1, currentPage - 2); p <= Math.min(totalPages, currentPage + 2); p++) range.push(p);
+    if (range[0] > 1) { addPageBtn(1); if (range[0] > 2) addPageDot(); }
+    range.forEach(p => addPageBtn(p));
+    if (range[range.length-1] < totalPages) { if (range[range.length-1] < totalPages-1) addPageDot(); addPageBtn(totalPages); }
+
+    const next = document.createElement('button');
+    next.className = 'page-btn'; next.textContent = '→';
+    next.disabled = currentPage === totalPages;
+    next.onclick = () => loadPage(currentPage + 1);
+    pagination.appendChild(next);
+  }
+
+  function addPageBtn(p) {
+    const btn = document.createElement('button');
+    btn.className = 'page-btn' + (p === currentPage ? ' active' : '');
+    btn.textContent = p;
+    btn.onclick = () => loadPage(p);
+    pagination.appendChild(btn);
+  }
+
+  function addPageDot() {
+    const dot = document.createElement('span');
+    dot.textContent = '…'; dot.style.cssText = 'display:flex;align-items:center;padding:0 4px;color:var(--text3);font-size:13px;';
+    pagination.appendChild(dot);
+  }
+
+  // ─── SETTINGS ───
+  function openSettings() {
+    document.getElementById('settingsOverlay').classList.add('open');
+  }
+  function closeSettings() {
+    document.getElementById('settingsOverlay').classList.remove('open');
+  }
+  function closeSettingsOutside(e) {
+    if (e.target === document.getElementById('settingsOverlay')) closeSettings();
+  }
+
+  function setTheme(el) {
+    document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+    document.body.className = document.body.className.replace(/theme-\w+/, '');
+    document.body.classList.add(el.dataset.theme);
+    localStorage.setItem('velora_theme', el.dataset.theme);
+  }
+
+  function setGridSize(val) {
+    const g = document.getElementById('grid');
+    g.style.gridTemplateColumns = `repeat(auto-fill, minmax(${val}px, 1fr))`;
+    localStorage.setItem('velora_gridsize', val);
+  }
+
+  function toggleTitles() {
+    showTitles = !showTitles;
+    document.getElementById('titleToggle').classList.toggle('on', showTitles);
+    document.querySelectorAll('.card-label').forEach(el => { el.style.display = showTitles ? '' : 'none'; });
+    localStorage.setItem('velora_titles', showTitles);
+  }
+
+  function toggleAnims() {
+    animsEnabled = !animsEnabled;
+    document.getElementById('animToggle').classList.toggle('on', animsEnabled);
+    document.getElementById('grid').style.setProperty('--hover-transform', animsEnabled ? 'translateY(-3px)' : 'none');
+    const style = document.getElementById('anim-override') || (() => { const s = document.createElement('style'); s.id='anim-override'; document.head.appendChild(s); return s; })();
+    style.textContent = animsEnabled ? '' : '.game-card:hover{transform:none!important;}';
+    localStorage.setItem('velora_anims', animsEnabled);
+  }
+
+  function setBg(val) {
+    document.body.style.setProperty('--bg', val);
+    document.documentElement.style.background = val;
+    localStorage.setItem('velora_bg', val);
+  }
+
+  // ─── RESTORE PREFS ───
+  (() => {
+    const theme = localStorage.getItem('velora_theme');
+    if (theme) { document.body.className = 'theme-' + theme.replace('theme-',''); document.querySelector(`.swatch[data-theme="${theme}"]`)?.classList.add('active'); }
+    const gs = localStorage.getItem('velora_gridsize');
+    if (gs) { document.getElementById('gridSizeSelect').value = gs; setGridSize(gs); }
+    const bg = localStorage.getItem('velora_bg');
+    if (bg) { document.getElementById('bgSelect').value = bg; setBg(bg); }
+  })();
+</script>
 </body>
 </html>
