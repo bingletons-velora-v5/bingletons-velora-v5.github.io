@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>velora chat</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@400;500;600;700&display=swap');
+:root{--bg:#070707;--panel:#101010;--panel2:#0c0c0c;--line:#202020;--text:#eee;--muted:#898989;--aqua:#b4ffe6;--pink:#ff7aa8;--red:#ff6868}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at top,#111 0,#070707 42%,#050505 100%);color:var(--text);font-family:Inter,system-ui,sans-serif;min-height:100vh}
+.wrap{width:min(960px,calc(100% - 24px));margin:22px auto;height:calc(100vh - 44px);display:flex;flex-direction:column}
+.top{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.logo{font-family:'Great Vibes',cursive;font-size:42px;color:var(--aqua);line-height:1}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+.card{background:linear-gradient(180deg,#111,#0a0a0a);border:1px solid var(--line);border-radius:18px;box-shadow:0 12px 40px #0008;overflow:hidden}
+.namebar{padding:12px;display:flex;gap:8px;border-bottom:1px solid var(--line);background:#0d0d0d}
+input,button{font:inherit}
+input{background:#080808;color:var(--text);border:1px solid #292929;border-radius:10px;outline:none;padding:11px 12px}
+input:focus{border-color:#4d6a60}
+#name{width:200px}
+button{border:0;border-radius:10px;padding:11px 15px;background:var(--aqua);color:#07100d;font-weight:700;cursor:pointer}
+button:disabled{opacity:.45;cursor:not-allowed}
+.chat{flex:1;min-height:0;display:flex;flex-direction:column}
+#messages{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:9px}
+.msg{display:flex;gap:10px;align-items:flex-start;padding:9px 11px;border-radius:12px;background:#0f0f0f;border:1px solid #171717;animation:in .12s ease-out}
+.msg.me{border-color:#23483e;background:#0e1412}
+.meta{font-size:12px;color:var(--aqua);font-weight:700;white-space:nowrap}
+.time{font-size:10px;color:#666;margin-left:7px;font-weight:400}
+.text{font-size:14px;line-height:1.45;word-break:break-word;color:#ddd}
+.empty{margin:auto;color:#666;font-size:14px;text-align:center}
+.composer{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line);background:#0d0d0d}
+#message{flex:1;min-width:0}
+.error{padding:10px 12px;background:#180d0d;color:#ff9b9b;border-top:1px solid #341414;font-size:12px;display:none}
+.notice{font-size:11px;color:#666;padding:0 2px 9px}
+.banned{color:#ff9b9b}
+@keyframes in{from{opacity:0;transform:translateY(2px)}to{opacity:1;transform:none}}
+@media(max-width:600px){.wrap{height:calc(100vh - 20px);margin:10px auto}.logo{font-size:36px}#name{width:145px}.namebar{flex-wrap:wrap}.status{width:100%;margin-left:0}.msg{display:block}.meta{margin-bottom:3px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="logo">velora chat</div>
+    <div id="status" class="status">connecting...</div>
+  </div>
+  <div class="card chat">
+    <div class="namebar">
+      <input id="name" maxlength="24" placeholder="your name" autocomplete="off">
+      <button id="saveName">save name</button>
+    </div>
+    <div id="messages"><div class="empty">loading chat...</div></div>
+    <div id="error" class="error"></div>
+    <div class="composer">
+      <input id="message" maxlength="500" placeholder="say something..." autocomplete="off" disabled>
+      <button id="send" disabled>send</button>
+    </div>
+    <div class="notice">be normal. spam gets rate-limited, and banned language can get the account banned.</div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+import { getFirestore, collection, query, orderBy, limit, onSnapshot, getDoc, doc } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-functions.js";
+
+// paste your Firebase web config here
+const firebaseConfig = {
+  apiKey: "PASTE_API_KEY",
+  authDomain: "PASTE_PROJECT.firebaseapp.com",
+  projectId: "PASTE_PROJECT_ID",
+  storageBucket: "PASTE_PROJECT.firebasestorage.app",
+  messagingSenderId: "PASTE_SENDER_ID",
+  appId: "PASTE_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const functions = getFunctions(app, "us-central1");
+const sendMessage = httpsCallable(functions, "sendMessage");
+
+const nameInput = document.getElementById("name");
+const saveName = document.getElementById("saveName");
+const messageInput = document.getElementById("message");
+const sendButton = document.getElementById("send");
+const messages = document.getElementById("messages");
+const status = document.getElementById("status");
+const errorBox = document.getElementById("error");
+
+let currentUser = null;
+let unsubMessages = null;
+let banned = false;
+
+nameInput.value = localStorage.getItem("velora-chat-name") || "";
+
+function cleanName(value){
+  return value.replace(/[<>]/g, "").replace(/\\s+/g, " ").trim().slice(0,24);
+}
+function showError(text){
+  errorBox.textContent = text;
+  errorBox.style.display = "block";
+  clearTimeout(showError.timer);
+  showError.timer = setTimeout(()=>errorBox.style.display="none",5000);
+}
+function setReady(){
+  const ready = !!currentUser && !banned && !!cleanName(nameInput.value) ;
+  messageInput.disabled = !ready;
+  sendButton.disabled = !ready;
+}
+function fmt(ts){
+  if(!ts) return "now";
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  return d.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
+}
+function render(items){
+  messages.innerHTML = "";
+  if(!items.length){ messages.innerHTML='<div class="empty">no messages yet. start it.</div>'; return; }
+  for(const m of items){
+    const row = document.createElement("div");
+    row.className = "msg" + (m.uid === currentUser?.uid ? " me" : "");
+    const left = document.createElement("div");
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    const time = document.createElement("span");
+    time.className = "time";
+    time.textContent = fmt(m.createdAt);
+    meta.textContent = m.name || "anonymous";
+    meta.appendChild(time);
+    const text = document.createElement("div");
+    text.className = "text";
+    text.textContent = m.text || "";
+    left.append(meta,text);
+    row.appendChild(left);
+    messages.appendChild(row);
+  }
+  messages.scrollTop = messages.scrollHeight;
+}
+
+saveName.addEventListener("click",()=>{
+  const n = cleanName(nameInput.value);
+  if(n.length < 1){ showError("choose a name first."); return; }
+  localStorage.setItem("velora-chat-name", n);
+  nameInput.value = n;
+  setReady();
+  messageInput.focus();
+});
+nameInput.addEventListener("input", setReady);
+
+async function refreshBan(){
+  if(!currentUser) return;
+  const snap = await getDoc(doc(db,"bans",currentUser.uid));
+  banned = snap.exists();
+  if(banned){
+    status.textContent = "banned";
+    status.className = "status banned";
+    showError("this account is banned from the chat.");
+  }
+  setReady();
+}
+
+async function send(){
+  if(!currentUser || banned) return;
+  const text = messageInput.value.trim();
+  const name = cleanName(nameInput.value);
+  if(!name){ showError("choose a name first."); return; }
+  if(!text) return;
+  if(text.length > 500){ showError("message is too long."); return; }
+  sendButton.disabled = true;
+  try{
+    await sendMessage({name,text});
+    messageInput.value = "";
+  }catch(e){
+    const code = e?.code || "";
+    if(code.includes("permission-denied") || code.includes("functions/permission-denied")) showError(e.message || "message rejected.");
+    else if(code.includes("resource-exhausted")) showError("slow down — you're sending too fast.");
+    else showError("could not send that message.");
+  }
+  setReady();
+}
+sendButton.addEventListener("click",send);
+messageInput.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}});
+
+onAuthStateChanged(auth, async user=>{
+  currentUser = user;
+  if(!user) return;
+  status.textContent = "online";
+  await refreshBan();
+  if(unsubMessages) unsubMessages();
+  const q = query(collection(db,"messages"),orderBy("createdAt","asc"),limit(100));
+  unsubMessages = onSnapshot(q,snap=>render(snap.docs.map(d=>({id:d.id,...d.data()}))),err=>showError("could not load chat."));
+});
+
+try{
+  await signInAnonymously(auth);
+}catch(e){
+  status.textContent = "setup needed";
+  showError("Firebase anonymous sign-in is not enabled yet.");
+}
+</script>
+</body>
+</html>
