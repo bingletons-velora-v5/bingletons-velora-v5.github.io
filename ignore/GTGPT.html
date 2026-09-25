@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>Neon Shores</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="game"></div>
+  <div id="boot">Loading Neon Shores…</div>
+
+  <div id="hud" class="hidden">
+    <div id="top-left" class="hud-panel">
+      <div class="title">NEON SHORES</div>
+      <div class="bars">
+        <div class="bar-line"><span>HEALTH</span><div class="bar"><i id="health-fill"></i></div><b id="health-text">100</b></div>
+        <div class="bar-line"><span>ARMOR</span><div class="bar armor"><i id="armor-fill"></i></div><b id="armor-text">50</b></div>
+      </div>
+      <div class="money" id="money">$750</div>
+    </div>
+
+    <div id="top-right" class="hud-panel">
+      <div class="weapon-name" id="weapon-name">COMPACT PULSE</div>
+      <div class="ammo" id="ammo">12 / 48</div>
+      <div class="suspicion-wrap">
+        <span>SIGNAL</span>
+        <div id="signals" class="signals"></div>
+      </div>
+    </div>
+
+    <div id="mission-box" class="hud-panel hidden">
+      <div class="mission-head"><span id="mission-name">OBJECTIVE</span><span id="mission-timer"></span></div>
+      <div id="mission-objective">Find the marker.</div>
+    </div>
+
+    <div id="prompt" class="prompt hidden">E — ENTER</div>
+    <div id="reticle"><i></i><i></i><i></i><i></i></div>
+    <canvas id="minimap" width="220" height="220"></canvas>
+    <div id="status" class="status">WASD move · mouse look · click fire · E enter/exit · Space jump · Shift sprint · R reload · Esc pause</div>
+    <div id="toast" class="toast hidden"></div>
+  </div>
+
+  <div id="pause" class="overlay hidden">
+    <div class="overlay-card">
+      <div class="overlay-title">PAUSED</div>
+      <p>Neon Shores is paused.</p>
+      <div class="button-row">
+        <button id="resume-btn">RESUME</button>
+        <button id="save-btn">SAVE</button>
+        <button id="reset-btn">RESET</button>
+      </div>
+      <div class="help">Click the game to recapture the mouse.</div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.min.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
